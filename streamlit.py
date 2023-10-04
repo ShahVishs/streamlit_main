@@ -458,7 +458,12 @@ else:
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons if feedback is not provided yet
                 thumbs_up = st.button("👍", key=f"thumbs_up_{i}")
+                
+                # Create a column separator to add some space between the buttons
+                col_separator = st.columns([1])
+                
                 thumbs_down = st.button("👎", key=f"thumbs_down_{i}")
+                
                 if thumbs_up:
                     feedback = "👍"  # Store thumbs-up feedback
                 elif thumbs_down:
