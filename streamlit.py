@@ -443,17 +443,6 @@ else:
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
 
-   # Add this line to set the background color
-    custom_css = """
-        body {
-            background-color: #f0f0f0; /* Change this to the desired background color */
-        }
-    """
-    
-    st.markdown(f'<style>{custom_css}</style>', unsafe_allow_html=True)
-    
-    # ... (previous code)
-    
    # Initialize thumbs_up_states and thumbs_down_states in session state
     if 'thumbs_up_states' not in st.session_state:
         st.session_state.thumbs_up_states = [False] * len(st.session_state.chat_history)
@@ -483,19 +472,22 @@ else:
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
-                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
-                    if thumbs_up:
-                        st.session_state.thumbs_up_states[i] = True  # Update thumbs-up state
-                        st.session_state.thumbs_down_states[i] = False  # Reset thumbs-down state
-            
-                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
-                    if thumbs_down:
-                        st.session_state.thumbs_down_states[i] = True  # Update thumbs-down state
-            
-                    if st.session_state.thumbs_up_states[i]:
+                    if not st.session_state.thumbs_up_states[i]:  # Check if thumbs-up is not already clicked
+                        thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
+                        if thumbs_up:
+                            st.session_state.thumbs_up_states[i] = True  # Update thumbs-up state
+                            st.session_state.thumbs_down_states[i] = False  # Reset thumbs-down state
+                    else:
                         st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
-            
-                    if st.session_state.thumbs_down_states[i]:
+        
+                # Display thumbs-down button conditionally based on its state
+                with thumbs_down_col:
+                    if not st.session_state.thumbs_down_states[i]:  # Check if thumbs-down is not already clicked
+                        thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
+                        if thumbs_down:
+                            st.session_state.thumbs_down_states[i] = True  # Update thumbs-down state
+                            st.session_state.thumbs_up_states[i] = False  # Reset thumbs-up state
+                    else:
                         st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
         
                 if feedback is not None:
