@@ -439,7 +439,9 @@ else:
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
     # Display chat history with feedback
-    
+    # Initialize feedback_dict as an empty dictionary if it doesn't exist in session state
+    if "feedback_dict" not in st.session_state:
+        st.session_state.feedback_dict = {}
    
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
