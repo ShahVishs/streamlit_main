@@ -439,7 +439,19 @@ else:
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
     # Display chat history with feedback
-   
+   # Add this line to set the background color
+    custom_css = """
+        body {
+            background-color: #f0f0f0; /* Change this to the desired background color */
+        }
+    """
+    
+    st.markdown(f'<style>{custom_css}</style>', unsafe_allow_html=True)
+    
+    # ... (previous code)
+    
+    thumbs_up_states = [False] * len(st.session_state.chat_history)
+    thumbs_down_states = [False] * len(st.session_state.chat_history)
     # Display chat history with feedback
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
@@ -464,12 +476,21 @@ else:
                 with thumbs_up_col:
                     thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
                     if thumbs_up:
-                        feedback = "👍"  # Store thumbs-up feedback
+                        thumbs_up_states[i] = True  # Update thumbs-up state
+                        thumbs_down_states[i] = False  # Reset thumbs-down state
+        
                 with thumbs_down_col:
                     thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
                     if thumbs_down:
-                        feedback = "👎"  # Store thumbs-down feedback
-    
+                        thumbs_down_states[i] = True  # Update thumbs-down state
+                        thumbs_up_states[i] = False  # Reset thumbs-up state
+        
+                if thumbs_up_states[i]:
+                    st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
+        
+                if thumbs_down_states[i]:
+                    st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
+        
                 if feedback is not None:
                     # Update the feedback in the chat history
                     st.session_state.chat_history[i] = (query, answer, feedback)
