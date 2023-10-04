@@ -460,13 +460,15 @@ else:
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
-                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
+                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",
+                                          style="margin: -5px;")  # Apply negative margin
                     if thumbs_up:
                         feedback = "👍"  # Store thumbs-up feedback
                 with thumbs_down_col:
-                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
+                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",
+                                            style="margin: -5px;")  # Apply negative margin
                     if thumbs_down:
-                        feedback = "👎"  # Store thumbs-down feedback
+                        feedback = "👎" 
     
                 if feedback is not None:
                     # Update the feedback in the chat history
