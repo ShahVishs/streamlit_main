@@ -445,10 +445,11 @@ else:
 
    # Initialize thumbs_up_states and thumbs_down_states in session state
     if 'thumbs_up_states' not in st.session_state:
-        st.session_state.thumbs_up_states = [False] * len(st.session_state.chat_history)
-    
+        st.session_state.thumbs_up_states = {}
+
     if 'thumbs_down_states' not in st.session_state:
-        st.session_state.thumbs_down_states = [False] * len(st.session_state.chat_history)
+        st.session_state.thumbs_down_states = {}
+
 
     # Display chat history with feedback
     with response_container:
@@ -472,22 +473,24 @@ else:
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
-                    if not st.session_state.thumbs_up_states[i]:  # Check if thumbs-up is not already clicked
-                        thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
+                    thumbs_up_key = f"thumbs_up_{i}"
+                    if thumbs_up_key not in st.session_state.thumbs_up_states or not st.session_state.thumbs_up_states[thumbs_up_key]:
+                        thumbs_up = st.button("👍", key=thumbs_up_key, help="thumbs_up_button",)
                         if thumbs_up:
-                            st.session_state.thumbs_up_states[i] = True  # Update thumbs-up state
-                            st.session_state.thumbs_down_states[i] = False  # Reset thumbs-down state
-                    else:
+                            st.session_state.thumbs_up_states[thumbs_up_key] = True
+                            st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
+                    elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
         
                 # Display thumbs-down button conditionally based on its state
                 with thumbs_down_col:
-                    if not st.session_state.thumbs_down_states[i]:  # Check if thumbs-down is not already clicked
-                        thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
+                    thumbs_down_key = f"thumbs_down_{i}"
+                    if thumbs_down_key not in st.session_state.thumbs_down_states or not st.session_state.thumbs_down_states[thumbs_down_key]:
+                        thumbs_down = st.button("👎", key=thumbs_down_key, help="thumbs_down_button",)
                         if thumbs_down:
-                            st.session_state.thumbs_down_states[i] = True  # Update thumbs-down state
-                            st.session_state.thumbs_up_states[i] = False  # Reset thumbs-up state
-                    else:
+                            st.session_state.thumbs_down_states[thumbs_down_key] = True
+                            st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
+                    elif thumbs_down_key in st.session_state.thumbs_down_states:
                         st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
         
                 if feedback is not None:
