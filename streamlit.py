@@ -499,6 +499,6 @@ else:
                 
                 if feedback is not None:
                     st.session_state.chat_history[i] = (user_input, output, feedback)
-                
+                    save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
             
                 
