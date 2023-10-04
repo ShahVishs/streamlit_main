@@ -475,8 +475,8 @@ else:
                 with thumbs_up_col:
                     thumbs_up_key = f"thumbs_up_{i}"
                     thumbs_up_state = st.session_state.thumbs_up_states.get(thumbs_up_key, False)
-                    thumbs_up_color = "green" if thumbs_up_state else None
-                    thumbs_up = st.button("👍", key=thumbs_up_key, help="thumbs_up_button", style=f"background-color: {thumbs_up_color};")
+                    thumbs_up_style = f"background-color: {'green' if thumbs_up_state else 'white'}; padding: 5px 10px; font-size: 1.2em; border: none; cursor: pointer;"
+                    thumbs_up = st.markdown(f'<div style="{thumbs_up_style}">👍</div>', key=thumbs_up_key, help="thumbs_up_button", unsafe_allow_html=True)
                     if thumbs_up:
                         st.session_state.thumbs_up_states[thumbs_up_key] = True
                         st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
@@ -487,8 +487,8 @@ else:
                 with thumbs_down_col:
                     thumbs_down_key = f"thumbs_down_{i}"
                     thumbs_down_state = st.session_state.thumbs_down_states.get(thumbs_down_key, False)
-                    thumbs_down_color = "red" if thumbs_down_state else None
-                    thumbs_down = st.button("👎", key=thumbs_down_key, help="thumbs_down_button", style=f"background-color: {thumbs_down_color};")
+                    thumbs_down_style = f"background-color: {'red' if thumbs_down_state else 'white'}; padding: 5px 10px; font-size: 1.2em; border: none; cursor: pointer;"
+                    thumbs_down = st.markdown(f'<div style="{thumbs_down_style}">👎</div>', key=thumbs_down_key, help="thumbs_down_button", unsafe_allow_html=True)
                     if thumbs_down:
                         st.session_state.thumbs_down_states[thumbs_down_key] = True
                         st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
