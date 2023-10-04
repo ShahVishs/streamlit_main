@@ -474,29 +474,37 @@ else:
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
                     thumbs_up_key = f"thumbs_up_{i}"
-                    if thumbs_up_key not in st.session_state.thumbs_up_states or not st.session_state.thumbs_up_states[thumbs_up_key]:
-                        thumbs_up = st.button("👍", key=thumbs_up_key, help="thumbs_up_button",)
-                        if thumbs_up:
-                            st.session_state.thumbs_up_states[thumbs_up_key] = True
-                            st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
-                            # Call save_chat_to_airtable with feedback when thumbs-up is clicked
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👍")
-                    elif thumbs_up_key in st.session_state.thumbs_up_states:
-                        st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
+                    thumbs_up_state = st.session_state.thumbs_up_states.get(thumbs_up_key, False)
+                    if thumbs_up_state:
+                        thumbs_up_color = "gray"  # Change the color to gray if feedback has been given
+                    else:
+                        thumbs_up_color = "black"  # Default color
+                    thumbs_up = st.button(f'<span style="color: {thumbs_up_color}; font-size: 20px;">👍</span>', key=thumbs_up_key, help="thumbs_up_button", disabled=thumbs_up_state)
+                    if thumbs_up:
+                        st.session_state.thumbs_up_states[thumbs_up_key] = True
+                        st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
+                        # Call save_chat_to_airtable with feedback when thumbs-up is clicked
+                        save_chat_to_airtable(st.session_state.user_name, query, answer, "👍")
+                elif thumbs_up_key in st.session_state.thumbs_up_states:
+                    st.markdown(f'<span style="color: gray; font-size: 20px;">👍</span> You already gave feedback', unsafe_allow_html=True)
                 
                 # Display thumbs-down button conditionally based on its state
                 with thumbs_down_col:
                     thumbs_down_key = f"thumbs_down_{i}"
-                    if thumbs_down_key not in st.session_state.thumbs_down_states or not st.session_state.thumbs_down_states[thumbs_down_key]:
-                        thumbs_down = st.button("👎", key=thumbs_down_key, help="thumbs_down_button",)
-                        if thumbs_down:
-                            st.session_state.thumbs_down_states[thumbs_down_key] = True
-                            st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
-                            # Call save_chat_to_airtable with feedback when thumbs-down is clicked
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👎")
-                    elif thumbs_down_key in st.session_state.thumbs_down_states:
-                        st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
-    
+                    thumbs_down_state = st.session_state.thumbs_down_states.get(thumbs_down_key, False)
+                    if thumbs_down_state:
+                        thumbs_down_color = "gray"  # Change the color to gray if feedback has been given
+                    else:
+                        thumbs_down_color = "black"  # Default color
+                    thumbs_down = st.button(f'<span style="color: {thumbs_down_color}; font-size: 20px;">👎</span>', key=thumbs_down_key, help="thumbs_down_button", disabled=thumbs_down_state)
+                    if thumbs_down:
+                        st.session_state.thumbs_down_states[thumbs_down_key] = True
+                        st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
+                        # Call save_chat_to_airtable with feedback when thumbs-down is clicked
+                        save_chat_to_airtable(st.session_state.user_name, query, answer, "👎")
+                elif thumbs_down_key in st.session_state.thumbs_down_states:
+                    st.markdown(f'<span style="color: gray; font-size: 20px;">👎</span> You already gave feedback', unsafe_allow_html=True)
+                    
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
             
