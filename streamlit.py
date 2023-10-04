@@ -456,14 +456,14 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Display thumbs-up and thumbs-down buttons side by side in a row
-                with st.row():
-                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}")
-                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}")
-                    if thumbs_up:
-                        feedback = "👍"  # Store thumbs-up feedback
-                    elif thumbs_down:
-                        feedback = "👎"  # Store thumbs-down feedback
+                # Display thumbs-up and thumbs-down buttons side by side using HTML and CSS
+                st.markdown(
+                    f'<div style="display: flex; justify-content: space-between;">'
+                    f'<button style="margin-right: 10px;" onclick="thumbsUp({i})">👍</button>'
+                    f'<button onclick="thumbsDown({i})">👎</button>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
     
                 if feedback is not None:
                     # Update the feedback in the chat history
