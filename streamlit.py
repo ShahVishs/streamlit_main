@@ -459,7 +459,7 @@ else:
                 # Display thumbs-up and thumbs-down buttons side by side using HTML and CSS
                 st.markdown(
                     f'<div style="display: flex; justify-content: space-between;">'
-                    f'<button style="margin-right: 02px;" onclick="thumbsUp({i})">👍</button>'
+                    f'<button style="margin-right: 2px;" onclick="thumbsUp({i})">👍</button>'
                     f'<button onclick="thumbsDown({i})">👎</button>'
                     f'</div>',
                     unsafe_allow_html=True
