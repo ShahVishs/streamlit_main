@@ -473,9 +473,3 @@ else:
                     st.session_state.chat_history[i] = (query, answer, feedback)
                     user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
                     save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
-    
-            # Display feedback emoji and message
-            if feedback is not None:
-                feedback_col = st.columns([1])
-                with feedback_col:
-                    st.markdown(f"Feedback: {feedback}")
