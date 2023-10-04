@@ -440,9 +440,9 @@ else:
     
     # Display chat history with feedback
     
-    # Initialize feedback_buttons in session state
-    if 'feedback_buttons' not in st.session_state:
-        st.session_state.feedback_buttons = [""] * len(st.session_state.chat_history)
+    # Initialize feedback_dict in session state
+    if 'feedback_dict' not in st.session_state:
+        st.session_state.feedback_dict = {}
     
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
@@ -461,7 +461,7 @@ else:
                     unsafe_allow_html=True
                 )
     
-            feedback_buttons = st.session_state.feedback_buttons  # Get current feedback buttons state
+            feedback_dict = st.session_state.feedback_dict  # Get current feedback dictionary state
     
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
@@ -469,29 +469,24 @@ else:
     
                 with thumbs_up_col:
                     # Conditionally render the thumbs-up button based on feedback state
-                    if feedback_buttons[i] == "👍":
-                        thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
-                    else:
-                        st.write("👍")  # Display the emoji as text
+                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
+                    if thumbs_up:
+                        feedback_dict[i] = "👍"  # Store thumbs-up feedback
     
                 with thumbs_down_col:
                     # Conditionally render the thumbs-down button based on feedback state
-                    if feedback_buttons[i] == "👎":
-                        thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
-                    else:
-                        st.write("👎")  # Display the emoji as text
+                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
+                    if thumbs_down:
+                        feedback_dict[i] = "👎"  # Store thumbs-down feedback
     
-                if thumbs_up or thumbs_down:
-                    feedback = thumbs_up if thumbs_up else thumbs_down  # Store the selected feedback
-                    feedback_buttons[i] = feedback  # Update the feedback buttons state
-    
-            # Update the feedback in the chat history
+            # Update the feedback in the chat history using the feedback dictionary
+            feedback = feedback_dict.get(i, None)
             st.session_state.chat_history[i] = (query, answer, feedback)
             user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
             save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
-    # Update feedback_buttons in session state
-    st.session_state.feedback_buttons = feedback_buttons
+    # Update feedback_dict in session state
+    st.session_state.feedback_dict = feedback_dict
         
         
         
