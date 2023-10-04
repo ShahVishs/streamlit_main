@@ -454,8 +454,13 @@ else:
     
     # ... (previous code)
     
-    thumbs_up_states = [False] * len(st.session_state.chat_history)
-    thumbs_down_states = [False] * len(st.session_state.chat_history)
+   # Initialize thumbs_up_states and thumbs_down_states in session state
+    if 'thumbs_up_states' not in st.session_state:
+        st.session_state.thumbs_up_states = [False] * len(st.session_state.chat_history)
+    
+    if 'thumbs_down_states' not in st.session_state:
+        st.session_state.thumbs_down_states = [False] * len(st.session_state.chat_history)
+
     # Display chat history with feedback
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
@@ -480,20 +485,18 @@ else:
                 with thumbs_up_col:
                     thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
                     if thumbs_up:
-                        thumbs_up_states[i] = True  # Update thumbs-up state
-                        thumbs_down_states[i] = False  # Reset thumbs-down state
-        
-                with thumbs_down_col:
+                        st.session_state.thumbs_up_states[i] = True  # Update thumbs-up state
+                        st.session_state.thumbs_down_states[i] = False  # Reset thumbs-down state
+            
                     thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
                     if thumbs_down:
-                        thumbs_down_states[i] = True  # Update thumbs-down state
-                        thumbs_up_states[i] = False  # Reset thumbs-up state
-        
-                if thumbs_up_states[i]:
-                    st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
-        
-                if thumbs_down_states[i]:
-                    st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
+                        st.session_state.thumbs_down_states[i] = True  # Update thumbs-down state
+            
+                    if st.session_state.thumbs_up_states[i]:
+                        st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
+            
+                    if st.session_state.thumbs_down_states[i]:
+                        st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
         
                 if feedback is not None:
                     # Update the feedback in the chat history
