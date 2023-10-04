@@ -471,13 +471,13 @@ else:
     
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
+                # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
                     thumbs_up_key = f"thumbs_up_{i}"
                     thumbs_up_state = st.session_state.thumbs_up_states.get(thumbs_up_key, False)
                     thumbs_up_style = f"background-color: {'green' if thumbs_up_state else 'white'}; padding: 5px 10px; font-size: 1.2em; border: none; cursor: pointer;"
-                    thumbs_up = st.markdown(f'<div style="{thumbs_up_style}">👍</div>', key=thumbs_up_key, help="thumbs_up_button", unsafe_allow_html=True)
-                    if thumbs_up:
+                    if st.button("👍", key=thumbs_up_key, help="thumbs_up_button", on_click=None, args=None, kwargs=None, disabled=False, use_container_width=False, style=thumbs_up_style):
                         st.session_state.thumbs_up_states[thumbs_up_key] = True
                         st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
                         # Call save_chat_to_airtable with feedback when thumbs-up is clicked
@@ -488,8 +488,7 @@ else:
                     thumbs_down_key = f"thumbs_down_{i}"
                     thumbs_down_state = st.session_state.thumbs_down_states.get(thumbs_down_key, False)
                     thumbs_down_style = f"background-color: {'red' if thumbs_down_state else 'white'}; padding: 5px 10px; font-size: 1.2em; border: none; cursor: pointer;"
-                    thumbs_down = st.markdown(f'<div style="{thumbs_down_style}">👎</div>', key=thumbs_down_key, help="thumbs_down_button", unsafe_allow_html=True)
-                    if thumbs_down:
+                    if st.button("👎", key=thumbs_down_key, help="thumbs_down_button", on_click=None, args=None, kwargs=None, disabled=False, use_container_width=False, style=thumbs_down_style):
                         st.session_state.thumbs_down_states[thumbs_down_key] = True
                         st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
                         # Call save_chat_to_airtable with feedback when thumbs-down is clicked
