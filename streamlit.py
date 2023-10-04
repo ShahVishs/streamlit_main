@@ -456,15 +456,13 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Display thumbs-up and thumbs-down buttons side by side
-                feedback_col = st.columns(2)  # Create a column container for the buttons
-                with feedback_col[0]:
+                # Display thumbs-up and thumbs-down buttons side by side in a row
+                with st.row():
                     thumbs_up = st.button("👍", key=f"thumbs_up_{i}")
+                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}")
                     if thumbs_up:
                         feedback = "👍"  # Store thumbs-up feedback
-                with feedback_col[1]:
-                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}")
-                    if thumbs_down:
+                    elif thumbs_down:
                         feedback = "👎"  # Store thumbs-down feedback
     
                 if feedback is not None:
