@@ -458,7 +458,7 @@ else:
                     unsafe_allow_html=True
                 )
     
-            feedback_dict = st.session_state.feedback_dict  # Get current feedback dictionary state
+            feedback_dict = st.session_state.get("feedback_dict", {})  # Get current feedback dictionary state
     
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
@@ -481,13 +481,16 @@ else:
                     st.session_state.chat_history[i] = (query, answer, feedback)
                     user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
                     save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
-                
+    
                 # Highlight the clicked button using CSS
                 if "clicked_button" in locals():
                     st.markdown(
                         f'<style>button[data-baseweb="button"][data-key="{clicked_button}"]{{background-color: yellow;}}</style>',
                         unsafe_allow_html=True
                     )
+    
+    # Store feedback_dict in session state for persistence
+    st.session_state.feedback_dict = feedback_dict
 
 
 
