@@ -439,10 +439,7 @@ else:
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
     # Display chat history with feedback
-    # Initialize the feedback_buttons list in session state
-    if 'feedback_buttons' not in st.session_state:
-        st.session_state.feedback_buttons = [""] * len(st.session_state.chat_history)
-
+    
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
@@ -460,31 +457,31 @@ else:
                     unsafe_allow_html=True
                 )
     
+            feedback_buttons = st.session_state.feedback_buttons  # Get feedback buttons' state
+    
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
+                
                 with thumbs_up_col:
-                    thumbs_up_key = f"thumbs_up_{i}"
-                    thumbs_up = st.button("👍", key=thumbs_up_key, help="thumbs_up_button",)
+                    thumbs_up_clicked = feedback_buttons[i] == "👍"  # Check if thumbs-up button is clicked
+                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button", disabled=thumbs_up_clicked)
                     if thumbs_up:
                         feedback = "👍"  # Store thumbs-up feedback
-                        st.session_state.feedback_buttons[i] = "thumbs_up"  # Store the clicked button type
-                    elif st.session_state.feedback_buttons[i] == "thumbs_up":
-                        st.button("👍", key=thumbs_up_key, help="thumbs_up_button (disabled)", disabled=True)
+                        feedback_buttons[i] = "👍"  # Update the state of the button
+    
                 with thumbs_down_col:
-                    thumbs_down_key = f"thumbs_down_{i}"
-                    thumbs_down = st.button("👎", key=thumbs_down_key, help="thumbs_down_button",)
+                    thumbs_down_clicked = feedback_buttons[i] == "👎"  # Check if thumbs-down button is clicked
+                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button", disabled=thumbs_down_clicked)
                     if thumbs_down:
                         feedback = "👎"  # Store thumbs-down feedback
-                        st.session_state.feedback_buttons[i] = "thumbs_down"  # Store the clicked button type
-                    elif st.session_state.feedback_buttons[i] == "thumbs_down":
-                        st.button("👎", key=thumbs_down_key, help="thumbs_down_button (disabled)", disabled=True)
+                        feedback_buttons[i] = "👎"  # Update the state of the button
     
-                if feedback is not None:
-                    # Update the feedback in the chat history
-                    st.session_state.chat_history[i] = (query, answer, feedback)
-                    user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
-                    save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
+            if feedback is not None:
+                # Update the feedback in the chat history
+                st.session_state.chat_history[i] = (query, answer, feedback)
+                user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
+                save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
         
         
         
