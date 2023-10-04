@@ -482,7 +482,7 @@ else:
                             st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
-            
+                
                 # Display thumbs-down button conditionally based on its state
                 with thumbs_down_col:
                     thumbs_down_key = f"thumbs_down_{i}"
@@ -493,20 +493,22 @@ else:
                             st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
                         st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
-            
+                
                 if feedback is not None:
                     # Extract user_input and output from chat history
                     user_input, output, _ = st.session_state.chat_history[i]
                     
-                    # If thumbs-up or thumbs-down were clicked, update the feedback
+                    # Check if thumbs-up or thumbs-down were clicked and add the corresponding feedback
+                    thumbs_up_key = f"thumbs_up_{i}"
+                    thumbs_down_key = f"thumbs_down_{i}"
                     if thumbs_up_key in st.session_state.thumbs_up_states:
                         feedback = f"👍 {feedback}" if feedback else "👍"
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
                         feedback = f"👎 {feedback}" if feedback else "👎"
-                    
+                
                     # Update the feedback in the chat history
                     st.session_state.chat_history[i] = (user_input, output, feedback)
-                    
+                
                     # Save updated feedback to Airtable
                     save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
 
