@@ -460,7 +460,7 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Create two columns for thumbs-up and thumbs-down buttons
+                # Create two columns for thumbs-up and thumbs-down buttons with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 
                 with thumbs_up_col:
