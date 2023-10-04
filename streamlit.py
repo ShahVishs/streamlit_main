@@ -439,6 +439,10 @@ else:
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
     # Display chat history with feedback
+    # Add this line to initialize chat_history
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+
    # Add this line to set the background color
     custom_css = """
         body {
