@@ -456,29 +456,24 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Display thumbs-up and thumbs-down buttons side by side using columns
+                # Display thumbs-up and thumbs-down buttons side by side using columns with custom CSS
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
-                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs-up")
+                    st.markdown(
+                        f'<button style="margin: 0; padding: 0; font-size: 24px; background-color: transparent; border: none;" onclick="thumbsUp({i})">👍</button>',
+                        unsafe_allow_html=True
+                    )
+                    thumbs_up = st.button("", key=f"thumbs_up_{i}", help="👍")
                     if thumbs_up:
                         feedback = "👍"  # Store thumbs-up feedback
                 with thumbs_down_col:
-                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs-down")
+                    st.markdown(
+                        f'<button style="margin: 0; padding: 0; font-size: 24px; background-color: transparent; border: none;" onclick="thumbsDown({i})">👎</button>',
+                        unsafe_allow_html=True
+                    )
+                    thumbs_down = st.button("", key=f"thumbs_down_{i}", help="👎")
                     if thumbs_down:
                         feedback = "👎"  # Store thumbs-down feedback
-    
-                # Custom CSS to reduce space between buttons
-                st.markdown(
-                    f"""
-                    <style>
-                    div[data-testid="stButtonContainer"] {{
-                        margin: 0;  /* Reduce margin */
-                        padding: 0; /* Reduce padding */
-                    }}
-                    </style>
-                    """,
-                    unsafe_allow_html=True,
-                )
     
                 if feedback is not None:
                     # Update the feedback in the chat history
