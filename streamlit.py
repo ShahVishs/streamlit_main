@@ -442,7 +442,7 @@ else:
     
     # Initialize feedback_buttons in session state
     if 'feedback_buttons' not in st.session_state:
-        st.session_state.feedback_buttons = []
+        st.session_state.feedback_buttons = [""] * len(st.session_state.chat_history)
     
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
@@ -492,7 +492,6 @@ else:
     
     # Update feedback_buttons in session state
     st.session_state.feedback_buttons = feedback_buttons
-        
         
         
         
