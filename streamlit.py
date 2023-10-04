@@ -439,6 +439,10 @@ else:
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
     # Display chat history with feedback
+    # Initialize the feedback_buttons list in session state
+    if 'feedback_buttons' not in st.session_state:
+        st.session_state.feedback_buttons = [""] * len(st.session_state.chat_history)
+
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
@@ -481,13 +485,9 @@ else:
                     st.session_state.chat_history[i] = (query, answer, feedback)
                     user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
                     save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
-    
-    # Initialize the feedback_buttons list in session state
-    if 'feedback_buttons' not in st.session_state:
-        st.session_state.feedback_buttons = [""] * len(st.session_state.chat_history)
-    
-    
-    
-    
+        
+        
+        
+        
     
 
