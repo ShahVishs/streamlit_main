@@ -484,7 +484,7 @@ else:
                             # Call save_chat_to_airtable with feedback when thumbs-up is clicked
                             save_chat_to_airtable(st.session_state.user_name, query, answer, "👍")
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
-                        st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
+                        st.markdown("👍", unsafe_allow_html=True)
                 
                 # Display thumbs-down button conditionally based on its state
                 with thumbs_down_col:
@@ -497,7 +497,7 @@ else:
                             # Call save_chat_to_airtable with feedback when thumbs-down is clicked
                             save_chat_to_airtable(st.session_state.user_name, query, answer, "👎")
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
-                        st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
+                        st.markdown("👎", unsafe_allow_html=True)
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
