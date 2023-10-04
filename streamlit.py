@@ -442,7 +442,7 @@ else:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-            col1, col2 = st.columns([0.7, 10])
+            col1, col2, col3 = st.columns([0.5, 5, 5])  # Create three columns for layout
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
@@ -454,22 +454,17 @@ else:
                     f'</div>',
                     unsafe_allow_html=True
                 )
-    
-            if feedback is None and st.session_state.user_name != "vishakha":
-                # Display thumbs-up and thumbs-down buttons if feedback is not provided yet
-                thumbs_up = st.button("👍", key=f"thumbs_up_{i}")
-                
-                # Create a column separator to add some space between the buttons
-                col_separator = st.columns([1])
-                
-                thumbs_down = st.button("👎", key=f"thumbs_down_{i}")
-                
-                if thumbs_up:
-                    feedback = "👍"  # Store thumbs-up feedback
-                elif thumbs_down:
-                    feedback = "👎"  # Store thumbs-down feedback
-                if feedback is not None:
-                    # Update the feedback in the chat history
-                    st.session_state.chat_history[i] = (query, answer, feedback)
-                    user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
-                    save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
+            with col3:
+                if feedback is None and st.session_state.user_name != "vishakha":
+                    # Display thumbs-up and thumbs-down buttons if feedback is not provided yet
+                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}")
+                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}")
+                    if thumbs_up:
+                        feedback = "👍"  # Store thumbs-up feedback
+                    elif thumbs_down:
+                        feedback = "👎"  # Store thumbs-down feedback
+                    if feedback is not None:
+                        # Update the feedback in the chat history
+                        st.session_state.chat_history[i] = (query, answer, feedback)
+                        user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
+                        save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
