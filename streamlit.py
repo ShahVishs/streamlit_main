@@ -471,6 +471,7 @@ else:
     
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
+                # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
                     thumbs_up_key = f"thumbs_up_{i}"
@@ -481,7 +482,7 @@ else:
                             st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
-        
+            
                 # Display thumbs-down button conditionally based on its state
                 with thumbs_down_col:
                     thumbs_down_key = f"thumbs_down_{i}"
@@ -492,20 +493,20 @@ else:
                             st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
                         st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
-        
+            
                 if feedback is not None:
-                    # Update the feedback in the chat history
-                    st.session_state.chat_history[i] = (query, answer, feedback)
-                    
                     # Extract user_input and output from chat history
-                    user_input, output, updated_feedback = st.session_state.chat_history[i]
+                    user_input, output, _ = st.session_state.chat_history[i]
                     
                     # If thumbs-up or thumbs-down were clicked, update the feedback
                     if thumbs_up_key in st.session_state.thumbs_up_states:
-                        updated_feedback = f"👍 {updated_feedback}" if updated_feedback else "👍"
+                        feedback = f"👍 {feedback}" if feedback else "👍"
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
-                        updated_feedback = f"👎 {updated_feedback}" if updated_feedback else "👎"
+                        feedback = f"👎 {feedback}" if feedback else "👎"
+                    
+                    # Update the feedback in the chat history
+                    st.session_state.chat_history[i] = (user_input, output, feedback)
                     
                     # Save updated feedback to Airtable
-                    save_chat_to_airtable(st.session_state.user_name, user_input, output, updated_feedback)
+                    save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
 
