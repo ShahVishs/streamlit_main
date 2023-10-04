@@ -471,7 +471,6 @@ else:
     
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
-                # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
                     thumbs_up_key = f"thumbs_up_{i}"
@@ -480,6 +479,8 @@ else:
                         if thumbs_up:
                             st.session_state.thumbs_up_states[thumbs_up_key] = True
                             st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
+                            # Call save_chat_to_airtable with feedback when thumbs-up is clicked
+                            save_chat_to_airtable(st.session_state.user_name, user_input, output, "thumbs-up")
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍 You've already given feedback for this message.", unsafe_allow_html=True)
                 
@@ -491,31 +492,13 @@ else:
                         if thumbs_down:
                             st.session_state.thumbs_down_states[thumbs_down_key] = True
                             st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
+                            # Call save_chat_to_airtable with feedback when thumbs-down is clicked
+                            save_chat_to_airtable(st.session_state.user_name, user_input, output, "thumbs-down")
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
                         st.markdown("👎 You've already given feedback for this message.", unsafe_allow_html=True)
                 
                 if feedback is not None:
-                    st.session_state.chat_history[i] = (query, answer, feedback)
-                    user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
-                    save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
-                    # # Extract user_input and output from chat history
-                    # # Update the feedback in the chat history
-                    # st.session_state.chat_history[i] = (user_input, output, feedback_text)
-                    # user_input, output, _ = st.session_state.chat_history[i]
-                
-                    # # Check if thumbs-up or thumbs-down were clicked and add the corresponding feedback
-                    # thumbs_up_key = f"thumbs_up_{i}"
-                    # thumbs_down_key = f"thumbs_down_{i}"
-                    # feedback_text = feedback  # Preserve the original feedback text
-                    
-                    # if thumbs_up_key in st.session_state.thumbs_up_states:
-                    #     feedback_text = f"👍 {feedback_text}" if feedback_text else "👍"
-                    # elif thumbs_down_key in st.session_state.thumbs_down_states:
-                    #     feedback_text = f"👎 {feedback_text}" if feedback_text else "👎"
+                    st.session_state.chat_history[i] = (user_input, output, feedback)
                 
             
-                    # # Save updated feedback to Airtable
-                    # save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback_text)
-
-                   
                 
