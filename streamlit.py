@@ -496,6 +496,16 @@ else:
                 if feedback is not None:
                     # Update the feedback in the chat history
                     st.session_state.chat_history[i] = (query, answer, feedback)
-                    user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
-                    save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
+                    
+                    # Extract user_input and output from chat history
+                    user_input, output, updated_feedback = st.session_state.chat_history[i]
+                    
+                    # If thumbs-up or thumbs-down were clicked, update the feedback
+                    if thumbs_up_key in st.session_state.thumbs_up_states:
+                        updated_feedback = f"👍 {updated_feedback}" if updated_feedback else "👍"
+                    elif thumbs_down_key in st.session_state.thumbs_down_states:
+                        updated_feedback = f"👎 {updated_feedback}" if updated_feedback else "👎"
+                    
+                    # Save updated feedback to Airtable
+                    save_chat_to_airtable(st.session_state.user_name, user_input, output, updated_feedback)
 
