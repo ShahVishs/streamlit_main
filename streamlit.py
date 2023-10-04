@@ -456,11 +456,11 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Display thumbs-up and thumbs-down buttons side by side using custom CSS
-                st.markdown(
-                    f'<div style="display: flex; justify-content: space-between;">'
-                    f'<button style="padding: 5px; margin-right: 5px; background-color: #0071bc; color: white; border: none; border-radius: 5px;" onclick="thumbsUp({i})">👍</button>'
-                    f'<button style="padding: 5px; margin-left: 5px; background-color: #0071bc; color: white; border: none; border-radius: 5px;" onclick="thumbsDown({i})">👎</button>'
+                # Display thumbs-up and thumbs-down buttons side by side using HTML
+                st.write(
+                    f'<div style="display: flex; justify-content: space-between; margin-top: 10px;">'
+                    f'<button onclick="thumbsUp({i})">👍</button>'
+                    f'<button onclick="thumbsDown({i})">👎</button>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
