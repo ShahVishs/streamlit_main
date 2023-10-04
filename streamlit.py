@@ -439,9 +439,6 @@ else:
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
     # Display chat history with feedback
-    # Initialize feedback_dict as an empty dictionary if it doesn't exist in session state
-    if "feedback_dict" not in st.session_state:
-        st.session_state.feedback_dict = {}
    
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
@@ -460,8 +457,6 @@ else:
                     unsafe_allow_html=True
                 )
     
-            feedback_dict = st.session_state.get("feedback_dict", {})  # Get current feedback dictionary state
-    
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
@@ -470,36 +465,26 @@ else:
                     thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button")
                     if thumbs_up:
                         feedback = "👍"  # Store thumbs-up feedback
-                        clicked_button = "thumbs_up"
-                
+    
                 with thumbs_down_col:
                     thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button")
                     if thumbs_down:
                         feedback = "👎"  # Store thumbs-down feedback
-                        clicked_button = "thumbs_down"
-                
+    
                 if feedback is not None:
                     # Update the feedback in the chat history
                     st.session_state.chat_history[i] = (query, answer, feedback)
                     user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
                     save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
-                # Highlight the clicked button using CSS
-                if "clicked_button" in locals():
+                # Highlight the clicked button by changing its background color
+                if thumbs_up:
                     st.markdown(
-                        f'<style>button[data-baseweb="button"][data-key="{clicked_button}"]{{background-color: yellow;}}</style>',
+                        f'<style>button[data-baseweb="button"][data-key="thumbs_up_{i}"]{{background-color: yellow;}}</style>',
                         unsafe_allow_html=True
                     )
-    
-    # Store feedback_dict in session state for persistence
-    st.session_state.feedback_dict = feedback_dict
-
-
-
-
-
-
-        
-        
-    
-
+                if thumbs_down:
+                    st.markdown(
+                        f'<style>button[data-baseweb="button"][data-key="thumbs_down_{i}"]{{background-color: yellow;}}</style>',
+                        unsafe_allow_html=True
+                    )
