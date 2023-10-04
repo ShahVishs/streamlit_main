@@ -457,7 +457,7 @@ else:
     
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns
-                thumbs_up_col, thumbs_down_col = st.beta_columns(2)
+                thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
                     thumbs_up = st.button("👍", key=f"thumbs_up_{i}")
                     if thumbs_up:
