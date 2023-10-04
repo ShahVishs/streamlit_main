@@ -437,22 +437,7 @@ else:
         st.session_state.chat_history.append((user_input, output, feedback))  # Store feedback along with response
         print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
-    def b_ask():
-        c1, c2, c3, c4, c5 = st.columns([2, 1, 1, 2, 2])
-        if c2.button('👍', use_container_width=True, disabled=not ss.get('output')):
-            ss['feedback'].send(+1, ss, details=ss['send_details'])
-            ss['feedback_score'] = ss['feedback'].get_score()
-        if c3.button('👎', use_container_width=True, disabled=not ss.get('output')):
-            ss['feedback'].send(-1, ss, details=ss['send_details'])
-            ss['feedback_score'] = ss['feedback'].get_score()
-        score = ss.get('feedback_score', 0)
-        c5.write(f'feedback score: {score}')
-        c4.checkbox('send details', True, key='send_details',
-                    help='allow question and the answer to be stored in the ask-my-pdf feedback database')
-        disabled = (not ss.get('api_key') and not ss.get('community_pct', 0)) or not ss.get('index')
-        if c1.button('get answer', disabled=disabled, type='primary', use_container_width=True):
-            # ... Rest of your code for getting an answer ...
-            st.experimental_rerun() # to enable the feedback buttons
+    
     # Display chat history with feedback
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
@@ -472,5 +457,19 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Call b_ask function to display thumbs-up and thumbs-down buttons
-                b_ask()
+                # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
+                thumbs_up_col, thumbs_down_col = st.columns(2)
+                with thumbs_up_col:
+                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
+                    if thumbs_up:
+                        feedback = "👍"  # Store thumbs-up feedback
+                with thumbs_down_col:
+                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
+                    if thumbs_down:
+                        feedback = "👎"  # Store thumbs-down feedback
+    
+                if feedback is not None:
+                    # Update the feedback in the chat history
+                    st.session_state.chat_history[i] = (query, answer, feedback)
+                    user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
+                    save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
