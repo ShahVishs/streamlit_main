@@ -440,12 +440,7 @@ else:
     
     # Display chat history with feedback
    
-    # Define a list to keep track of clicked button keys
-    # Create a dictionary to store button feedback in session state
-    if 'button_feedback' not in st.session_state:
-        st.session_state.button_feedback = {}
-
-    
+    # Display chat history with feedback
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
@@ -463,39 +458,21 @@ else:
                     unsafe_allow_html=True
                 )
     
-            # Get feedback for the current message
-            feedback_dict = st.session_state.button_feedback.get(i, {})
-    
             if feedback is None and st.session_state.user_name != "vishakha":
                 # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
-    
                 with thumbs_up_col:
-                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button")
+                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}", help="thumbs_up_button",)
                     if thumbs_up:
-                        feedback_dict["thumbs_up"] = "👍"  # Store thumbs-up feedback
-    
+                        feedback = "👍"  # Store thumbs-up feedback
                 with thumbs_down_col:
-                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button")
+                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}", help="thumbs_down_button",)
                     if thumbs_down:
-                        feedback_dict["thumbs_down"] = "👎"  # Store thumbs-down feedback
+                        feedback = "👎"  # Store thumbs-down feedback
     
-                # Update the feedback dictionary for this message
-                st.session_state.button_feedback[i] = feedback_dict
-    
-                # Highlight the clicked button using CSS
-                if "thumbs_up" in feedback_dict:
-                    st.markdown(
-                        f'<style>button[data-baseweb="button"][data-key="thumbs_up_{i}"]{{background-color: yellow;}}</style>',
-                        unsafe_allow_html=True
-                    )
-                if "thumbs_down" in feedback_dict:
-                    st.markdown(
-                        f'<style>button[data-baseweb="button"][data-key="thumbs_down_{i}"]{{background-color: yellow;}}</style>',
-                        unsafe_allow_html=True
-                    )
-    
-    # ...
-    
-    # Save the updated button feedback in session state
-    st.session_state.button_feedback = button_feedback
+                if feedback is not None:
+                    # Update the feedback in the chat history
+                    st.session_state.chat_history[i] = (query, answer, feedback)
+                    user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
+                    save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
+
