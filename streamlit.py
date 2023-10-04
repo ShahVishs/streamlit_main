@@ -456,24 +456,14 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Display thumbs-up and thumbs-down buttons side by side using columns with custom CSS
-                thumbs_up_col, thumbs_down_col = st.columns(2)
-                with thumbs_up_col:
-                    st.markdown(
-                        f'<button style="margin: 0; padding: 0; font-size: 24px; background-color: transparent; border: none;" onclick="thumbsUp({i})">👍</button>',
-                        unsafe_allow_html=True
-                    )
-                    thumbs_up = st.button("", key=f"thumbs_up_{i}", help="👍")
-                    if thumbs_up:
-                        feedback = "👍"  # Store thumbs-up feedback
-                with thumbs_down_col:
-                    st.markdown(
-                        f'<button style="margin: 0; padding: 0; font-size: 24px; background-color: transparent; border: none;" onclick="thumbsDown({i})">👎</button>',
-                        unsafe_allow_html=True
-                    )
-                    thumbs_down = st.button("", key=f"thumbs_down_{i}", help="👎")
-                    if thumbs_down:
-                        feedback = "👎"  # Store thumbs-down feedback
+                # Display thumbs-up and thumbs-down buttons side by side using columns and custom CSS
+                st.markdown(
+                    f'<div style="display: flex; justify-content: space-between; margin-top: -5px;">'
+                    f'<button style="padding: 5px; margin-right: 0px; background-color: #0071bc; color: white; border: none; border-radius: 5px;" onclick="thumbsUp({i})">👍</button>'
+                    f'<button style="padding: 5px; margin-left: 0px; background-color: #0071bc; color: white; border: none; border-radius: 5px;" onclick="thumbsDown({i})">👎</button>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
     
                 if feedback is not None:
                     # Update the feedback in the chat history
