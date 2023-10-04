@@ -442,11 +442,13 @@ else:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-            col1, col2 = st.columns([0.1, 9])  # Create two columns
-    
+            
+            # Create two columns to place the buttons side by side
+            col1, col2 = st.columns([0.5, 1])
+            
             with col1:
                 st.image("icon-1024.png", width=50)
-    
+            
             with col2:
                 st.markdown(
                     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
@@ -457,15 +459,22 @@ else:
                     unsafe_allow_html=True
                 )
     
-                thumbs_up = st.button("👍", key=f"thumbs_up_{i}")
-                thumbs_down = st.button("👎", key=f"thumbs_down_{i}")
-    
+            if feedback is None and st.session_state.user_name != "vishakha":
+                # Create two columns for thumbs-up and thumbs-down buttons
+                thumbs_up_col, thumbs_down_col = st.columns(2)
+                
+                with thumbs_up_col:
+                    thumbs_up = st.button("👍", key=f"thumbs_up_{i}")
+                
+                with thumbs_down_col:
+                    thumbs_down = st.button("👎", key=f"thumbs_down_{i}")
+                
                 if thumbs_up:
                     feedback = "👍"  # Store thumbs-up feedback
                 elif thumbs_down:
                     feedback = "👎"  # Store thumbs-down feedback
-    
-                if feedback is not None and st.session_state.user_name != "vishakha":
+                
+                if feedback is not None:
                     # Update the feedback in the chat history
                     st.session_state.chat_history[i] = (query, answer, feedback)
                     user_input, output, _ = st.session_state.chat_history[i]  # Extract user_input and output from chat history
