@@ -326,7 +326,7 @@ else:
     If the appointment schedule time is not available for the specified 
     date and time you can provide alternative available times near to costumer's preferred time from the information given to you.
     In answer use AM, PM time format strictly don't use 24 hrs format.
-    Additionally provide this link: https://app.funnelai.com/shorten/JiXfGCEElA to schedule appointment by the user himself.
+    Additionally provide this <a href="https://app.funnelai.com/shorten/JiXfGCEElA">here</a> to schedule appointment by the user himself.
     Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
     their name, contact number, and email address.
 
@@ -346,7 +346,7 @@ else:
     strictly answer only from the "System: " message provided to you.""")
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
-
+    st.markdown(template, unsafe_allow_html=True)
     class PythonInputs(BaseModel):
         query: str = Field(description="code snippet to run")
 
