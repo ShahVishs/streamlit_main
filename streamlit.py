@@ -311,7 +311,7 @@ else:
     Checking Appointments Availability: If the customer's inquiry lacks specific details such as their preferred day, 
     date, or time, kindly engage by asking for these specifics.
     {details} Use these details that are today's date and day and find the appointment date from the user's input 
-    and check for appointment availability using python_repl function mentioned in the tools <a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">appointment scheduling tool</a> 
+    and check for appointment availability using the  <a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">appointment scheduling tool</a> 
     for that specific day or date and time.
     
     For checking appointment availability, you can use a Python Pandas DataFrame. The name of the DataFrame is `df`. 
