@@ -333,7 +333,7 @@ else:
 
     Very Very Important Instruction: whenever you are using tools to answer the question. 
     strictly answer only from the "System: " message provided to you.""")
-    st.markdown(template, unsafe_allow_html=True)
+   
     # # Find the position of "here" in the template
     # start_pos = template.find("<a")
     # end_pos = template.find("</a>") + len("</a>")
