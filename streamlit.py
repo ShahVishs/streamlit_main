@@ -326,7 +326,8 @@ else:
     If the appointment schedule time is not available for the specified 
     date and time you can provide alternative available times near to costumer's preferred time from the information given to you.
     In answer use AM, PM time format strictly don't use 24 hrs format.
-    Additionally provide this <a href="https://app.funnelai.com/shorten/JiXfGCEElA">here</a> to schedule appointment by the user himself.
+    Additionally provide this 
+    Please schedule your appointment by clicking <a href='https://app.funnelai.com/shorten/JiXfGCEElA' target='_blank'>here</a>.
     Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
     their name, contact number, and email address.
 
@@ -344,15 +345,16 @@ else:
 
     Very Very Important Instruction: whenever you are using tools to answer the question. 
     strictly answer only from the "System: " message provided to you.""")
-    # Find the position of "here" in the template
-    start_pos = template.find("<a")
-    end_pos = template.find("</a>") + len("</a>")
+    st.markdown(template, unsafe_allow_html=True)
+    # # Find the position of "here" in the template
+    # start_pos = template.find("<a")
+    # end_pos = template.find("</a>") + len("</a>")
     
-    # Extract the clickable link part
-    clickable_link = template[start_pos:end_pos]
+    # # Extract the clickable link part
+    # clickable_link = template[start_pos:end_pos]
     
-    # Display only the clickable link
-    st.markdown(clickable_link, unsafe_allow_html=True)
+    # # Display only the clickable link
+    # st.markdown(clickable_link, unsafe_allow_html=True)
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
