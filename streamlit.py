@@ -344,9 +344,17 @@ else:
 
     Very Very Important Instruction: whenever you are using tools to answer the question. 
     strictly answer only from the "System: " message provided to you.""")
-
+    # Find the position of "here" in the template
+    start_pos = template.find("<a")
+    end_pos = template.find("</a>") + len("</a>")
+    
+    # Extract the clickable link part
+    clickable_link = template[start_pos:end_pos]
+    
+    # Display only the clickable link
+    st.markdown(clickable_link, unsafe_allow_html=True)
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
-    st.markdown(template, unsafe_allow_html=True)
+    
     class PythonInputs(BaseModel):
         query: str = Field(description="code snippet to run")
 
