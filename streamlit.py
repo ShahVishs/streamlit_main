@@ -318,9 +318,7 @@ else:
     
     Please maintain a courteous and respectful tone in your American English responses. If you're unsure of an answer, respond with 'I am sorry.'
     
-    Make every effort to assist the customer promptly while keeping responses concise, not exceeding two sentences.
-    
-    
+    Make every effort to assist the customer promptly while keeping responses concise, not exceeding two sentences."
     Very Very Important Instruction: whenever you are using tools to answer the question. 
     strictly answer only from the "System: " message provided to you.""")
    
