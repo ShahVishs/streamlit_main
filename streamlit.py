@@ -320,7 +320,7 @@ else:
     
     Make every effort to assist the customer promptly while keeping responses concise, not exceeding two sentences.
     Very Very Important Instruction: whenever you are using tools to answer the question, strictly answer only from the "System: " message provided to you.""")
-   
+       
     # # Find the position of "here" in the template
     # start_pos = template.find("<a")
     # end_pos = template.find("</a>") + len("</a>")
