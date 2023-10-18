@@ -327,7 +327,7 @@ else:
     date and time you can provide alternative available times near to costumer's preferred time from the information given to you.
     In answer use AM, PM time format strictly don't use 24 hrs format.
     Additionally provide this 
-    Please schedule your appointment by clicking <a href='https://app.funnelai.com/shorten/JiXfGCEElA' target='_blank'>here</a>.
+    Please schedule your appointment by clicking [here](https://app.funnelai.com/shorten/JiXfGCEElA).
     Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
     their name, contact number, and email address.
 
