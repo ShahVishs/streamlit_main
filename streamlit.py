@@ -481,10 +481,6 @@ else:
     
         return response, feedback
         
-    # Display the list of makes and models when asked
-    user_input = "can you provide me the list of all the make and model from the dataset"
-    response, _ = conversational_chat(user_input)
-    st.markdown(response)
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
         if user_name:
