@@ -326,7 +326,7 @@ else:
         For example "Jeep is a make and Jeep Cherokee, Jeep Wrangler, Jeep Grand Cherokee are models
         similarly Ram is a maker and Ram 1500, Ram 2500 and Ram 3500 are models"
         Please note that the above provided make and model details of jeep and ram in double inverted coomas are solely for 
-        illustration purposes and should not be used to respond customer queries.
+        illustration purposes and should not be used to respond customer queries and also check Car Inventory Inquiries
     
         Identify Query Content:
         When customers make inquiries, carefully examine the content of their question.
