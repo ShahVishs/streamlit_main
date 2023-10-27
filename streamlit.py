@@ -375,8 +375,8 @@ else:
         If the appointment slot for the requested date and time is not available, we can offer alternative times that are close to the customer's preferred time based 
         on the information provided.
     
-        Additionally, use  Markdown format '[click here](www.12345.com).' to create a clickable link and  When they click on this link, it will take them to a URL
-        where they can schedule their appointment themselves."
+        # Additionally, use  Markdown format '[click here](www.12345.com).' to create a clickable link and  When they click on this link, it will take them to a URL
+        # where they can schedule their appointment themselves."
     
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         first ask If they have a car for trade-in then separatly ask for their name, contact number and email address.
