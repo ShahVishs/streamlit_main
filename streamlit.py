@@ -468,9 +468,6 @@ else:
     # List of available car makes
     car_makes = ["Ram", "Jeep", "Chrysler", "Hyundai", "Maruti"]
     
-    # Generate clickable links for each car make
-    clickable_links = [create_clickable_link(make) for make in car_makes]
-    
     # Define the conversational chat function
     def conversational_chat(user_input):
         for query, answer, feedback in reversed(st.session_state.chat_history):
@@ -481,9 +478,15 @@ else:
         response = result["output"]
         feedback = None
     
-        if "We have a variety of car makes available in our inventory:" in response:
-            # Display clickable links for car makes
-            st.markdown("<br>".join(clickable_links), unsafe_allow_html=True)
+        # Check if the response contains the message about available car makes
+        if "We have a variety of car makes available in our inventory" in response:
+            clickable_links = []
+            for make in car_makes:
+                make_link = f'<a href="https://www.example.com/{make}">{make}</a>'
+                clickable_links.append(make_link)
+    
+            # Join the clickable links with commas
+            response += " " + ", ".join(clickable_links)
     
         return response, feedback
         
