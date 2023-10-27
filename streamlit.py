@@ -245,15 +245,10 @@ retriever_1 = vectorstore_1.as_retriever(search_type="similarity", search_kwargs
 # Create the first tool
 tool1 = create_retriever_tool(
     retriever_1, 
-     "search_car_dealership_inventory",
-     "This tool is used when answering questions related to car inventory.\
-      Searches and returns documents regarding the car inventory. Input to this can be multi string.\
-      The primary input for this function consists of either the car's make and model, whether it's new or used car, and trade-in.\
-      You should know the make of the car, the model of the car, and whether the customer is looking for a new or used car to answer inventory-related queries.\
-      When responding to inquiries about any car, restrict the information shared with the customer to the car's make, year, model, and trim.\
-      The selling price should only be disclosed upon the customer's request, without any prior provision of MRP.\
-      If the customer inquires about a car that is not available, please refrain from suggesting other cars.\
-      Provide a link for more details after every car information given."
+     "search_car_model_make",
+     "This tool is used only when you know model of the car or features of the car for example good mileage car, toeing car,\
+     pickup truck or and new or used car and \
+      Searches and returns documents regarding the car details. Input to this should be the car's model or car features and new or used car as a single argument"
 )
 
 
@@ -396,24 +391,16 @@ else:
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
     """)
-       
-    # # Find the position of "here" in the template
-    # start_pos = template.find("<a")
-    # end_pos = template.find("</a>") + len("</a>")
-    
-    # # Extract the clickable link part
-    # clickable_link = template[start_pos:end_pos]
-    
-    # # Display only the clickable link
-    # st.markdown(clickable_link, unsafe_allow_html=True)
+
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
         query: str = Field(description="code snippet to run")
 
     df = pd.read_csv("appointment_new.csv")
+    df1 = pd.read_csv("make_model.csv")
     # input_template = template.format(dhead=df.head().to_markdown(),details=details)
-    input_template = f"{template.replace('{{dhead}}', df.head().to_markdown()).replace('{{details}}', details)}"
+    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
 
     system_message = SystemMessage(content=input_template)
 
@@ -423,9 +410,14 @@ else:
     )
 
     repl = PythonAstREPLTool(locals={"df": df}, name="python_repl",
-        description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy. This is the only way for you to answer questions about available appointments. This tool will reply with available times for the specified date in 24hour time, for example: 15:00 and 3pm are the same")
-
-    tools = [tool1, repl, tool3]
+        description="Use to check on available appointment times for a given date and time. strictly input to\
+        this tool should be a string in this format mm/dd/yy, for example  october 21st 2023 is taken as 10/21/2023 format not 10-21-2023\
+                         . This is the only way for you to answer questions about available appointments.\
+        This tool will reply with available times for the specified date in 12 hour time format, for example: 15:00 and 3pm are the same.", args_schema=PythonInputs)
+    repl_1 = PythonAstREPLTool(locals={"df1": df1}, name="python_repl_1",
+        description="Use to check on what are the various available models and make of the car, output should be either list of make or model of the cars"
+        , args_schema=PythonInputs)
+    tools = [tool1, repl, tool3,repl_1]
     agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
     if 'agent_executor' not in st.session_state:
         agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
@@ -441,7 +433,6 @@ else:
 
     airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
 
-    # Function to save chat history with feedback to Airtable
     def save_chat_to_airtable(user_name, user_input, output, feedback):
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -451,32 +442,27 @@ else:
                     "question": user_input,
                     "answer": output,
                     "timestamp": timestamp,
-                    "feedback": feedback if feedback is not None else ""  # Store an empty string if feedback is None
+                    "feedback": feedback if feedback is not None else ""  
                 }
             )
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
-    # Initialize session state
+   
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
-    # Function to perform conversational chat
-    # Function to perform conversational chat
+
     def conversational_chat(user_input):
         for query, answer, feedback in reversed(st.session_state.chat_history):
             if query.lower() == user_input.lower():
-                return answer, feedback if feedback else None  # Return None if feedback is not available
+                return answer, feedback if feedback else None  
         result = agent_executor({"input": user_input})
         response = result["output"]
-        feedback = None  # Initialize feedback as None
-        # Check if the response contains a list of models
+        feedback = None  
         if "Here are a few options:" in response:
-            # Extract the list of models from the response
             start_pos = response.find("[")
             end_pos = response.find("]") + 1
             model_list = response[start_pos:end_pos]
-    
-            # Replace the list in the response with a clickable link
             clickable_link = f"[Click here to see the full list of models]({model_list})"
             response = response.replace(model_list, clickable_link)
         return response, feedback
@@ -485,19 +471,18 @@ else:
         if user_name:
             st.session_state.user_name = user_name
         if user_name == "vishakha":
-            # Load chat history for "vishakha" without asking for a query
+           
             is_admin = True
             st.session_state.user_role = "admin"
             st.session_state.user_name = user_name
-            st.session_state.new_session = False  # Prevent clearing chat history
+            st.session_state.new_session = False  
             st.session_state.sessions = load_previous_sessions()
             
     
-    # User input and chat history display
-    # User input and chat history display
+
     user_input = ""
     output = ""
-    feedback = None  # Initialize feedback as None
+    feedback = None  
     
     with st.form(key='my_form', clear_on_submit=True):
         if st.session_state.user_name != "vishakha":
@@ -506,26 +491,20 @@ else:
     
     if submit_button and user_input:
         output, feedback = conversational_chat(user_input)
-        st.session_state.chat_history.append((user_input, output, feedback))  # Store feedback along with response
+        st.session_state.chat_history.append((user_input, output, feedback))  
         print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
-    # Display chat history with feedback
-    # Add this line to initialize chat_history
+
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
 
-   # Initialize thumbs_up_states and thumbs_down_states in session state
     if 'thumbs_up_states' not in st.session_state:
         st.session_state.thumbs_up_states = {}
 
     if 'thumbs_down_states' not in st.session_state:
         st.session_state.thumbs_down_states = {}
 
-
-    # Display chat history with feedback
-        # Display chat history with feedback
-    # Display chat history with feedback
     with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
