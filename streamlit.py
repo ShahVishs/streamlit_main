@@ -296,24 +296,26 @@ else:
         To ensure a consistent and effective response, please adhere to the following guidelines:
     
         Car Inventory Inquiries:
-        In our dealership, we offer a wide selection of vehicles from various manufacturers, 
+        In our dealership, we offer a wide selection of vehicles from various manufacturers. 
         Please find the list of available car makes below:
-
-        1. [Ram](https://carbuzz.com/cars/ram/Ram)
-        2. [Jeep](https://www.jeep-india.com//Jeep)
-        3. [Chrysler](https://www.chrysler.com//Chrysler)
-        4. [Hyundai](https://www.example.com/Hyundai)
-        5. [Maruti](https://www.example.com/Maruti) Understand that each make may
-        have multiple models available in the inventory if the costumer asks about what are the makes or models we have. 
-        You should use "python_repl_1" tool to answer and use pandas dataframe in Python. This is the result of running 
-        `markdown_table = df1.iloc[:5, :5].to_markdown()`.
-        <df1>
-        {dhead_1}
-        </df1>
-        You are not meant to use these rows to answer questions - they are meant as a way of telling you
-        about the shape and schema of the dataframe. 
-        If you are providing available make or model or both ask costumer which make or model they are intersted than only enquire
-        about new or used car they are interested.
+    
+        1. [Ram 1500](https://carbuzz.com/cars/ram/Ram-1500)
+        2. [Jeep Grand Cherokee 4xe](https://www.jeep-india.com/Jeep-Grand-Cherokee-4xe)
+        3. [Chrysler Pacifica](https://www.chrysler.com/Chrysler-Pacifica)
+        4. [Jeep Compass](https://www.jeep-india.com/Jeep-Compass)
+        5. [Jeep Wrangler 4xe](https://www.jeep-india.com/Jeep-Wrangler-4xe)
+        6. [Ram ProMaster Cargo Van](https://carbuzz.com/cars/ram/Ram-ProMaster-Cargo-Van)
+        7. [Hyundai Creta](https://www.example.com/Hyundai-Creta)
+        8. [Hyundai i20](https://www.example.com/Hyundai-i20)
+        9. [Hyundai Kona](https://www.example.com/Hyundai-Kona)
+        10. [Hyundai Verna](https://www.example.com/Hyundai-Verna)
+        11. [Maruti Alto](https://www.example.com/Maruti-Alto)
+        12. [Maruti Swift](https://www.example.com/Maruti-Swift)
+        13. [Maruti Baleno](https://www.example.com/Maruti-Baleno)
+        
+        Understand that each make may have multiple models available in the inventory. If the customer asks about specific makes or models, 
+        you should use "python_repl_1" tool to answer and use a pandas dataframe in Python to provide details. 
+        This is the result of running `markdown_table = df1.iloc[:5, :5].to_markdown()`.
         
         If a customer inquires about our car inventory with features related to towing, off-road capability, good mileage, or pickup 
         trucks, there's no need to ask about the make and model of the car. Simply inquire whether they are interested in a new or
@@ -482,14 +484,14 @@ else:
         response = result["output"]
         feedback = None
     
-        # Check if the response contains the message about available car makes
-        if "We have a variety of car makes available in our inventory" in response:
-            # List of available car makes
-            car_makes = ["Ram", "Jeep", "Chrysler", "Hyundai", "Maruti"]
-            car_make_links = generate_clickable_links(car_makes, "https://www.example.com")
+        # # Check if the response contains the message about available car makes
+        # if "We have a variety of car makes available in our inventory" in response:
+        #     # List of available car makes
+        #     car_makes = ["Ram", "Jeep", "Chrysler", "Hyundai", "Maruti"]
+        #     car_make_links = generate_clickable_links(car_makes, "https://www.example.com")
     
-            # Update the response to include clickable links for car makes
-            response += "\n\n" + "\n".join(car_make_links)
+        #     # Update the response to include clickable links for car makes
+        #     response += "\n\n" + "\n".join(car_make_links)
     
         return response, feedback
         
