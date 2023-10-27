@@ -472,13 +472,10 @@ else:
         feedback = None
     
         if "Here are the makes and their respective models we have in our inventory:" in response:
-            clickable_links = []
             for make, models in makes_and_models.items():
-                model_links = [f"<a href='https://www.pinebelt.com/{make}/{model}'>{model}</a>" for model in models]
-                clickable_links.append(f"{make}: {', '.join(model_links)}")
-    
-            response = "\n\n".join(clickable_links)
-            st.markdown(response, unsafe_allow_html=True)
+                model_links = [f'<a href="https://www.pinrbelt.com/{make}/{model}">{model}</a>' for model in models]
+                clickable_links = f"Make: {make}, Models: {', '.join(model_links)}"
+                st.markdown(clickable_links, unsafe_allow_html=True)
     
         return response, feedback
         
