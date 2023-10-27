@@ -303,7 +303,7 @@ else:
         3. Chrysler
     
         If you'd like to see more makes or models, please click here: 
-        [Click here to see models]((https://www.jeep-india.com/Jeep-Compass)[Jeep Compass](https://www.jeep-india.com/Jeep-Wrangler-4xe)[Jeep Wrangler 4xe](https://carbuzz.com/cars/ram/Ram-ProMaster-Cargo-Van)[Ram ProMaster Cargo Van]).
+        [Click here to see models](Jeep Compass).
     
         Here are some specific models:
     
