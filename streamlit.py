@@ -471,7 +471,7 @@ else:
         response = result["output"]
         feedback = None
     
-        if "Here are the makes and their respective models we have in our inventory:" in response:
+        if "We have a variety of car makes available in our dealership,:" in response:
             for make, models in makes_and_models.items():
                 model_links = [f'<a href="https://www.pinrbelt.com/{make}/{model}">{model}</a>' for model in models]
                 clickable_links = f"Make: {make}, Models: {', '.join(model_links)}"
