@@ -395,7 +395,7 @@ else:
     
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
-        """)
+    """)
        
     # # Find the position of "here" in the template
     # start_pos = template.find("<a")
