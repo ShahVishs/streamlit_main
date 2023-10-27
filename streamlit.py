@@ -461,7 +461,6 @@ else:
     # Read the makes and models from the CSV file
     df1 = pd.read_csv("make_model.csv")
     makes_and_models = df1.groupby('Make')['Model'].apply(list).to_dict()
-    
     # Define the conversational chat function
     def conversational_chat(user_input):
         for query, answer, feedback in reversed(st.session_state.chat_history):
@@ -471,11 +470,16 @@ else:
         response = result["output"]
         feedback = None
     
-        if "We have a variety of car makes available in our dealership,:" in response:
-            for make, models in makes_and_models.items():
-                model_links = [f'<a href="https://www.pinrbelt.com/{make}/{model}">{model}</a>' for model in models]
-                clickable_links = f"Make: {make}, Models: {', '.join(model_links)}"
-                st.markdown(clickable_links, unsafe_allow_html=True)
+        if "We have a variety of car makes available in our dealership:" in response:
+            clickable_links = []
+    
+            for idx, (make, models) in enumerate(makes_and_models.items()):
+                model_links = [f'<a href="https://www.example.com/{make}/{model}">{model}</a>' for model in models]
+                clickable_links.append(f"Make: {make}, Models: {', '.join(model_links)}")
+    
+                if (idx + 1) % 2 == 0 or idx == len(makes_and_models) - 1:
+                    st.markdown("<br>".join(clickable_links), unsafe_allow_html=True)
+                    clickable_links = []
     
         return response, feedback
         
