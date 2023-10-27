@@ -455,31 +455,34 @@ else:
         for index, row in dataframe.iterrows():
             make = row['Make']
             model = row['Model']
-            link = row['Link']  # Replace 'Link' with the actual column name for links
-            makes_and_models.append(f"<a href='{link}'>{make} {model}</a>")
+            makes_and_models.append(f"{make} {model}")
         return makes_and_models
     
-    # Example usage: Load the data from a DataFrame
+    # Load the data from a CSV file
     df1 = pd.read_csv("make_model.csv")  # Load your CSV file into a DataFrame
     makes_and_models = load_make_model_data(df1)
+        
     def conversational_chat(user_input):
         for query, answer, feedback in reversed(st.session_state.chat_history):
             if query.lower() == user_input.lower():
                 return answer, feedback if feedback else None
-    
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None
-    
         if "Here are a few options:" in response:
-            max_models_to_display = 4
+            options_start_pos = response.find("[")
+            options_end_pos = response.find("]") + 1
+            model_list = response[options_start_pos:options_end_pos]
+            clickable_links = []
     
-            # Create clickable links for the first 4 models
-            clickable_links = "\n".join(makes_and_models[:max_models_to_display])
-            full_list_link = "<a href='https://www.example.com/full-model-list'>See the complete list</a>"
+            for i, make_model in enumerate(makes_and_models):
+                if i % 4 == 0:
+                    clickable_links.append(f"<a href='{model_list}'>{make_model}</a>")
+                else:
+                    clickable_links.append(make_model)
     
-            response = response.replace("Here are a few options:", clickable_links)
-            response += f"\n\n{full_list_link}"
+            response = response.replace(model_list, " ".join(clickable_links))
+            response = f"<div>{response}</div>"
     
         return response, feedback
     if st.session_state.user_name is None:
