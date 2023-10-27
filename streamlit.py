@@ -233,7 +233,7 @@ else:
                 if st.sidebar.button(formatted_session_name):
                     st.session_state.chat_history = session['chat_history'].copy()
 
-file_1 = r'dealer_1_inventry.csv'
+file_1 = r'car_desription_new.csv''
 
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
