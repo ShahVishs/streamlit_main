@@ -417,6 +417,16 @@ else:
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None  # Initialize feedback as None
+        # Check if the response contains a list of models
+        if "Here are a few options:" in response:
+            # Extract the list of models from the response
+            start_pos = response.find("[")
+            end_pos = response.find("]") + 1
+            model_list = response[start_pos:end_pos]
+    
+            # Replace the list in the response with a clickable link
+            clickable_link = f"[Click here to see the full list of models]({model_list})"
+            response = response.replace(model_list, clickable_link)
         return response, feedback
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
