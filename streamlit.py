@@ -412,7 +412,8 @@ else:
         query: str = Field(description="code snippet to run")
 
     df = pd.read_csv("appointment_new.csv")
-    input_template = template.format(dhead=df.head().to_markdown(),details=details)
+    # input_template = template.format(dhead=df.head().to_markdown(),details=details)
+    input_template = f"{template.replace('{{dhead}}', df.head().to_markdown()).replace('{{details}}', details)}"
 
     system_message = SystemMessage(content=input_template)
 
