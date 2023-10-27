@@ -471,16 +471,11 @@ else:
         feedback = None
     
         if "We have a variety of car makes available in our dealership:" in response:
-            clickable_links = []
-    
-            for idx, (make, models) in enumerate(makes_and_models.items()):
-                model_links = [f'<a href="https://www.example.com/{make}/{model}">{model}</a>' for model in models]
-                clickable_links.append(f"Make: {make}, Models: {', '.join(model_links)}")
-    
-                if (idx + 1) % 2 == 0 or idx == len(makes_and_models) - 1:
-                    st.markdown("<br>".join(clickable_links), unsafe_allow_html=True)
-                    clickable_links = []
-    
+            for make, models in makes_and_models.items():
+                st.write(f"Make: {make}")
+                for model in models:
+                    st.markdown(f"[{model}](https://www.example.com/{make}/{model})", unsafe_allow_html=True)
+                st.write("")
         return response, feedback
         
     if st.session_state.user_name is None:
