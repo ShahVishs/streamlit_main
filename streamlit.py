@@ -448,20 +448,39 @@ else:
    
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
-
+    
+    # Load make and model data from a DataFrame
+    def load_make_model_data(dataframe):
+        makes_and_models = []
+        for index, row in dataframe.iterrows():
+            make = row['Make']
+            model = row['Model']
+            link = row['Link']  # Replace 'Link' with the actual column name for links
+            makes_and_models.append(f"<a href='{link}'>{make} {model}</a>")
+        return makes_and_models
+    
+    # Example usage: Load the data from a DataFrame
+    df1 = pd.read_csv("make_model.csv")  # Load your CSV file into a DataFrame
+    makes_and_models = load_make_model_data(df1)
     def conversational_chat(user_input):
         for query, answer, feedback in reversed(st.session_state.chat_history):
             if query.lower() == user_input.lower():
-                return answer, feedback if feedback else None  
+                return answer, feedback if feedback else None
+    
         result = agent_executor({"input": user_input})
         response = result["output"]
-        feedback = None  
-        # if "Here are a few options:" in response:
-        #     start_pos = response.find("[")
-        #     end_pos = response.find("]") + 1
-        #     model_list = response[start_pos:end_pos]
-        #     clickable_link = f"[Click here]({model_list})"
-        #     response = response.replace(model_list, clickable_link)
+        feedback = None
+    
+        if "Here are a few options:" in response:
+            max_models_to_display = 4
+    
+            # Create clickable links for the first 4 models
+            clickable_links = "\n".join(makes_and_models[:max_models_to_display])
+            full_list_link = "<a href='https://www.example.com/full-model-list'>See the complete list</a>"
+    
+            response = response.replace("Here are a few options:", clickable_links)
+            response += f"\n\n{full_list_link}"
+    
         return response, feedback
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
