@@ -456,12 +456,12 @@ else:
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None  
-        if "Here are a few options:" in response:
-            start_pos = response.find("[")
-            end_pos = response.find("]") + 1
-            model_list = response[start_pos:end_pos]
-            clickable_link = f"[Click here]({model_list})"
-            response = response.replace(model_list, clickable_link)
+        # if "Here are a few options:" in response:
+        #     start_pos = response.find("[")
+        #     end_pos = response.find("]") + 1
+        #     model_list = response[start_pos:end_pos]
+        #     clickable_link = f"[Click here]({model_list})"
+        #     response = response.replace(model_list, clickable_link)
         return response, feedback
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
