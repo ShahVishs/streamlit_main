@@ -461,9 +461,8 @@ else:
     # Read the makes and models from the CSV file
     df1 = pd.read_csv("make_model.csv")
     makes_and_models = df1.groupby('Make')['Model'].apply(list).to_dict()
-    # Define a function to generate clickable links
     def generate_clickable_links(items, link_prefix):
-        clickable_links = [f'<a href="{link_prefix}/{item}">{item}</a>' for item in items]
+        clickable_links = [f"[{item}]({link_prefix}/{item})" for item in items]
         return clickable_links
     
     # Define the conversational chat function
