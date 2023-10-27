@@ -413,10 +413,10 @@ else:
         description="Use to check on available appointment times for a given date and time. strictly input to\
         this tool should be a string in this format mm/dd/yy, for example  october 21st 2023 is taken as 10/21/2023 format not 10-21-2023\
                          . This is the only way for you to answer questions about available appointments.\
-        This tool will reply with available times for the specified date in 12 hour time format, for example: 15:00 and 3pm are the same.", args_schema=PythonInputs)
+        This tool will reply with available times for the specified date in 12 hour time format, for example: 15:00 and 3pm are the same.")
     repl_1 = PythonAstREPLTool(locals={"df1": df1}, name="python_repl_1",
         description="Use to check on what are the various available models and make of the car, output should be either list of make or model of the cars"
-        , args_schema=PythonInputs)
+        )
     tools = [tool1, repl, tool3,repl_1]
     agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
     if 'agent_executor' not in st.session_state:
