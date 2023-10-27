@@ -460,7 +460,7 @@ else:
     
     # Read the makes and models from the CSV file
     df1 = pd.read_csv("make_model.csv")
-    makes_and_models = zip(df['Make'], df['Model'])
+    makes_and_models = df1.groupby('Make')['Model'].apply(list).to_dict()
 
     # Define the conversational chat function
     def conversational_chat(user_input):
@@ -471,18 +471,12 @@ else:
         response = result["output"]
         feedback = None
     
-        if "Here are the makes and models we have in our inventory:" in response:
+        if "Here are the makes and their respective models we have in our inventory:" in response:
             clickable_links = []
-            for i, (make, model) in enumerate(makes_and_models, 1):
-                if i <= 2:  # Show the first 3 makes and models
-                    clickable_links.append(f'<a href="https://www.example.com/{make}/{model}">{make} {model}</a>')
+            for make, models in makes_and_models.items():
+                clickable_links.append(f'{make}: {", ".join([f"<a href='https://www.example.com/{make}/{model}'>{model}</a>" for model in models])}')
     
-            if user_input.lower() == "more makes and models":
-                clickable_links = []  # Show all makes and models if requested
-                for make, model in makes_and_models:
-                    clickable_links.append(f'<a href="https://www.example.com/{make}/{model}">{make} {model}</a>')
-    
-            response = response.replace("Here are the makes and models we have in our inventory:", "\n".join(clickable_links))
+            response = response.replace("Here are the makes and their respective models we have in our inventory:", "\n".join(clickable_links))
     
         return response, feedback
     if st.session_state.user_name is None:
