@@ -461,21 +461,30 @@ else:
     # Read the makes and models from the CSV file
     df1 = pd.read_csv("make_model.csv")
     makes_and_models = df1.groupby('Make')['Model'].apply(list).to_dict()
+    # Define a function to create clickable links
+    def create_clickable_link(make):
+        return f'<a href="https://www.pinebelt.com/{make}">{make}</a>'
+    
+    # List of available car makes
+    car_makes = ["Ram", "Jeep", "Chrysler", "Hyundai", "Maruti"]
+    
+    # Generate clickable links for each car make
+    clickable_links = [create_clickable_link(make) for make in car_makes]
+    
     # Define the conversational chat function
     def conversational_chat(user_input):
         for query, answer, feedback in reversed(st.session_state.chat_history):
             if query.lower() == user_input.lower():
                 return answer, feedback if feedback else None
+    
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None
     
-        if "We have a variety of car makes available in our dealership:" in response:
-            for make, models in makes_and_models.items():
-                st.write(f"Make: {make}")
-                for model in models:
-                    st.markdown(f"[{model}](https://www.example.com/{make}/{model})", unsafe_allow_html=True)
-                st.write("")
+        if "We have a variety of car makes available in our inventory:" in response:
+            # Display clickable links for car makes
+            st.markdown("<br>".join(clickable_links), unsafe_allow_html=True)
+    
         return response, feedback
         
     if st.session_state.user_name is None:
