@@ -476,7 +476,7 @@ else:
             clickable_links = []
     
             for i, make_model in enumerate(makes_and_models):
-                if i % 4 == 0:
+                if i % 2 == 0:
                     clickable_links.append(f"<a href='{model_list}'>{make_model}</a>")
                 else:
                     clickable_links.append(make_model)
