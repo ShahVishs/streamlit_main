@@ -458,10 +458,10 @@ else:
             makes_and_models.append(f"[{make} {model}](https://www.example.com/{make}/{model})")
         return makes_and_models
     
-    # Load the data from a CSV file
-    df1 = pd.read_csv("make_model.csv")  # Load your CSV file into a DataFrame
-    makes_and_models = load_make_model_data(df1)
-        
+    # Read the makes and models from the CSV file
+    df1 = pd.read_csv("make_model.csv")
+    makes_and_models = zip(df1['Make'], df1['Model'])
+    
     # Define the conversational chat function
     def conversational_chat(user_input):
         for query, answer, feedback in reversed(st.session_state.chat_history):
@@ -470,12 +470,13 @@ else:
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None
+    
         if "Here are the makes and their respective models we have:" in response:
-            options_start_pos = response.find("[")
-            options_end_pos = response.find("]") + 1
-            model_list = response[options_start_pos:options_end_pos]
-            clickable_links = [model_list] + makes_and_models
-            response = response.replace(model_list, " ".join(clickable_links))
+            clickable_links = []
+            for make, model in makes_and_models:
+                clickable_links.append(f'<a href="https://www.example.com/{make}/{model}">{make} {model}</a>')
+    
+            response = response.replace("Here are the makes and their respective models we have:", "\n".join(clickable_links))
     
         return response, feedback
     if st.session_state.user_name is None:
