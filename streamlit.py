@@ -303,7 +303,7 @@ else:
         3. Chrysler
     
         If you'd like to see more makes or models, please click here: 
-        [Click here to see more makes and models]([Jeep Compass](https://www.jeep-india.com/Jeep-Compass),[Jeep Wrangler 4xe](https://www.jeep-india.com/Jeep-Wrangler-4xe)).
+        [Click here to see more makes and models]((https://www.jeep-india.com/Jeep-Compass),(https://www.jeep-india.com/Jeep-Wrangler-4xe)).
     
         Here are some specific models:
     
