@@ -374,10 +374,7 @@ else:
     
         If the appointment slot for the requested date and time is not available, we can offer alternative times that are close to the customer's preferred time based 
         on the information provided.
-    
-        # Additionally, use  Markdown format '[click here](www.12345.com).' to create a clickable link and  When they click on this link, it will take them to a URL
-        # where they can schedule their appointment themselves."
-    
+
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         first ask If they have a car for trade-in then separatly ask for their name, contact number and email address.
         Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
@@ -463,7 +460,7 @@ else:
             start_pos = response.find("[")
             end_pos = response.find("]") + 1
             model_list = response[start_pos:end_pos]
-            clickable_link = f"[Click here to see the full list of models]({model_list})"
+            clickable_link = f"[Click here]({model_list})"
             response = response.replace(model_list, clickable_link)
         return response, feedback
     if st.session_state.user_name is None:
