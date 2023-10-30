@@ -408,8 +408,13 @@ else:
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
     # input_template = template.format(dhead=df.head().to_markdown(),details=details)
-    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
-
+    # input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
+    input_template = template.format(
+        dhead_1=df1.iloc[:5, :5].to_markdown(),
+        dhead=df.head().to_markdown(),
+        details=details,
+        appointment_link=appointment_link_markdown  # Add appointment_link to the formatted template
+    )
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
