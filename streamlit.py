@@ -395,7 +395,7 @@ else:
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
         
-        If you'd like to schedule your appointment, please click [here](https://app.funnelai.com/shorten/JiXfGCEElA) before confirmation.
+        You can schedule your appointment by clicking [here](https://app.funnelai.com/shorten/JiXfGCEElA) before confirmation.
         """)
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
