@@ -394,9 +394,12 @@ else:
         
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
-        
-        You can schedule your appointment by clicking [here](https://app.funnelai.com/shorten/JiXfGCEElA). Please fill in your contact number and email address in the required fields.
+        link = '<a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">Schedule an Appointment</a>'
+        st.markdown(link, unsafe_allow_html=True)
+        For appointment scheduling Please click [here](https://app.funnelai.com/shorten/JiXfGCEElA) to schedule your appointment. 
+        We look forward to assisting you with your appointment.
         """)
+        
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
