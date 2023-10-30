@@ -381,8 +381,11 @@ else:
         If the appointment slot for the requested date and time is not available, we can offer alternative times that are close to the customer's preferred time based 
         on the information provided.
         
-        additional_text = "Additionally, provide this [link](https://app.funnelai.com/shorten/JiXfGCEElA) for scheduling an appointment by the user himself."
-        st.markdown(additional_text, unsafe_allow_html=True)
+        appointment_link = "https://app.funnelai.com/shorten/JiXfGCEElA"
+        appointment_link_markdown = f"Additionally, provide this [<a href='{appointment_link}' target='_blank'>link</a>] for scheduling an appointment by the user himself."
+        
+        st.markdown(appointment_link_markdown, unsafe_allow_html=True)
+
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         first ask If they have a car for trade-in then separatly ask for their name, contact number and email address.
         Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
