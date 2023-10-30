@@ -395,9 +395,7 @@ else:
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
         
-        Additionally, provide a clickable link where customer can schedule the appointment themself
-        If you'd like to see more makes or models, please click here: 
-        [Click here to see models](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv).
+        You can schedule your appointment by clicking [here](https://app.funnelai.com/shorten/JiXfGCEElA). Please fill in your contact number and email address in the required fields.
         """)
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
