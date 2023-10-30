@@ -382,7 +382,7 @@ else:
         on the information provided.
         
         If you'd like to shedule your appointment, please click here: 
-        [Click here ](https://app.funnelai.com/shorten/JiXfGCEElA).
+        [Click here](https://app.funnelai.com/shorten/JiXfGCEElA)
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         first ask If they have a car for trade-in then separatly ask for their name, contact number and email address.
         Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
