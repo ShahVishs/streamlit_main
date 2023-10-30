@@ -396,8 +396,6 @@ else:
         Keep responses concise, not exceeding two sentences.
         link = '<a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">Schedule an Appointment</a>'
         st.markdown(link, unsafe_allow_html=True)
-        For appointment scheduling Please click [here](https://app.funnelai.com/shorten/JiXfGCEElA) to schedule your appointment. 
-        We look forward to assisting you with your appointment.
         """)
         
 
