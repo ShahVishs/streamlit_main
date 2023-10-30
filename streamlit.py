@@ -458,22 +458,6 @@ else:
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
     
-    # Load make and model data from a DataFrame
-    def load_make_model_data(dataframe):
-        makes_and_models = []
-        for index, row in dataframe.iterrows():
-            make = row['Make']
-            model = row['Model']
-            makes_and_models.append(f"[{make} {model}](https://www.example.com/{make}/{model})")
-        return makes_and_models
-    
-    # Read the makes and models from the CSV file
-    df1 = pd.read_csv("make_model.csv")
-    makes_and_models = df1.groupby('Make')['Model'].apply(list).to_dict()
-    def generate_clickable_links(items, link_prefix):
-        clickable_links = [f"[{item}]({link_prefix}/{item})" for item in items]
-        return clickable_links
-    
     # Define the conversational chat function
     def conversational_chat(user_input):
         for query, answer, feedback in reversed(st.session_state.chat_history):
@@ -483,16 +467,6 @@ else:
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None
-    
-        # # Check if the response contains the message about available car makes
-        # if "We have a variety of car makes available in our inventory" in response:
-        #     # List of available car makes
-        #     car_makes = ["Ram", "Jeep", "Chrysler", "Hyundai", "Maruti"]
-        #     car_make_links = generate_clickable_links(car_makes, "https://www.example.com")
-    
-        #     # Update the response to include clickable links for car makes
-        #     response += "\n\n" + "\n".join(car_make_links)
-    
         return response, feedback
         
     if st.session_state.user_name is None:
