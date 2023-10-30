@@ -396,7 +396,8 @@ else:
         Keep responses concise, not exceeding two sentences.
         
         Additionally, provide a clickable link where customer can schedule the appointment themself
-        [Click here](https://app.funnelai.com/shorten/JiXfGCEElA)
+        If you'd like to see more makes or models, please click here: 
+        [Click here to see models](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv).
         """)
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
