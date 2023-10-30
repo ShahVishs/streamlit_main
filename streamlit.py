@@ -381,12 +381,11 @@ else:
         If the appointment slot for the requested date and time is not available, we can offer alternative times that are close to the customer's preferred time based 
         on the information provided.
         
-        If you'd like to shedule your appointment, please click here: 
-        [Click here](https://app.funnelai.com/shorten/JiXfGCEElA)
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
-        first ask If they have a car for trade-in then separatly ask for their name, contact number and email address.
-        Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
-        and contact details use search_business_details tool to get information.
+        First ask if they have a car for trade-in, then separately ask for their name, contact number, and email address.
+        
+        Business details: Inquiry regarding the Google Maps location of the store, address of the store, working days, working hours, 
+        and contact details - use the search_business_details tool to get this information.
         
         Encourage Dealership Visit: Our goal is to encourage customers to visit the dealership for test drives or
         receive product briefings from our team. After providing essential information on the car's make, model,
@@ -395,6 +394,8 @@ else:
         
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
+        
+        If you'd like to schedule your appointment, please click [here](https://app.funnelai.com/shorten/JiXfGCEElA) before confirmation.
         """)
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
