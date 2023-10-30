@@ -365,8 +365,8 @@ else:
         Checking Appointments Avaliability: If the customer's inquiry lacks specific details such as their preferred/
         day, date or time kindly engage by asking for these specifics.
         {details} Use these details that is todays date and day and find the appointment date from the users input
-        and check for appointment availabity using function mentioned in the tools for 
-        that specific day or date and time.
+        and check for appointment availabity using the  <a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">appointment scheduling tool</a> 
+        for that specific day or date and time.
         For checking appointment vailability you use pandas dataframe in Python. The name of the dataframe is `df`. The dataframe contains 
         data related appointment schedule. It is important to understand the attributes of the dataframe before working with it. 
         This is the result of running `df.head().to_markdown()`. Important rule is set the option to display all columns without
