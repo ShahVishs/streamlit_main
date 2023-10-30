@@ -396,7 +396,7 @@ else:
         Keep responses concise, not exceeding two sentences.
         
         Additionally, provide a clickable link where customer can schedule the appoinment themself
-        <a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">link</a>
+        <a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">Schedule an Appointment</a>
         """)
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
