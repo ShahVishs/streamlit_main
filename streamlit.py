@@ -381,10 +381,8 @@ else:
         If the appointment slot for the requested date and time is not available, we can offer alternative times that are close to the customer's preferred time based 
         on the information provided.
         
-        appointment_link = "https://app.funnelai.com/shorten/JiXfGCEElA"
-        appointment_link_markdown = f"Additionally, provide this [<a href='{appointment_link}' target='_blank'>link</a>] for scheduling an appointment by the user himself."
-        
-        st.markdown(appointment_link_markdown, unsafe_allow_html=True)
+       Additionally, use  Markdown format <a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">link</a> to create a clickable link and  When they click on this link, it will take them to a URL
+        where they can schedule their appointment themselves."
 
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         first ask If they have a car for trade-in then separatly ask for their name, contact number and email address.
@@ -408,13 +406,8 @@ else:
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
     # input_template = template.format(dhead=df.head().to_markdown(),details=details)
-    # input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
-    input_template = template.format(
-        dhead_1=df1.iloc[:5, :5].to_markdown(),
-        dhead=df.head().to_markdown(),
-        details=details,
-        appointment_link=appointment_link_markdown  # Add appointment_link to the formatted template
-    )
+    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
+    
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
