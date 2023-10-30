@@ -381,8 +381,8 @@ else:
         If the appointment slot for the requested date and time is not available, we can offer alternative times that are close to the customer's preferred time based 
         on the information provided.
         
-       Additionally, use Markdown format to [create a clickable link](https://app.funnelai.com/shorten/JiXfGCEElA) that directs the user to a URL where they can schedule their appointment themselves."
-
+        If you'd like to shedule your appointment, please click here: 
+        [Click here ](https:////app.funnelai.com/shorten/JiXfGCEElA).
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         first ask If they have a car for trade-in then separatly ask for their name, contact number and email address.
         Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
