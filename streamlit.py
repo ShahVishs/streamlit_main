@@ -382,6 +382,7 @@ else:
         on the information provided.
         
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
+        click [here](https://app.funnelai.com/shorten/JiXfGCEElA)
         First ask if they have a car for trade-in, then separately ask for their name, contact number, and email address.
         
         Business details: Inquiry regarding the Google Maps location of the store, address of the store, working days, working hours, 
@@ -396,8 +397,7 @@ else:
         Keep responses concise, not exceeding two sentences.
         To assist the customer, provide them with a link to schedule an appointment:
         click [here](https://app.funnelai.com/shorten/JiXfGCEElA).""")
-    # st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
-
+   
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
