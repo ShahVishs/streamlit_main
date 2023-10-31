@@ -292,7 +292,7 @@ else:
     langchain.debug=True
     memory_key = "history"
     memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
-    show_appointment_link = True
+    link = "https://app.funnelai.com/shorten/JiXfGCEElA"
    
     template = (
         """You are an costumer care support at car dealership responsible for handling inquiries related to 
@@ -386,7 +386,7 @@ else:
         
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         First ask if they have a car for trade-in, then separately ask for their name, contact number, and email address.
-        For scheduling an appointment, [Schedule Appointment]({link})
+         For scheduling an appointment, please check out [this link](%s).
         
         Business details: Inquiry regarding the Google Maps location of the store, address of the store, working days, working hours, 
         and contact details - use the search_business_details tool to get this information.
@@ -397,8 +397,8 @@ else:
         for a comprehensive product overview by our experts.
         
         Make every effort to assist the customer promptly.
-        Keep responses concise, not exceeding two sentences.""")
-        
+        Keep responses concise, not exceeding two sentences."""% link)
+    st.markdown(template)  
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
@@ -406,9 +406,7 @@ else:
 
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
-    # Append the appointment link based on a condition
-    if show_appointment_link:
-        st.markdown(f"[Click here to schedule an appointment](https://app.funnelai.com/shorten/JiXfGCEElA)")
+  
     # input_template = template.format(dhead=df.head().to_markdown(),details=details)
     input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details) 
     # input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(), dhead=df.head().to_markdown(), details=details, link=link)
