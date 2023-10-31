@@ -293,7 +293,7 @@ else:
     memory_key = "history"
     memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
     show_appointment_link = True
-    link = "https://app.funnelai.com/shorten/JiXfGCEElA"
+   
     template = (
         """You are an costumer care support at car dealership responsible for handling inquiries related to 
         car inventory, business details and appointment scheduling.
@@ -408,7 +408,7 @@ else:
     df1 = pd.read_csv("make_model.csv")
     # Append the appointment link based on a condition
     if show_appointment_link:
-        st.markdown(f"[Click here to schedule an appointment]({link})")
+        st.markdown(f"[Click here to schedule an appointment](https://app.funnelai.com/shorten/JiXfGCEElA)")
     # input_template = template.format(dhead=df.head().to_markdown(),details=details)
     # input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
     input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(), dhead=df.head().to_markdown(), details=details, link=link)
