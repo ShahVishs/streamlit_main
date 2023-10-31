@@ -394,7 +394,7 @@ else:
         
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
-        st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
+        Additionally, provide this <a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">link</a> for scheduling an appointment by the user himself.
         """)
     st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
 
