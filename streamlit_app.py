@@ -410,8 +410,8 @@ else:
     if show_appointment_link:
         st.markdown(f"[Click here to schedule an appointment](https://app.funnelai.com/shorten/JiXfGCEElA)")
     # input_template = template.format(dhead=df.head().to_markdown(),details=details)
-    # input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
-    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(), dhead=df.head().to_markdown(), details=details, link=link)
+    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
+    # input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(), dhead=df.head().to_markdown(), details=details, link=link)
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
