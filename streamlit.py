@@ -396,7 +396,7 @@ else:
         Keep responses concise, not exceeding two sentences.
         st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
         """)
-        
+    st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
