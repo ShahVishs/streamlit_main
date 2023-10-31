@@ -293,7 +293,7 @@ else:
     memory_key = "history"
     memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
     template = (
-        f"""You are an costumer care support at car dealership responsible for handling inquiries related to 
+        """You are an costumer care support at car dealership responsible for handling inquiries related to 
         car inventory, business details and appointment scheduling.
         To ensure a consistent and effective response, please adhere to the following guidelines:
         
