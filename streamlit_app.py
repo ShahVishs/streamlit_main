@@ -291,9 +291,7 @@ else:
     llm = ChatOpenAI(model="gpt-4", temperature = 0)
     langchain.debug=True
     memory_key = "history"
-    memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
-    link = "https://app.funnelai.com/shorten/JiXfGCEElA"
-   
+    memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm);
     template = (
         """You are an costumer care support at car dealership responsible for handling inquiries related to 
         car inventory, business details and appointment scheduling.
@@ -386,7 +384,7 @@ else:
         
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         First ask if they have a car for trade-in, then separately ask for their name, contact number, and email address.
-         For scheduling an appointment, please check out [this link](%s).
+        
         
         Business details: Inquiry regarding the Google Maps location of the store, address of the store, working days, working hours, 
         and contact details - use the search_business_details tool to get this information.
@@ -397,8 +395,8 @@ else:
         for a comprehensive product overview by our experts.
         
         Make every effort to assist the customer promptly.
-        Keep responses concise, not exceeding two sentences."""% link)
-    st.markdown(template)  
+        Keep responses concise, not exceeding two sentences.""")
+    response_template = "Your appointment link is [APPOINTMENT_LINK]."
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
@@ -469,6 +467,15 @@ else:
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None
+        # Inject the appointment link into the response
+        if "appointment scheduling" in response:
+            # Replace the placeholder with the actual appointment link
+            appointment_link = "[Schedule your appointment here](https://app.funnelai.com/shorten/JiXfGCEElA)"
+            response = response.replace("[APPOINTMENT_LINK]", appointment_link)
+    
+        st.session_state.chat_history.append((user_input, response, feedback))
+        save_chat_to_airtable(st.session_state.user_name, user_input, response, feedback)
+    
         return response, feedback
         
     if st.session_state.user_name is None:
