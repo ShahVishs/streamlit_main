@@ -382,7 +382,6 @@ else:
         on the information provided.
         
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
-        click [here](https://app.funnelai.com/shorten/JiXfGCEElA)
         First ask if they have a car for trade-in, then separately ask for their name, contact number, and email address.
         
         Business details: Inquiry regarding the Google Maps location of the store, address of the store, working days, working hours, 
