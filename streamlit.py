@@ -293,7 +293,7 @@ else:
     memory_key = "history"
     memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
     template = (
-        """You are an costumer care support at car dealership responsible for handling inquiries related to 
+        f"""You are an costumer care support at car dealership responsible for handling inquiries related to 
         car inventory, business details and appointment scheduling.
         To ensure a consistent and effective response, please adhere to the following guidelines:
         
@@ -394,8 +394,8 @@ else:
         
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
-        st.markdown("[Link to schedule appointment](https://app.funnelai.com/shorten/JiXfGCEElA)")
-        """)
+        To assist the customer, provide them with a link to schedule an appointment:
+        click [here](https://app.funnelai.com/shorten/JiXfGCEElA).""")
     # st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
