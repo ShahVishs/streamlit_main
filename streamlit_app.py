@@ -397,7 +397,7 @@ else:
         
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.""")
-   
+    st.markdown(f"[Schedule Appointment]({link})")
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
