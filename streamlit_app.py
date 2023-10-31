@@ -292,9 +292,11 @@ else:
     langchain.debug=True
     memory_key = "history"
     memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
+    link = "https://app.funnelai.com/shorten/JiXfGCEElA"
     template = (
         """You are an costumer care support at car dealership responsible for handling inquiries related to 
         car inventory, business details and appointment scheduling.
+        
         To ensure a consistent and effective response, please adhere to the following guidelines:
         
         Car Inventory Inquiries:
@@ -383,6 +385,7 @@ else:
         
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         First ask if they have a car for trade-in, then separately ask for their name, contact number, and email address.
+        For scheduling an appointment, [please check out this link]({link}).
         
         Business details: Inquiry regarding the Google Maps location of the store, address of the store, working days, working hours, 
         and contact details - use the search_business_details tool to get this information.
@@ -393,9 +396,7 @@ else:
         for a comprehensive product overview by our experts.
         
         Make every effort to assist the customer promptly.
-        Keep responses concise, not exceeding two sentences.
-        To assist the customer, provide them with a link to schedule an appointment:
-        click [here](https://app.funnelai.com/shorten/JiXfGCEElA).""")
+        Keep responses concise, not exceeding two sentences.""")
    
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
