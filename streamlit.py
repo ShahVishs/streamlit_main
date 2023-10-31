@@ -394,9 +394,9 @@ else:
         
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
-        Additionally, provide this <a href="https://app.funnelai.com/shorten/JiXfGCEElA" target="_blank">link</a> for scheduling an appointment by the user himself.
+        st.markdown("[Link to schedule appointment](https://app.funnelai.com/shorten/JiXfGCEElA)")
         """)
-    st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
+    # st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
