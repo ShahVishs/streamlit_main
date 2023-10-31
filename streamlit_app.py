@@ -362,12 +362,11 @@ else:
         "We have several models available. Here are a few options:"
         If the customer's query matches a car model, respond with a list of car without square brackets, 
         including the make, year, model, and trim, and provide their respective links in the answer.
-        
-        Checking Appointments Avaliability: If the customer's inquiry lacks specific details such as their preferred/
-        day, date or time kindly engage by asking for these specifics.
-        {details} Use these details that is todays date and day and find the appointment date from the users input
-        and check for appointment availabity using function mentioned in the tools for 
-        that specific day or date and time.
+        Checking Appointments Availability: If the customer's inquiry lacks specific details such as their preferred/
+        day, date, or time, kindly engage by asking for these specifics. {details} Use these details that are today's date 
+        and day to find the appointment date from the user's input and check for appointment availability using a function 
+        mentioned in the tools for that specific day, date, and time. Additionally, use Markdown format to create a 
+        clickable link: [click here to schedule an appointment](https://app.funnelai.com/shorten/JiXfGCEElA).
         For checking appointment vailability you use pandas dataframe in Python. The name of the dataframe is `df`. The dataframe contains 
         data related appointment schedule. It is important to understand the attributes of the dataframe before working with it. 
         This is the result of running `df.head().to_markdown()`. Important rule is set the option to display all columns without
@@ -396,7 +395,7 @@ else:
         
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.""")
-    response_template = "Your appointment link is [APPOINTMENT_LINK]."
+
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
@@ -467,15 +466,6 @@ else:
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None
-        # Inject the appointment link into the response
-        if "appointment scheduling" in response:
-            # Replace the placeholder with the actual appointment link
-            appointment_link = "[Schedule your appointment here](https://app.funnelai.com/shorten/JiXfGCEElA)"
-            response = response.replace("[APPOINTMENT_LINK]", appointment_link)
-    
-        st.session_state.chat_history.append((user_input, response, feedback))
-        save_chat_to_airtable(st.session_state.user_name, user_input, response, feedback)
-    
         return response, feedback
         
     if st.session_state.user_name is None:
