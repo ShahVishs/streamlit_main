@@ -394,9 +394,7 @@ else:
         
         Make every effort to assist the customer promptly.
         Keep responses concise, not exceeding two sentences.
-        
-        link = 'check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)'
-        st.markdown(link, unsafe_allow_html=True)
+        st.write('check out this [link](https://app.funnelai.com/shorten/JiXfGCEElA)')
         """)
         
 
