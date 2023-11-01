@@ -367,7 +367,7 @@ else:
         and day to find the appointment date from the user's input and check for appointment availability using a function 
         mentioned in the tools for that specific day, date, and time. Additionally, use Markdown format to create a 
         
-        [Click here](https://app.funnelai.com/shorten/JiXfGCEElA)
+        [Click here to reschedule an appointment](https://app.funnelai.com/shorten/JiXfGCEElA)
        
         For checking appointment vailability you use pandas dataframe in Python. The name of the dataframe is `df`. The dataframe contains 
         data related appointment schedule. It is important to understand the attributes of the dataframe before working with it. 
