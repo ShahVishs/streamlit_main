@@ -559,3 +559,18 @@ else:
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
+# Add a feedback form at the end
+st.header("Feedback Form")
+
+# Text area for general feedback
+feedback_text = st.text_area("Please provide any feedback about your experience:")
+
+# Dropdown for rating feedback
+st.write("How would you rate your overall experience?")
+feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Fair", "Poor"])
+
+# Submit button for the feedback form
+if st.button("Submit Feedback"):
+    # If the user submits the feedback, save it
+    save_feedback(feedback_text, feedback_rating)
+    st.success("Thank you for your feedback!")
