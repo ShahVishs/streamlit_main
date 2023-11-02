@@ -467,11 +467,11 @@ else:
         for query, answer, feedback in reversed(st.session_state.chat_history):
             if query.lower() == user_input.lower():
                 return answer, feedback if feedback else None
-    
-        result = agent_executor({"input": user_input})
-        response = result["output"]
-        feedback = None
-        return response, feedback
+        with st.spinner('Generating a response...'):  # Show a loading spinner
+            result = agent_executor({"input": user_input})
+            response = result["output"]
+            feedback = None
+            return response, feedback
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
