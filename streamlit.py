@@ -598,10 +598,10 @@ with st.form(key='feedback_form'):
     if submit_button:
         st.success("Thank you for your feedback!")
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
-        st.session_state.feedback_text = ""
+         st.session_state.feedback_text = ""
         st.session_state.feedback_rating = ""
         st.experimental_rerun()
 
 # Clearing the feedback and rating after submission
-feedback_text = st.session_state.feedback_text
-feedback_rating = st.session_state.feedback_rating
+feedback_text = st.session_state.feedback_text if "feedback_text" in st.session_state else ""
+feedback_rating = st.session_state.feedback_rating if "feedback_rating" in st.session_state else ""
