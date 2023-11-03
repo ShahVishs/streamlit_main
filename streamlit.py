@@ -458,7 +458,9 @@ else:
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
-            
+    AIRTABLE_BASE_ID = "appFObp0k5vGuC15B"  
+    AIRTABLE_TABLE_NAME = "feedback_data" 
+    airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
     def save_complete_conversation_to_airtable(user_name, chat_history, feedback):
         complete_conversation = "\n".join([f"{query}\n{answer}" for query, answer, _ in chat_history])
         complete_conversation += f"\nUser Feedback: {feedback}"
