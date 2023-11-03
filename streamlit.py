@@ -265,9 +265,10 @@ tool3 = create_retriever_tool(
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
 AIRTABLE_BASE_ID = "appFObp0k5vGuC15B"  
-AIRTABLE_TABLE_NAME = "Question_Answer_Data"
-AIRTABLE_TABLE_NAME = "feedback_data" 
- 
+# AIRTABLE_TABLE_NAME = "Question_Answer_Data"
+# AIRTABLE_TABLE_NAME = "feedback_data" 
+AIRTABLE_QUESTION_ANSWER_TABLE_NAME = "Question_Answer_Data"
+AIRTABLE_FEEDBACK_TABLE_NAME = "feedback_data"
 # Streamlit UI setup
 st.info("Introducing **Otto**, your cutting-edge partner in streamlining dealership and customer-related operations. At EngagedAi, we specialize in harnessing the power of automation to revolutionize the way dealerships and customers interact. Our advanced solutions seamlessly handle tasks, from managing inventory and customer inquiries to optimizing sales processes, all while enhancing customer satisfaction. Discover a new era of efficiency and convenience with us as your trusted automation ally. [engagedai.io](https://funnelai.com/). For this demo application, we will use the Inventory Dataset. Please explore it [here](https://github.com/ShahVishs/workflow/blob/main/2013_Inventory.csv) to get a sense for what questions you can ask.")
 
@@ -445,38 +446,43 @@ else:
     airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
 
     def save_chat_to_airtable(user_name, user_input, output, feedback):
-        try:
-            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            airtable.insert(
-                {
-                    "username": user_name,
-                    "question": user_input,
-                    "answer": output,
-                    "timestamp": timestamp,
-                    "feedback": feedback if feedback is not None else ""  
-                }
-            )
-            print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
-        except Exception as e:
-            st.error(f"An error occurred while saving data to Airtable: {e}")
+    try:
+        timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        # Save data to the feedback_data table
+        airtable.insert(
+            {
+                "username": user_name,
+                "user_input": user_input,  # Adjust the field name to match your 'feedback_data' schema
+                "output": output,  # Adjust the field name to match your 'feedback_data' schema
+                "timestamp": timestamp,
+                "feedback": feedback if feedback is not None else ""  
+            },
+            table_name=AIRTABLE_FEEDBACK_TABLE_NAME  # Specify the table to save the data
+        )
+        print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
+    except Exception as e:
+        st.error(f"An error occurred while saving data to Airtable: {e}")
 
-    def save_complete_conversation_to_airtable(user_name, chat_history, feedback):
-        complete_conversation = "\n".join([f"{query}\n{answer}" for query, answer, _ in chat_history])
-        complete_conversation += f"\nUser Feedback: {feedback}"
-    
-        try:
-            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            airtable.insert(
-                {
-                    "username": user_name,
-                    "complete_conversation": complete_conversation,
-                    "user_feedback": feedback,
-                    "timestamp": timestamp,
-                }
-            )
-            st.success("Complete conversation saved to Airtable.")
-        except Exception as e:
-            st.error(f"An error occurred while saving data to Airtable: {e}")
+def save_complete_conversation_to_airtable(user_name, chat_history, feedback):
+    complete_conversation = "\n".join([f"{query}\n{answer}" for query, answer, _ in chat_history])
+    complete_conversation += f"\nUser Feedback: {feedback}"
+
+    try:
+        timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        # Save data to the Question_Answer_Data table
+        airtable.insert(
+            {
+                "username": user_name,
+                "complete_conversation": complete_conversation,
+                "user_feedback": feedback,
+                "timestamp": timestamp,
+            },
+            table_name=AIRTABLE_QUESTION_ANSWER_TABLE_NAME  # Specify the table to save the data
+        )
+        st.success("Complete conversation saved to Airtable.")
+    except Exception as e:
+        st.error(f"An error occurred while saving data to Airtable: {e}")
+        
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
     
