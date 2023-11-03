@@ -595,13 +595,9 @@ with st.form(key='feedback_form'):
     feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
     submit_button = st.form_submit_button("Submit Feedback")
 
-    # if submit_button:
-        # st.success("Thank you for your feedback!")
-        # save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
-        # feedback_text = ""
-        # feedback_rating = ""
-    if st.form_submit_button("Submit Feedback"):
+    if submit_button:
         st.success("Thank you for your feedback!")
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
         feedback_text = ""
         feedback_rating = ""
+  
