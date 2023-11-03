@@ -595,20 +595,24 @@ with st.form(key='feedback_form'):
     feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
     submit_button = st.form_submit_button("Submit Feedback")
 
-    if submit_button:
+    # if submit_button:
         # st.success("Thank you for your feedback!")
         # save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
         # feedback_text = ""
         # feedback_rating = ""
+    if submit_button:
         st.success("Thank you for your feedback!")
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
-        # Clear the feedback fields
+    
+    # Display feedback input fields only when they are not submitted
+    if feedback_text is None:
         feedback_text = ""
+    if feedback_rating is None:
         feedback_rating = ""
-        # Clear the feedback area in Streamlit
-        feedback_text = st.text_area("Please provide feedback about your experience:", value="")
-        st.write("How would you rate your overall experience?")
-        feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"], index=0)
+        
+    feedback_text = st.text_area("Please provide feedback about your experience:", value=feedback_text)
+    st.write("How would you rate your overall experience?")
+    feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"], index=0)
 # # Initially set a flag for showing the feedback inputs
 # show_feedback_inputs = False
 
