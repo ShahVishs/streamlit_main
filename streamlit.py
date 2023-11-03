@@ -600,4 +600,6 @@ with st.form(key='feedback_form'):
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
         feedback_text = ""
         feedback_rating = ""
-  
+# Clearing the feedback and rating after submission
+feedback_text = ""
+feedback_rating = ""
