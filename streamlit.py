@@ -589,30 +589,30 @@ else:
     #     if st.button("Submit Feedback"):
     #         st.success("Thank you for your feedback!")
     #         save_complete_conversation_to_airtable(st.session_state.user_name, st.session_state.chat_history, feedback_text)
-# with st.form(key='feedback_form'):
-    # feedback_text = st.text_area("Please provide feedback about your experience:")
-    # st.write("How would you rate your overall experience?")
-    # feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
-    # submit_button = st.form_submit_button("Submit Feedback")
-
-    # if submit_button:
-    #     st.success("Thank you for your feedback!")
-    #     save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
-# Initially set a flag for showing the feedback inputs
-show_feedback_inputs = False
-
-# Show a button to trigger feedback input fields
-if st.button("Feedback"):
-    show_feedback_inputs = True
-
-# Check if the button was clicked to display the feedback inputs
-if show_feedback_inputs:
+with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
     feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
-    submit_feedback = st.button("Submit")
+    submit_button = st.form_submit_button("Submit Feedback")
 
-    # Handle the submission when the "Submit Feedback" button is clicked
-    if submit_feedback:
+    if submit_button:
         st.success("Thank you for your feedback!")
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
+# # Initially set a flag for showing the feedback inputs
+# show_feedback_inputs = False
+
+# # Show a button to trigger feedback input fields
+# if st.button("Feedback"):
+#     show_feedback_inputs = True
+
+# # Check if the button was clicked to display the feedback inputs
+# if show_feedback_inputs:
+#     feedback_text = st.text_area("Please provide feedback about your experience:")
+#     st.write("How would you rate your overall experience?")
+#     feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
+#     submit_feedback = st.button("Submit")
+
+#     # Handle the submission when the "Submit Feedback" button is clicked
+#     if submit_feedback:
+#         st.success("Thank you for your feedback!")
+#         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
