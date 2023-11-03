@@ -452,11 +452,11 @@ else:
             # Save data to the feedback_data table
             airtable_question_answer.insert(
                 {
-                    "username": user_name,
-                    "user_input": user_input,  # Adjust the field name to match your 'feedback_data' schema
-                    "output": output,  # Adjust the field name to match your 'feedback_data' schema
+                   "username": user_name,
+                    "question": user_input,
+                    "answer": output,
                     "timestamp": timestamp,
-                    "feedback": feedback if feedback is not None else ""  
+                    "feedback": feedback if feedback is not None else ""    
                 }
             )
              
