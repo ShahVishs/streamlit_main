@@ -598,6 +598,8 @@ with st.form(key='feedback_form'):
     if submit_button:
         st.success("Thank you for your feedback!")
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
+        feedback_text = ""
+        feedback_rating = ""
 # # Initially set a flag for showing the feedback inputs
 # show_feedback_inputs = False
 
