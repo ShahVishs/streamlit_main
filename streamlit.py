@@ -586,19 +586,14 @@ else:
                     st.session_state.chat_history[i] = (query, answer, feedback)
 
 
-    # Check for user feedback and save complete conversation
-    if st.button("Feedback"):
-        feedback_text = st.text_area("Please provide feedback about your experience:")
-        st.write("How would you rate your overall experience?")
-        feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
-        if st.button("Submit Feedback"):
-            st.success("Thank you for your feedback!")
-    
-            # Combine the text area input and the rating into the overall feedback
-            overall_feedback = f"{feedback_text} - Rating: {feedback_rating}"
-    
-            # Debugging print statement
-            print(f"Overall Feedback: {overall_feedback}")
-    
-            # Save the combined feedback to Airtable
-            save_chat_to_airtable(st.session_state.user_name, "", "", "", overall_feedback)
+    with container:
+        if st.button("Feedback"):
+            feedback_text = st.text_area("Please provide feedback about your experience:")
+            st.write("How would you rate your overall experience?")
+            feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
+
+            if st.button("Submit Feedback"):
+                st.success("Thank you for your feedback!")
+
+                overall_feedback = f"{feedback_text} - Rating: {feedback_rating}"
+                save_chat_to_airtable(st.session_state.user_name, "", "", "", overall_feedback)
