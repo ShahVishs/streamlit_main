@@ -468,10 +468,10 @@ else:
         
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)  # Establish Airtable connection
+            airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)  # Establish Airtable connection
     
             # Save the complete conversation to Airtable
-            airtable.insert({
+            airtable_feedback.insert({
                 "username": user_name,
                 "complete_conversation": complete_conversation,
                 "user_feedback": feedback,
