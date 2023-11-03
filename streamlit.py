@@ -515,7 +515,7 @@ else:
     user_input = ""
     output = ""
     feedback = None  
-    
+    overall_feedback = None
     with st.form(key='my_form', clear_on_submit=True):
         if st.session_state.user_name != "vishakha":
             user_input = st.text_input("Query:", placeholder="Type your question here :)", key='input')
@@ -524,8 +524,8 @@ else:
     if submit_button and user_input:
         output, feedback = conversational_chat(user_input)
         st.session_state.chat_history.append((user_input, output, feedback))  
-        # print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback},overall_feedback: { overall_feedback}")
-        save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback,  overall_feedback)
+        # print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}, overall_feedback: {overall_feedback}")
+        save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback, overall_feedback)
     
 
     if 'chat_history' not in st.session_state:
