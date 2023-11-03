@@ -597,5 +597,8 @@ else:
             # Combine the text area input and the rating into the overall feedback
             overall_feedback = f"{feedback_text} - Rating: {feedback_rating}"
     
+            # Debugging print statement
+            print(f"Overall Feedback: {overall_feedback}")
+    
             # Save the combined feedback to Airtable
             save_chat_to_airtable(st.session_state.user_name, "", "", "", overall_feedback)
