@@ -457,7 +457,8 @@ else:
                     "output": output,  # Adjust the field name to match your 'feedback_data' schema
                     "timestamp": timestamp,
                     "feedback": feedback if feedback is not None else ""  
-                },
+                }
+            )
              
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
@@ -476,7 +477,8 @@ else:
                     "complete_conversation": complete_conversation,
                     "user_feedback": feedback,
                     "timestamp": timestamp,
-                },
+                }
+            )
               
             st.success("Complete conversation saved to Airtable.")
         except Exception as e:
