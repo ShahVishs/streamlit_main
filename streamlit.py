@@ -522,7 +522,7 @@ else:
     if submit_button and user_input:
         output, feedback = conversational_chat(user_input)
         st.session_state.chat_history.append((user_input, output, feedback))  
-        # print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
+        print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
 
@@ -582,14 +582,14 @@ else:
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
-        if st.button("Feedback"):
-                feedback_text = st.text_area("Please provide feedback about your experience:")
-                st.write("How would you rate your overall experience?")
-                feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
-                if st.button("Submit Feedback"):
-                    st.success("Thank you for your feedback!")
+    if st.button("Feedback"):
+            feedback_text = st.text_area("Please provide feedback about your experience:")
+            st.write("How would you rate your overall experience?")
+            feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
+            if st.button("Submit Feedback"):
+                st.success("Thank you for your feedback!")
         
-                    # Save the complete conversation to Airtable after feedback submission
-                    save_complete_conversation_to_airtable(st.session_state.user_name, st.session_state.chat_history, feedback_text)
+                # Save the complete conversation to Airtable after feedback submission
+                save_complete_conversation_to_airtable(st.session_state.user_name, st.session_state.chat_history, feedback_text)
 
   
