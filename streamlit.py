@@ -446,7 +446,7 @@ else:
     # airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
     airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
-    def save_chat_to_airtable(user_name, user_input, output, feedback, overall_feedback):
+    def save_chat_to_airtable(user_name, user_input, output, feedback):
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             # Save data to the feedback_data table
