@@ -264,9 +264,10 @@ tool3 = create_retriever_tool(
 # Append all tools to the tools list
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
-AIRTABLE_BASE_ID = "appAVFD4iKFkBm49q"  
+AIRTABLE_BASE_ID = "appFObp0k5vGuC15B"  
 AIRTABLE_TABLE_NAME = "Question_Answer_Data"
-
+AIRTABLE_TABLE_NAME = "feedback_data" 
+ 
 # Streamlit UI setup
 st.info("Introducing **Otto**, your cutting-edge partner in streamlining dealership and customer-related operations. At EngagedAi, we specialize in harnessing the power of automation to revolutionize the way dealerships and customers interact. Our advanced solutions seamlessly handle tasks, from managing inventory and customer inquiries to optimizing sales processes, all while enhancing customer satisfaction. Discover a new era of efficiency and convenience with us as your trusted automation ally. [engagedai.io](https://funnelai.com/). For this demo application, we will use the Inventory Dataset. Please explore it [here](https://github.com/ShahVishs/workflow/blob/main/2013_Inventory.csv) to get a sense for what questions you can ask.")
 
@@ -458,9 +459,7 @@ else:
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
-    AIRTABLE_BASE_ID = "appFObp0k5vGuC15B"  
-    AIRTABLE_TABLE_NAME = "feedback_data" 
-    airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
+
     def save_complete_conversation_to_airtable(user_name, chat_history, feedback):
         complete_conversation = "\n".join([f"{query}\n{answer}" for query, answer, _ in chat_history])
         complete_conversation += f"\nUser Feedback: {feedback}"
