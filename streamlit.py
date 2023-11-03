@@ -589,6 +589,8 @@ else:
     #     if st.button("Submit Feedback"):
     #         st.success("Thank you for your feedback!")
     #         save_complete_conversation_to_airtable(st.session_state.user_name, st.session_state.chat_history, feedback_text)
+feedback_text = st.empty()
+feedback_rating = st.empty()
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
@@ -598,10 +600,12 @@ with st.form(key='feedback_form'):
     if submit_button:
         st.success("Thank you for your feedback!")
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
-        st.session_state.feedback_text = ""
-        st.session_state.feedback_rating = ""
-        st.experimental_rerun()
+        feedback_text.empty()
+        feedback_rating.empty()
+#         st.session_state.feedback_text = ""
+#         st.session_state.feedback_rating = ""
+#         st.experimental_rerun()
 
-# Clearing the feedback and rating after submission
-feedback_text = st.session_state.feedback_text if "feedback_text" in st.session_state else ""
-feedback_rating = st.session_state.feedback_rating if "feedback_rating" in st.session_state else ""
+# # Clearing the feedback and rating after submission
+# feedback_text = st.session_state.feedback_text if "feedback_text" in st.session_state else ""
+# feedback_rating = st.session_state.feedback_rating if "feedback_rating" in st.session_state else ""
