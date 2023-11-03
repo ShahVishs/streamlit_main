@@ -460,7 +460,7 @@ else:
                     "overall_feedback": overall_feedback if overall_feedback else ""
                 }
             )
-            print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
+            print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}, overall_feedback:{overall_feedback} ")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
 
