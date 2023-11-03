@@ -456,11 +456,10 @@ else:
                     "question": user_input,
                     "answer": output,
                     "timestamp": timestamp,
-                    "feedback": feedback if feedback is not None else "",
-                    "overall_feedback": overall_feedback if overall_feedback else ""
+                    "feedback": feedback if feedback is not None else ""
                 }
             )
-            print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}, overall_feedback: {overall_feedback}")
+            print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
 
@@ -524,8 +523,8 @@ else:
     if submit_button and user_input:
         output, feedback = conversational_chat(user_input)
         st.session_state.chat_history.append((user_input, output, feedback))  
-        # print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}, overall_feedback: {overall_feedback}")
-        save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback, overall_feedback)
+        # print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
+        save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
     
 
     if 'chat_history' not in st.session_state:
@@ -565,7 +564,7 @@ else:
                             st.session_state.thumbs_up_states[thumbs_up_key] = True
                             st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
                             # Call save_chat_to_airtable with feedback when thumbs-up is clicked
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👍", overall_feedback)
+                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👍")
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍", unsafe_allow_html=True)
                 
@@ -578,22 +577,20 @@ else:
                             st.session_state.thumbs_down_states[thumbs_down_key] = True
                             st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
                             # Call save_chat_to_airtable with feedback when thumbs-down is clicked
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👎", overall_feedback)
+                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👎")
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
                         st.markdown("👎", unsafe_allow_html=True)
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
-
-
-    with container:
         if st.button("Feedback"):
-            feedback_text = st.text_area("Please provide feedback about your experience:")
-            st.write("How would you rate your overall experience?")
-            feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
+                feedback_text = st.text_area("Please provide feedback about your experience:")
+                st.write("How would you rate your overall experience?")
+                feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
+                if st.button("Submit Feedback"):
+                    st.success("Thank you for your feedback!")
+        
+                    # Save the complete conversation to Airtable after feedback submission
+                    save_complete_conversation_to_airtable(st.session_state.user_name, st.session_state.chat_history, feedback_text)
 
-            if st.button("Submit Feedback"):
-                st.success("Thank you for your feedback!")
-
-                overall_feedback = f"{feedback_text} - Rating: {feedback_rating}"
-                save_chat_to_airtable(st.session_state.user_name, "", "", "", overall_feedback)
+  
