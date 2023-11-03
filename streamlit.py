@@ -594,5 +594,8 @@ else:
         if st.button("Submit Feedback"):
             st.success("Thank you for your feedback!")
     
-            # Save the feedback to Airtable
-            save_chat_to_airtable(st.session_state.user_name, "", "", "", feedback_text)
+            # Combine the text area input and the rating into the overall feedback
+            overall_feedback = f"{feedback_text} - Rating: {feedback_rating}"
+    
+            # Save the combined feedback to Airtable
+            save_chat_to_airtable(st.session_state.user_name, "", "", "", overall_feedback)
