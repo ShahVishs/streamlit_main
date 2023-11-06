@@ -500,24 +500,18 @@ else:
             complete_conversation += f"user:{query}\nAI:{answer}\n"
     
         with st.spinner('processing...'):
-            try:
-                result = agent_executor({"input": user_input})
-                response = result["output"]
-                feedback = None
+            result = agent_executor({"input": user_input})
+            response = result["output"]
+            feedback = None
     
-                # Append the new interaction to chat_history
-                st.session_state.chat_history.append((user_input, response, feedback))
+            # Append the new interaction to chat_history
+            st.session_state.chat_history.append((user_input, response, feedback))
     
-                # Reconstruct complete_conversation after adding the new interaction
-                complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
-                save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
+            # Reconstruct complete_conversation after adding the new interaction
+            complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
+            save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
     
-                return response, feedback
-            except Exception as e:
-                # Log the error or handle it appropriately
-                st.error(f"An error occurred: {e}")
-                # Return an appropriate message or error flag
-                return "An error occurred while processing your request. Please try again.", None
+            return response, feedback
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
