@@ -448,7 +448,7 @@ else:
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
     def save_chat_to_airtable(user_name, user_input, output,complete_conversation, feedback):
         if 'chat_history' not in st.session_state or not st.session_state.chat_history:
-        st.session_state.chat_history = []
+            st.session_state.chat_history = []
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
