@@ -495,9 +495,9 @@ else:
     
     # Define the conversational chat function
     def conversational_chat(user_input):
-        complete_conversation = ""
-        for query, answer, feedback in st.session_state.chat_history:
-            complete_conversation += f"user:{query}\nAI:{answer}\n"
+        # complete_conversation = ""
+        # for query, answer, feedback in st.session_state.chat_history:
+        #     complete_conversation += f"user:{query}\nAI:{answer}\n"
     
         with st.spinner('processing...'):
             result = agent_executor({"input": user_input})
