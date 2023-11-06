@@ -503,15 +503,22 @@ else:
             result = agent_executor({"input": user_input})
             response = result["output"]
             feedback = None
-            complete_conversation = ""  # Initialize conversation for this specific input
-            for query, answer, _ in st.session_state.chat_history:
-                complete_conversation += f"user:{query}\nAI:{answer}\n"
-            complete_conversation += f"user:{user_input}\nAI:{response}\n"
+            # complete_conversation = ""  # Initialize conversation for this specific input
+            # for query, answer, _ in st.session_state.chat_history:
+            #     complete_conversation += f"user:{query}\nAI:{answer}\n"
+            # complete_conversation += f"user:{user_input}\nAI:{response}\n"
     
+            # save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
+    
+            # return response, feedback
+            # Append the new interaction to chat_history
+            st.session_state.chat_history.append((user_input, response, feedback))
+    
+            # Reconstruct complete_conversation after adding the new interaction
+            complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
             save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
     
             return response, feedback
-
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
