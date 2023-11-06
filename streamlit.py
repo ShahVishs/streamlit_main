@@ -585,7 +585,8 @@ else:
                             st.session_state.thumbs_up_states[thumbs_up_key] = True
                             st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
                             # Call save_chat_to_airtable with feedback when thumbs-up is clicked
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👍")
+                            # save_chat_to_airtable(st.session_state.user_name, query, answer, "👍")
+                            save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍", unsafe_allow_html=True)
                 
@@ -598,7 +599,8 @@ else:
                             st.session_state.thumbs_down_states[thumbs_down_key] = True
                             st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
                             # Call save_chat_to_airtable with feedback when thumbs-down is clicked
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👎")
+                            # save_chat_to_airtable(st.session_state.user_name, query, answer, "👎")
+                            save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
                         st.markdown("👎", unsafe_allow_html=True)
     
