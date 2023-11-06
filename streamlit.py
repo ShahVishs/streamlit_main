@@ -505,7 +505,7 @@ else:
             feedback = None
     
             # Append the new interaction to chat_history
-            st.session_state.chat_history.append((user_input, response, feedback))
+            # st.session_state.chat_history.append((user_input, response, feedback))
     
             # Reconstruct complete_conversation after adding the new interaction
             complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
