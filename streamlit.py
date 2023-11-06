@@ -446,22 +446,48 @@ else:
     # airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
     airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
+    # def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
+    #     if 'chat_history' not in st.session_state or not st.session_state.chat_history:
+    #         st.session_state.chat_history = []
+        
+    #     # Filtering out potential None values from the chat history
+    #     filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
+    #     complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
+        
+    #     try:
+    #         timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    #         # Save data to the feedback_data table
+    #         airtable_question_answer.insert(
+    #             {
+    #                 "username": user_name,
+    #                 "question": user_input,
+    #                 "answer": output,
+    #                 "complete_conversation": complete_conversation,
+    #                 "feedback": feedback if feedback is not None else "",
+    #                 "timestamp": timestamp,
+    #             }
+    #         )
+    #         print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
+    #     except Exception as e:
+    #         st.error(f"An error occurred while saving data to Airtable: {e}")
     def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
         if 'chat_history' not in st.session_state or not st.session_state.chat_history:
             st.session_state.chat_history = []
-        
+    
         # Filtering out potential None values from the chat history
         filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
-        
+    
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+            # Combine user's question and AI's answer into a single field
+            conversation = f"User: {user_input}\nAI: {output}\n"
+            
             # Save data to the feedback_data table
             airtable_question_answer.insert(
                 {
                     "username": user_name,
-                    "question": user_input,
-                    "answer": output,
+                    "question": conversation,
                     "complete_conversation": complete_conversation,
                     "feedback": feedback if feedback is not None else "",
                     "timestamp": timestamp,
@@ -470,7 +496,6 @@ else:
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
-
     def save_complete_conversation_to_airtable(user_name, feedback):
         # complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
