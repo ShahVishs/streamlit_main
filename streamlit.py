@@ -438,7 +438,7 @@ else:
             airtable_question_answer.insert(
                 {
                     "username": user_name,
-                    "question": conversation,
+                    "conversation": conversation,
                     "complete_conversation": complete_conversation,
                     "feedback": feedback if feedback is not None else "",
                     "timestamp": timestamp,
