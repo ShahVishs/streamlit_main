@@ -505,7 +505,7 @@ else:
             feedback = None
             complete_conversation += f"user:{user_input}\nAI:{response}\n"
     
-            st.session_state.chat_history.append((user_input, response, feedback))
+            # st.session_state.chat_history.append((user_input, response, feedback))
             save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
     
             return response, feedback
