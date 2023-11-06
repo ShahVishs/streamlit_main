@@ -451,8 +451,8 @@ else:
             st.session_state.chat_history = []
         
         # Filtering out potential None values from the chat history
-        # filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
-        # complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
+        filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
         
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -495,10 +495,6 @@ else:
     
     # Define the conversational chat function
     def conversational_chat(user_input):
-        # complete_conversation = ""
-        # for query, answer, feedback in st.session_state.chat_history:
-        #     complete_conversation += f"user:{query}\nAI:{answer}\n"
-    
         with st.spinner('processing...'):
             result = agent_executor({"input": user_input})
             response = result["output"]
@@ -508,10 +504,10 @@ else:
             st.session_state.chat_history.append((user_input, response, feedback))
     
             # Reconstruct complete_conversation after adding the new interaction
-            complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
+            # complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
             
             # Save to Airtable
-            save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
+            # save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
     
             return response, feedback
         
@@ -544,7 +540,7 @@ else:
         st.session_state.chat_history.append((user_input, output, feedback))
     
         # Reconstruct complete_conversation once all interactions are stored in chat_history
-        # complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
+        complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
         save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
 
     if 'chat_history' not in st.session_state:
