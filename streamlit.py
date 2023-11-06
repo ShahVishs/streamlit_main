@@ -447,6 +447,8 @@ else:
     airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
     def save_chat_to_airtable(user_name, user_input, output,complete_conversation, feedback):
+        if 'chat_history' not in st.session_state or not st.session_state.chat_history:
+        st.session_state.chat_history = []
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -529,9 +531,9 @@ else:
         # print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output},complete_conversation: {complete_conversation}, Feedback: {feedback}")
         # save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
         output, feedback = conversational_chat(user_input)
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
+        # Include or update the existing complete_conversation variable here
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history])
         st.session_state.chat_history.append((user_input, output, feedback))
-        print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, complete_conversation: {complete_conversation}, Feedback: {feedback}")
         save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
 
     if 'chat_history' not in st.session_state:
