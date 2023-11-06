@@ -472,8 +472,8 @@ else:
             st.error(f"An error occurred while saving data to Airtable: {e}")
 
     def save_complete_conversation_to_airtable(user_name, feedback):
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
-        
+        # complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)  # Establish Airtable connection
