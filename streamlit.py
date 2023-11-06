@@ -446,10 +446,14 @@ else:
     # airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
     airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
-    def save_chat_to_airtable(user_name, user_input, output,complete_conversation, feedback):
+    def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
         if 'chat_history' not in st.session_state or not st.session_state.chat_history:
             st.session_state.chat_history = []
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
+        
+        # Filtering out potential None values from the chat history
+        filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
+        
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             # Save data to the feedback_data table
