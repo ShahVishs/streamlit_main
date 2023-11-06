@@ -451,8 +451,8 @@ else:
             st.session_state.chat_history = []
         
         # Filtering out potential None values from the chat history
-        filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
+        # filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
+        # complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
         
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -504,13 +504,12 @@ else:
             response = result["output"]
             feedback = None
     
-            # Append the new interaction to chat_history
-            if (user_input, response, feedback) not in st.session_state.chat_history:
-                st.session_state.chat_history.append((user_input, response, feedback))
+             # Append the new interaction to chat_history
+            st.session_state.chat_history.append((user_input, response, feedback))
     
-            # Construct complete_conversation with the current chat_history
+            # Reconstruct complete_conversation after adding the new interaction
             complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
-    
+            
             # Save to Airtable
             save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
     
