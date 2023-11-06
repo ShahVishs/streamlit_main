@@ -503,12 +503,15 @@ else:
             result = agent_executor({"input": user_input})
             response = result["output"]
             feedback = None
+            complete_conversation = ""  # Initialize conversation for this specific input
+            for query, answer, _ in st.session_state.chat_history:
+                complete_conversation += f"user:{query}\nAI:{answer}\n"
             complete_conversation += f"user:{user_input}\nAI:{response}\n"
     
-            # st.session_state.chat_history.append((user_input, response, feedback))
             save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
     
             return response, feedback
+
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -535,16 +538,10 @@ else:
         submit_button = st.form_submit_button(label='Send')
     
     if submit_button and user_input:
-        # output, feedback = conversational_chat(user_input)
-        # # st.session_state.chat_history.append((user_input, output,complete_conversation, feedback))  
-        # st.session_state.chat_history.append((user_input, output, feedback))
-        # print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output},complete_conversation: {complete_conversation}, Feedback: {feedback}")
-        # save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
         output, feedback = conversational_chat(user_input)
-        # Include or update the existing complete_conversation variable here
-        # complete_conversation += f"user:{user_input}\nAI:{output}\n"  # Update complete_conversation
         st.session_state.chat_history.append((user_input, output, feedback))
-        # Now, the join operation will work correctly
+    
+        # Reconstruct complete_conversation once all interactions are stored in chat_history
         complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
         save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
 
