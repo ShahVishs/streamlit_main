@@ -438,7 +438,7 @@ else:
             airtable_question_answer.insert(
                 {
                     "username": user_name,
-                    "conversation": conversation,
+                    "question": conversation,
                     "complete_conversation": complete_conversation,
                     "feedback": feedback if feedback is not None else "",
                     "timestamp": timestamp,
@@ -447,15 +447,15 @@ else:
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
-    def save_complete_conversation_to_airtable(user_name, feedback):
+    def save_complete_conversation_to_airtable(user_name, feedback, rating):
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
         try:
-            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)  
+            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") 
             airtable_feedback.insert({
                 "username": user_name,
                 "complete_conversation": complete_conversation,
                 "user_feedback": feedback,
+                "rating": rating,
                 "timestamp": timestamp,
             })
               
@@ -566,4 +566,5 @@ with st.form(key='feedback_form'):
 
     if submit_button:
         st.success("Thank you for your feedback!")
-        save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
+        save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text,feedback_rating)
+       
