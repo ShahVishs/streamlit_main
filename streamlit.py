@@ -491,13 +491,19 @@ else:
     
     # Define the conversational chat function
     def conversational_chat(user_input):
-        for query, answer, feedback in reversed(st.session_state.chat_history):
+        complete_conversation = ""
+        for chat_record in st.session_state.chat_history:
+            query, answer, feedback = chat_record
             if query.lower() == user_input.lower():
                 return answer, feedback if feedback else None
-        with st.spinner('processing...'):  
+            complete_conversation += f"user:{query}\nAI:{answer}\n"  # Update complete_conversation
+        with st.spinner('processing...'):
             result = agent_executor({"input": user_input})
             response = result["output"]
             feedback = None
+            complete_conversation += f"user:{user_input}\nAI:{response}\n"  # Update complete_conversation
+            st.session_state.chat_history.append((user_input, response, feedback))
+            save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
             return response, feedback
         
     if st.session_state.user_name is None:
