@@ -446,7 +446,8 @@ else:
     # airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
     airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
-    def save_chat_to_airtable(user_name, user_input, output, feedback):
+    def save_chat_to_airtable(user_name, user_input, output,complete_conversation, feedback):
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
             # Save data to the feedback_data table
@@ -455,8 +456,9 @@ else:
                     "username": user_name,
                     "question": user_input,
                     "answer": output,
+                    "complete_conversation": complete_conversation,
+                    "feedback": feedback if feedback is not None else "",
                     "timestamp": timestamp,
-                    "feedback": feedback if feedback is not None else ""
                 }
             )
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
@@ -464,7 +466,7 @@ else:
             st.error(f"An error occurred while saving data to Airtable: {e}")
 
     def save_complete_conversation_to_airtable(user_name, feedback):
-        complete_conversation = "\n".join([f"{query}\n{answer}\nFeedback: {fb}" for query, answer, fb in st.session_state.chat_history])
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
         
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -522,8 +524,8 @@ else:
     if submit_button and user_input:
         output, feedback = conversational_chat(user_input)
         st.session_state.chat_history.append((user_input, output, feedback))  
-        print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
-        save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
+        print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output},complete_conversation: {complete_conversation}, Feedback: {feedback}")
+        save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
     
 
     if 'chat_history' not in st.session_state:
@@ -582,15 +584,7 @@ else:
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
-    # if st.button("Feedback"):
-    #     feedback_text = st.text_area("Please provide feedback about your experience:")
-    #     st.write("How would you rate your overall experience?")
-    #     feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
-    #     if st.button("Submit Feedback"):
-    #         st.success("Thank you for your feedback!")
-    #         save_complete_conversation_to_airtable(st.session_state.user_name, st.session_state.chat_history, feedback_text)
-# feedback_text = st.empty()
-# feedback_rating = st.empty()
+ 
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
@@ -600,12 +594,4 @@ with st.form(key='feedback_form'):
     if submit_button:
         st.success("Thank you for your feedback!")
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
-        # feedback_text.empty()
-        # feedback_rating.empty()
-        st.session_state.feedback_text = ""
-        st.session_state.feedback_rating = ""
-        st.experimental_rerun()
-
-# # Clearing the feedback and rating after submission
-# feedback_text = st.session_state.feedback_text if "feedback_text" in st.session_state else ""
-# feedback_rating = st.session_state.feedback_rating if "feedback_rating" in st.session_state else ""
+       
