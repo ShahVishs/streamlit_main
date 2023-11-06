@@ -542,7 +542,7 @@ else:
         # save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
         output, feedback = conversational_chat(user_input)
         # Include or update the existing complete_conversation variable here
-        complete_conversation += f"user:{user_input}\nAI:{output}\n"  # Update complete_conversation
+        # complete_conversation += f"user:{user_input}\nAI:{output}\n"  # Update complete_conversation
         st.session_state.chat_history.append((user_input, output, feedback))
         # Now, the join operation will work correctly
         complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
