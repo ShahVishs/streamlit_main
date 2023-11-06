@@ -505,10 +505,13 @@ else:
             feedback = None
     
             # Append the new interaction to chat_history
-            # st.session_state.chat_history.append((user_input, response, feedback))
+            if (user_input, response, feedback) not in st.session_state.chat_history:
+                st.session_state.chat_history.append((user_input, response, feedback))
     
-            # Reconstruct complete_conversation after adding the new interaction
+            # Construct complete_conversation with the current chat_history
             complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
+    
+            # Save to Airtable
             save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
     
             return response, feedback
