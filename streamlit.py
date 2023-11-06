@@ -489,7 +489,6 @@ else:
     user_input = ""
     output = ""
     feedback = None  
-    overall_feedback = None
     complete_conversation = ""  
     with st.form(key='my_form', clear_on_submit=True):
         if st.session_state.user_name != "vishakha":
