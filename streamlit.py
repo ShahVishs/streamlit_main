@@ -1,7 +1,5 @@
 from pydantic import BaseModel, Field
-# from langchain.tools import PythonAstREPLTool
 from langchain_experimental.tools import PythonAstREPLTool
-
 import datetime
 import os
 import streamlit as st
@@ -77,17 +75,6 @@ st.markdown(hide_star_and_github_style, unsafe_allow_html=True)
 st.markdown(hide_mainmenu_style, unsafe_allow_html=True)
 st.markdown(hide_fork_app_button_style, unsafe_allow_html=True)
 
-# CSS to hide the "Animation Demo" text
-hide_animation_demo_style = """
-    <style>
-    .st-emotion-cache-pkbazv.eczjsme5 {
-        display: none !important;
-    }
-    </style>
-"""
-
-# Apply the CSS styles
-st.markdown(hide_animation_demo_style, unsafe_allow_html=True)
 pd.set_option('display.max_rows', 20)
 pd.set_option('display.max_columns', 20)
 
@@ -187,7 +174,6 @@ if st.button("Refresh Session"):
     st.session_state.new_session = True
     st.session_state.refreshing_session = False   
 
-# Initialize chat history in session state
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 
@@ -261,12 +247,9 @@ tool3 = create_retriever_tool(
     "Searches and returns documents related to business working days and hours, location and address details."
 )
 
-# Append all tools to the tools list
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
 AIRTABLE_BASE_ID = "appFObp0k5vGuC15B"  
-# AIRTABLE_TABLE_NAME = "Question_Answer_Data"
-# AIRTABLE_TABLE_NAME = "feedback_data" 
 AIRTABLE_QUESTION_ANSWER_TABLE_NAME = "Question_Answer_Data"
 AIRTABLE_FEEDBACK_TABLE_NAME = "feedback_data"
 # Streamlit UI setup
@@ -276,7 +259,6 @@ if 'generated' not in st.session_state:
     st.session_state.generated = []
 if 'past' not in st.session_state:
     st.session_state.past = []
-# Initialize user name in session state
 if 'user_name' not in st.session_state:
     st.session_state.user_name = None
 
@@ -411,9 +393,7 @@ else:
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
   
-    # input_template = template.format(dhead=df.head().to_markdown(),details=details)
     input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details) 
-    # input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(), dhead=df.head().to_markdown(), details=details, link=link)
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
@@ -443,47 +423,18 @@ else:
     response_container = st.container()
     container = st.container()
 
-    # airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
     airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
-    # def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
-    #     if 'chat_history' not in st.session_state or not st.session_state.chat_history:
-    #         st.session_state.chat_history = []
-        
-    #     # Filtering out potential None values from the chat history
-    #     filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
-    #     complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
-        
-    #     try:
-    #         timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    #         # Save data to the feedback_data table
-    #         airtable_question_answer.insert(
-    #             {
-    #                 "username": user_name,
-    #                 "question": user_input,
-    #                 "answer": output,
-    #                 "complete_conversation": complete_conversation,
-    #                 "feedback": feedback if feedback is not None else "",
-    #                 "timestamp": timestamp,
-    #             }
-    #         )
-    #         print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
-    #     except Exception as e:
-    #         st.error(f"An error occurred while saving data to Airtable: {e}")
     def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
         if 'chat_history' not in st.session_state or not st.session_state.chat_history:
             st.session_state.chat_history = []
     
-        # Filtering out potential None values from the chat history
         filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
     
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            # Combine user's question and AI's answer into a single field
             conversation = f"User: {user_input}\nAI: {output}\n"
-            
-            # Save data to the feedback_data table
             airtable_question_answer.insert(
                 {
                     "username": user_name,
@@ -497,13 +448,10 @@ else:
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
     def save_complete_conversation_to_airtable(user_name, feedback):
-        # complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in st.session_state.chat_history])
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)  # Establish Airtable connection
-    
-            # Save the complete conversation to Airtable
+            airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)  
             airtable_feedback.insert({
                 "username": user_name,
                 "complete_conversation": complete_conversation,
@@ -518,22 +466,12 @@ else:
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
     
-    # Define the conversational chat function
+
     def conversational_chat(user_input):
         with st.spinner('processing...'):
             result = agent_executor({"input": user_input})
             response = result["output"]
             feedback = None
-    
-             # Append the new interaction to chat_history
-            # st.session_state.chat_history.append((user_input, response, feedback))
-    
-            # Reconstruct complete_conversation after adding the new interaction
-            # complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
-            
-            # Save to Airtable
-            # save_chat_to_airtable(st.session_state.user_name, user_input, response, complete_conversation, feedback)
-    
             return response, feedback
         
     if st.session_state.user_name is None:
@@ -554,7 +492,7 @@ else:
     output = ""
     feedback = None  
     overall_feedback = None
-    complete_conversation = ""  # Define complete_conversation here
+    complete_conversation = ""  
     with st.form(key='my_form', clear_on_submit=True):
         if st.session_state.user_name != "vishakha":
             user_input = st.text_input("Query:", placeholder="Type your question here :)", key='input')
@@ -563,8 +501,6 @@ else:
     if submit_button and user_input:
         output, feedback = conversational_chat(user_input)
         st.session_state.chat_history.append((user_input, output, feedback))
-    
-        # Reconstruct complete_conversation once all interactions are stored in chat_history
         complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
         save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
 
@@ -595,7 +531,6 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
                     thumbs_up_key = f"thumbs_up_{i}"
@@ -604,8 +539,6 @@ else:
                         if thumbs_up:
                             st.session_state.thumbs_up_states[thumbs_up_key] = True
                             st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
-                            # Call save_chat_to_airtable with feedback when thumbs-up is clicked
-                            # save_chat_to_airtable(st.session_state.user_name, query, answer, "👍")
                             save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍", unsafe_allow_html=True)
@@ -618,8 +551,6 @@ else:
                         if thumbs_down:
                             st.session_state.thumbs_down_states[thumbs_down_key] = True
                             st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
-                            # Call save_chat_to_airtable with feedback when thumbs-down is clicked
-                            # save_chat_to_airtable(st.session_state.user_name, query, answer, "👎")
                             save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
                         st.markdown("👎", unsafe_allow_html=True)
@@ -636,4 +567,3 @@ with st.form(key='feedback_form'):
     if submit_button:
         st.success("Thank you for your feedback!")
         save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text)
-       
