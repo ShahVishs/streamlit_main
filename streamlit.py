@@ -523,7 +523,7 @@ else:
     
     if submit_button and user_input:
         output, feedback = conversational_chat(user_input)
-        st.session_state.chat_history.append((user_input, output, feedback))  
+        st.session_state.chat_history.append((user_input, output,complete_conversation, feedback))  
         print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output},complete_conversation: {complete_conversation}, Feedback: {feedback}")
         save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
     
