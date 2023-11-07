@@ -1,7 +1,5 @@
 from pydantic import BaseModel, Field
-# from langchain.tools import PythonAstREPLTool
 from langchain_experimental.tools import PythonAstREPLTool
-
 import datetime
 import os
 import streamlit as st
@@ -77,17 +75,6 @@ st.markdown(hide_star_and_github_style, unsafe_allow_html=True)
 st.markdown(hide_mainmenu_style, unsafe_allow_html=True)
 st.markdown(hide_fork_app_button_style, unsafe_allow_html=True)
 
-# CSS to hide the "Animation Demo" text
-hide_animation_demo_style = """
-    <style>
-    .st-emotion-cache-pkbazv.eczjsme5 {
-        display: none !important;
-    }
-    </style>
-"""
-
-# Apply the CSS styles
-st.markdown(hide_animation_demo_style, unsafe_allow_html=True)
 pd.set_option('display.max_rows', 20)
 pd.set_option('display.max_columns', 20)
 
@@ -187,7 +174,6 @@ if st.button("Refresh Session"):
     st.session_state.new_session = True
     st.session_state.refreshing_session = False   
 
-# Initialize chat history in session state
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 
@@ -261,12 +247,11 @@ tool3 = create_retriever_tool(
     "Searches and returns documents related to business working days and hours, location and address details."
 )
 
-# Append all tools to the tools list
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
-AIRTABLE_BASE_ID = "appAVFD4iKFkBm49q"  
-AIRTABLE_TABLE_NAME = "Question_Answer_Data"
-
+AIRTABLE_BASE_ID = "appFObp0k5vGuC15B"  
+AIRTABLE_QUESTION_ANSWER_TABLE_NAME = "Question_Answer_Data"
+AIRTABLE_FEEDBACK_TABLE_NAME = "feedback_data"
 # Streamlit UI setup
 st.info("Introducing **Otto**, your cutting-edge partner in streamlining dealership and customer-related operations. At EngagedAi, we specialize in harnessing the power of automation to revolutionize the way dealerships and customers interact. Our advanced solutions seamlessly handle tasks, from managing inventory and customer inquiries to optimizing sales processes, all while enhancing customer satisfaction. Discover a new era of efficiency and convenience with us as your trusted automation ally. [engagedai.io](https://funnelai.com/). For this demo application, we will use the Inventory Dataset. Please explore it [here](https://github.com/ShahVishs/workflow/blob/main/2013_Inventory.csv) to get a sense for what questions you can ask.")
 
@@ -274,7 +259,6 @@ if 'generated' not in st.session_state:
     st.session_state.generated = []
 if 'past' not in st.session_state:
     st.session_state.past = []
-# Initialize user name in session state
 if 'user_name' not in st.session_state:
     st.session_state.user_name = None
 
@@ -367,7 +351,7 @@ else:
         and day to find the appointment date from the user's input and check for appointment availability using a function 
         mentioned in the tools for that specific day, date, and time. Additionally, use Markdown format to create a 
         
-        [Click here to schedule an appointment](https://app.funnelai.com/shorten/JiXfGCEElA)
+        [Click here to reschedule an appointment](https://app.funnelai.com/shorten/JiXfGCEElA)
        
         For checking appointment vailability you use pandas dataframe in Python. The name of the dataframe is `df`. The dataframe contains 
         data related appointment schedule. It is important to understand the attributes of the dataframe before working with it. 
@@ -385,7 +369,10 @@ else:
         
         Prior to scheduling an appointment, please commence a conversation by soliciting the following customer information:
         First ask if they have a car for trade-in, then separately ask for their name, contact number, and email address.
+        Additionally, use Markdown format to create a 
         
+        [Click here to reschedule an appointment](https://app.funnelai.com/shorten/JiXfGCEElA)
+       
         
         Business details: Inquiry regarding the Google Maps location of the store, address of the store, working days, working hours, 
         and contact details - use the search_business_details tool to get this information.
@@ -406,9 +393,7 @@ else:
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
   
-    # input_template = template.format(dhead=df.head().to_markdown(),details=details)
     input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details) 
-    # input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(), dhead=df.head().to_markdown(), details=details, link=link)
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
@@ -438,37 +423,56 @@ else:
     response_container = st.container()
     container = st.container()
 
-    airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
-
-    def save_chat_to_airtable(user_name, user_input, output, feedback):
+    airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
+    airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
+    def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
+        if 'chat_history' not in st.session_state or not st.session_state.chat_history:
+            st.session_state.chat_history = []
+    
+        filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
+    
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            airtable.insert(
+            conversation = f"User: {user_input}\nAI: {output}\n"
+            airtable_question_answer.insert(
                 {
                     "username": user_name,
-                    "question": user_input,
-                    "answer": output,
+                    "conversation": conversation,
+                    "complete_conversation": complete_conversation,
+                    "feedback": feedback if feedback is not None else "",
                     "timestamp": timestamp,
-                    "feedback": feedback if feedback is not None else ""  
                 }
             )
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
-   
+    def save_complete_conversation_to_airtable(user_name, feedback, rating):
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
+        try:
+            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") 
+            airtable_feedback.insert({
+                "username": user_name,
+                "complete_conversation": complete_conversation,
+                "user_feedback": feedback,
+                "rating": rating,
+                "timestamp": timestamp,
+            })
+              
+            st.success("Complete conversation saved to Airtable.")
+        except Exception as e:
+            st.error(f"An error occurred while saving data to Airtable: {e}")
+        
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
     
-    # Define the conversational chat function
+
     def conversational_chat(user_input):
-        for query, answer, feedback in reversed(st.session_state.chat_history):
-            if query.lower() == user_input.lower():
-                return answer, feedback if feedback else None
-    
-        result = agent_executor({"input": user_input})
-        response = result["output"]
-        feedback = None
-        return response, feedback
+        with st.spinner('processing...'):
+            result = agent_executor({"input": user_input})
+            response = result["output"]
+            feedback = None
+            return response, feedback
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -481,13 +485,11 @@ else:
             st.session_state.user_name = user_name
             st.session_state.new_session = False  
             st.session_state.sessions = load_previous_sessions()
-            
-    
-
+  
     user_input = ""
     output = ""
     feedback = None  
-    
+    complete_conversation = ""  
     with st.form(key='my_form', clear_on_submit=True):
         if st.session_state.user_name != "vishakha":
             user_input = st.text_input("Query:", placeholder="Type your question here :)", key='input')
@@ -495,10 +497,9 @@ else:
     
     if submit_button and user_input:
         output, feedback = conversational_chat(user_input)
-        st.session_state.chat_history.append((user_input, output, feedback))  
-        print(f"Data to be saved - User: {st.session_state.user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
-        save_chat_to_airtable(st.session_state.user_name, user_input, output, feedback)
-    
+        st.session_state.chat_history.append((user_input, output, feedback))
+        complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
+        save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
 
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
@@ -527,7 +528,6 @@ else:
                 )
     
             if feedback is None and st.session_state.user_name != "vishakha":
-                # Display thumbs-up and thumbs-down buttons side by side using columns with reduced spacing
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
                     thumbs_up_key = f"thumbs_up_{i}"
@@ -536,8 +536,7 @@ else:
                         if thumbs_up:
                             st.session_state.thumbs_up_states[thumbs_up_key] = True
                             st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
-                            # Call save_chat_to_airtable with feedback when thumbs-up is clicked
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👍")
+                            save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍", unsafe_allow_html=True)
                 
@@ -549,10 +548,20 @@ else:
                         if thumbs_down:
                             st.session_state.thumbs_down_states[thumbs_down_key] = True
                             st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
-                            # Call save_chat_to_airtable with feedback when thumbs-down is clicked
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, "👎")
+                            save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
                     elif thumbs_down_key in st.session_state.thumbs_down_states:
                         st.markdown("👎", unsafe_allow_html=True)
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
+ 
+with st.form(key='feedback_form'):
+    feedback_text = st.text_area("Please provide feedback about your experience:")
+    st.write("How would you rate your overall experience?")
+    feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
+    submit_button = st.form_submit_button("Submit Feedback")
+
+    if submit_button:
+        st.success("Thank you for your feedback!")
+        save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text,feedback_rating)
+       
