@@ -282,9 +282,6 @@ else:
     
         Car Inventory Inquiries:
         In our dealership, we offer a wide selection of vehicles from various manufacturers. 
-        If the customer asks about available car makes and models, you can provide our inventory details. 
-        [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv)
-    
         Understand that each make may have multiple models available in the inventory. You should use the "python_repl_1" tool to answer. 
         For checking available makes and models, you can use a pandas dataframe in Python. The name of the dataframe is `df1`. 
         It is important to understand the attributes of the dataframe before working with it. 
@@ -319,10 +316,12 @@ else:
         Ask only one question at a time, like when asking about the model, don't ask about a used or new car. First, ask about the model, and then inquire about whether they prefer a used or new car separately. 
         You should provide details of the available cars in inventory only when you get the above details, i.e., the model and whether they want a new or used car.
         If the customer asks about available car makes and models, you can provide our list of inventory details. 
+        
         [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv)
         
         Trade-in Queries:
-        In case a customer is interested in trade-ins, we have a dedicated section for trade-ins. 
+        In case a customer is interested in trade-ins, we have a dedicated section for trade-ins.
+        
         [Trade-in Link](https://www.pinebeltcjdr.com/trade-in-valet/)
         
         Appointment Scheduling:
