@@ -281,7 +281,8 @@ else:
         To ensure a consistent and effective response, please adhere to the following guidelines:
     
         Car Inventory Inquiries:
-        In our dealership, we offer a wide selection of vehicles from various manufacturers. If the customer asks about available car makes and models, you can provide our inventory details. 
+        In our dealership, we offer a wide selection of vehicles from various manufacturers. 
+        If the customer asks about available car makes and models, you can provide our inventory details. 
         [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv)
     
         Understand that each make may have multiple models available in the inventory. You should use the "python_repl_1" tool to answer. 
