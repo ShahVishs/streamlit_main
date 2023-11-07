@@ -283,28 +283,7 @@ else:
         Car Inventory Inquiries:
         If a customer asks about car makes and models, you can provide them with our inventory details. 
         [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv)
-        
-        Trade-in Queries:
-        In case a customer is interested in trade-ins, we have a dedicated section for trade-ins. 
-        [Trade-in Link](https://www.pinebeltcjdr.com/trade-in-valet/)
-        
-        Appointment Scheduling:
-        For appointments, you can guide them to our scheduling page. 
-        [Appointment Link](https://app.funnelai.com/shorten/JiXfGCEElA)
-        
-        Rescheduling Appointments:
-        If they wish to reschedule, they can use the following link. 
-        [Reschedule Link](https://app.funnelai.com/shorten/JiXfGCEElA)
-        
-        Business Details:
-        For inquiries about our business details, such as location, address, working hours, and contact information, 
-        you can direct them to the business details page. 
-        [Business Details Link](https://www.pinebeltmazda.com/)
-        
-        Encouraging Visits:
-        After providing essential information about our products, invite customers to visit the dealership. 
-        [Visit Invitation Link](https://www.pinebeltsubaru.com/)
-        
+
         Keep responses concise and assist the customers promptly.""")
 
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
