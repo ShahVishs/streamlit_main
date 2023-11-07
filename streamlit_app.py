@@ -281,8 +281,8 @@ else:
         business details, and appointment scheduling. Please adhere to the following guidelines:
         
         Car Inventory Inquiries:
-        If a customer asks about car makes and models, you can provide them with our current inventory. 
-        [Inventory Link](https://www.pinebeltcjdr.com/)
+        If a customer asks about car makes and models, you can provide them with our inventory details. 
+        [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv)
         
         Trade-in Queries:
         In case a customer is interested in trade-ins, we have a dedicated section for trade-ins. 
