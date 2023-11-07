@@ -252,7 +252,6 @@ os.environ["AIRTABLE_API_KEY"] = airtable_api_key
 AIRTABLE_BASE_ID = "appFObp0k5vGuC15B"  
 AIRTABLE_QUESTION_ANSWER_TABLE_NAME = "Question_Answer_Data"
 AIRTABLE_FEEDBACK_TABLE_NAME = "feedback_data"
-
 # Streamlit UI setup
 st.info("Introducing **Otto**, your cutting-edge partner in streamlining dealership and customer-related operations. At EngagedAi, we specialize in harnessing the power of automation to revolutionize the way dealerships and customers interact. Our advanced solutions seamlessly handle tasks, from managing inventory and customer inquiries to optimizing sales processes, all while enhancing customer satisfaction. Discover a new era of efficiency and convenience with us as your trusted automation ally. [engagedai.io](https://funnelai.com/). For this demo application, we will use the Inventory Dataset. Please explore it [here](https://github.com/ShahVishs/workflow/blob/main/2013_Inventory.csv) to get a sense for what questions you can ask.")
 
@@ -262,6 +261,7 @@ if 'past' not in st.session_state:
     st.session_state.past = []
 if 'user_name' not in st.session_state:
     st.session_state.user_name = None
+
 
 if st.session_state.user_name == "vishakha":
     is_admin = True
@@ -479,16 +479,16 @@ else:
         if user_name:
             st.session_state.user_name = user_name
         if user_name == "vishakha":
+           
             is_admin = True
             st.session_state.user_role = "admin"
             st.session_state.user_name = user_name
             st.session_state.new_session = False  
             st.session_state.sessions = load_previous_sessions()
-
+  
     user_input = ""
     output = ""
     feedback = None  
-    overall_feedback = None
     complete_conversation = ""  
     with st.form(key='my_form', clear_on_submit=True):
         if st.session_state.user_name != "vishakha":
@@ -540,6 +540,7 @@ else:
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍", unsafe_allow_html=True)
                 
+                # Display thumbs-down button conditionally based on its state
                 with thumbs_down_col:
                     thumbs_down_key = f"thumbs_down_{i}"
                     if thumbs_down_key not in st.session_state.thumbs_down_states or not st.session_state.thumbs_down_states[thumbs_down_key]:
