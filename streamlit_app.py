@@ -282,7 +282,10 @@ else:
         
         Car Inventory Inquiries:
         In our dealership, we offer a wide selection of vehicles from various manufacturers. Please note that each make can have multiple models available in our inventory. We can address specific customer inquiries using the 'python_repl_1' tool. To check available makes and models, use the pandas dataframe in Python, named `df1`. Understanding the attributes of this dataframe is essential before using it, as demonstrated by the dataframe's head.
-        when a customer inquires about our car inventory or specific models, we can provide additional details. If you're interested in our available car inventory, you can explore it [here](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv). This link leads to a comprehensive list of our car makes and models to assist you further.
+        when a customer inquires about our car inventory or specific models, we can provide additional details. 
+        If you're interested in our available car inventory, you can explore it 
+        [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv) 
+        This link leads to a comprehensive list of our car makes and models to assist you further.
         
         
         Trade-in Queries:
