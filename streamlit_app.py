@@ -316,7 +316,7 @@ else:
         After identifying the car model, inquire about the customer's preference for a new or used car. Understanding their preference will help tailor the recommendations to their specific needs.
     
         Ask only one question at a time, like when asking about the model, don't ask about a used or new car. First, ask about the model, and then inquire about whether they prefer a used or new car separately. 
-        You should provide details of the available cars in inventory only when you get the above details, i.e., the model and whether they want a new or used car."""
+        You should provide details of the available cars in inventory only when you get the above details, i.e., the model and whether they want a new or used car.
         
         Trade-in Queries:
         In case a customer is interested in trade-ins, we have a dedicated section for trade-ins. 
