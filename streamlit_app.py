@@ -272,7 +272,7 @@ if st.session_state.user_name == "vishakha":
 else:
     if 'new_session' not in st.session_state and st.session_state.user_name != "vishakha":
         st.session_state.new_session = True
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature = 0)
+    llm = ChatOpenAI(model="gpt-4", temperature = 0)
     langchain.debug=True
     memory_key = "history"
     memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm);
