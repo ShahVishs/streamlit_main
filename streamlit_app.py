@@ -311,9 +311,9 @@ else:
         description="Use to check on what are the various available models and make of the car, output should be either list of make or model of the cars"
         )
     tools = [tool1, repl, tool3,repl_1]
-    agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
+    agent = OpenAIFunctionsAgent(llm=llm, tools=[], prompt=prompt)
     if 'agent_executor' not in st.session_state:
-        agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+        agent_executor = AgentExecutor(agent=agent, tools=[], memory=memory, verbose=True, return_source_documents=True,
             return_generated_question=True, return_intermediate_steps=True)
         st.session_state.agent_executor = agent_executor
     else:
@@ -370,22 +370,22 @@ else:
 
     def conversational_chat(user_input):
         with st.spinner('processing...'):
-            # result = agent_executor({"input": user_input})
+            result = agent_executor({"input": user_input})
             # llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0)
             # result = llm({"input": user_input})
             # return result["output"], None
-            # response = result["output"]
-            # feedback = None
-            # return response, feedback
-            llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0)
-            print(f"Input before Langchain call: {user_input}")  # Log the input data
-            try:
-                result = llm(user_input)
-                response = result["output"]
-                feedback = None
-                return response, feedback
-            except ValueError as e:
-                return f"Error: {str(e)}", None    
+            response = result["output"]
+            feedback = None
+            return response, feedback
+            # llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0)
+            # print(f"Input before Langchain call: {user_input}")  # Log the input data
+            # try:
+            #     result = llm(user_input)
+            #     response = result["output"]
+            #     feedback = None
+            #     return response, feedback
+            # except ValueError as e:
+            #     return f"Error: {str(e)}", None    
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
