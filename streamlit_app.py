@@ -378,12 +378,11 @@ else:
             # feedback = None
             # return response, feedback
             llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0)
-            # Ensure that the message is sent in the correct format
             try:
                 result = llm({"input": user_input})
                 return result["output"], None
             except ValueError as e:
-                return str(e), None  
+                return f"Error: {str(e)}", None  
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
