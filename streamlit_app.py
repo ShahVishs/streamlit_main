@@ -380,8 +380,10 @@ else:
             llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0)
             print(f"Input before Langchain call: {user_input}")  # Log the input data
             try:
-                result = llm({"input": user_input})
-                return result["output"], None
+                result = llm(user_input)
+                response = result["output"]
+                feedback = None
+                return response, feedback
             except ValueError as e:
                 return f"Error: {str(e)}", None    
         
