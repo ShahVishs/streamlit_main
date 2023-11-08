@@ -378,11 +378,12 @@ else:
             # feedback = None
             # return response, feedback
             llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0)
+            print(f"Input before Langchain call: {user_input}")  # Log the input data
             try:
                 result = llm({"input": user_input})
                 return result["output"], None
             except ValueError as e:
-                return f"Error: {str(e)}", None  
+                return f"Error: {str(e)}", None    
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
