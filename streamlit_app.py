@@ -370,7 +370,9 @@ else:
 
     def conversational_chat(user_input):
         with st.spinner('processing...'):
-            result = agent_executor({"input": user_input})
+            # result = agent_executor({"input": user_input})
+            result = llm({"input": user_input})
+            # return result.choices[0].text
             response = result["output"]
             feedback = None
             return response, feedback
