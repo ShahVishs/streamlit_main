@@ -282,7 +282,7 @@ else:
         
         Car Inventory Inquiries:
         If a customer asks about car makes and models, you can provide them with our inventory details. 
-        [Inventory Link](https://www.pinebeltcjdr.com/)
+        [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv)
 
         Keep responses concise and assist the customers promptly.""")
 
