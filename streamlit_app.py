@@ -371,11 +371,12 @@ else:
     def conversational_chat(user_input):
         with st.spinner('processing...'):
             # result = agent_executor({"input": user_input})
+            llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0)
             result = llm({"input": user_input})
-            # return result.choices[0].text
-            response = result["output"]
-            feedback = None
-            return response, feedback
+            return result["output"], None
+            # response = result["output"]
+            # feedback = None
+            # return response, feedback
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
