@@ -311,9 +311,9 @@ else:
         description="Use to check on what are the various available models and make of the car, output should be either list of make or model of the cars"
         )
     tools = [tool1, repl, tool3,repl_1]
-    agent = OpenAIFunctionsAgent(llm=llm, tools=[], prompt=prompt)
+    agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
     if 'agent_executor' not in st.session_state:
-        agent_executor = AgentExecutor(agent=agent, tools=[], memory=memory, verbose=True, return_source_documents=True,
+        agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
             return_generated_question=True, return_intermediate_steps=True)
         st.session_state.agent_executor = agent_executor
     else:
