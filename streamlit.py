@@ -333,15 +333,10 @@ else:
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
     def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
         if 'chat_history' not in st.session_state or not st.session_state.chat_history:
-            # If chat history is empty, just return without saving to Airtable
-            return
-        filtered_chat_history = [
-            (entry[0], entry[1], entry[2], entry[3] if len(entry) == 4 else None)
-            for entry in st.session_state.chat_history
-            if entry[0] is not None and entry[1] is not None and (len(entry) == 4 or (len(entry) == 3 and entry[2] is not None))
-        ]
-        # filtered_chat_history = [(query, answer, feedback, source) for query, answer, feedback, source in st.session_state.chat_history if query is not None and answer is not None and feedback is not None]
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}\nFeedback:{feedback}" if feedback is not None else f"user:{query}\nAI:{answer}" for query, answer, feedback, _ in st.session_state.chat_history])
+            st.session_state.chat_history = []
+    
+        filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
     
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -353,13 +348,11 @@ else:
                     "complete_conversation": complete_conversation,
                     "feedback": feedback if feedback is not None else "",
                     "timestamp": timestamp,
-                    "source": filtered_chat_history[-1][-1] if filtered_chat_history else "",  
                 }
             )
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
-
     def save_complete_conversation_to_airtable(user_name, feedback, rating):
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
         try:
@@ -381,17 +374,27 @@ else:
     
 
     def conversational_chat(user_input):
-        with st.spinner('processing...'):
-            # Add the historical chat to the user input
-            history_str = ' '.join([f'user: {query}\nAI: {answer}' for query, answer, _ in st.session_state.chat_history])
-            full_input = f"{user_input}\n\n{history_str}"
+        # Fetch question-and-answer pairs from Airtable based on the user's input
+        airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
+        headers = {"Authorization": f"Bearer {airtable_api_key}"}
+        params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{Question}}))>0", "maxRecords": 1}
+        
+        try:
+            response = requests.get(airtable_url, headers=headers, params=params)
+            data = response.json()
             
-            # Use the modified input for inference
-            result = agent_executor({"input": full_input})
-            
-            response = result["output"]
-            feedback = None
-            return response, feedback
+            if "records" in data and data["records"]:
+                # Use the first matching question-and-answer pair from Airtable
+                answer_from_airtable = data["records"][0]["fields"]["Answer"]
+                return answer_from_airtable, None
+        except Exception as e:
+            st.error(f"Error fetching data from Airtable: {e}")
+    
+        # If no matching pair is found in Airtable, use the original agent_executor
+        result = agent_executor({"input": user_input})
+        response = result["output"]
+        feedback = None
+        return response, feedback 
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
