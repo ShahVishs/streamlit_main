@@ -336,13 +336,9 @@ else:
             # If chat history is empty, just return without saving to Airtable
             return
         filtered_chat_history = [
-            (query, answer, feedback, source)
+            (entry[0], entry[1], entry[2], entry[3] if len(entry) == 4 else None)
             for entry in st.session_state.chat_history
-            if len(entry) == 4 and entry[0] is not None and entry[1] is not None and entry[2] is not None
-        ] + [
-            (query, answer, None, source)
-            for entry in st.session_state.chat_history
-            if len(entry) == 3 and entry[0] is not None and entry[1] is not None
+            if entry[0] is not None and entry[1] is not None and (len(entry) == 4 or (len(entry) == 3 and entry[2] is not None))
         ]
         # filtered_chat_history = [(query, answer, feedback, source) for query, answer, feedback, source in st.session_state.chat_history if query is not None and answer is not None and feedback is not None]
         complete_conversation = "\n".join([f"user:{query}\nAI:{answer}\nFeedback:{feedback}" for query, answer, feedback, _ in st.session_state.chat_history])
