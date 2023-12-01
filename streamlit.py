@@ -335,8 +335,8 @@ else:
         if 'chat_history' not in st.session_state or not st.session_state.chat_history:
             st.session_state.chat_history = []
     
-        filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
+        filtered_chat_history = [(query, answer, _, source) for query, answer, _, source in st.session_state.chat_history if query is not None and answer is not None]
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _, _ in st.session_state.chat_history])
     
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -347,32 +347,27 @@ else:
                     "conversation": conversation,
                     "complete_conversation": complete_conversation,
                     "feedback": feedback if feedback is not None else "",
+                    "source": filtered_chat_history[-1][-1],  # Use the source from the last message in history
                     "timestamp": timestamp,
                 }
             )
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
-    def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
-        if 'chat_history' not in st.session_state or not st.session_state.chat_history:
-            st.session_state.chat_history = []
-        
-        filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
-        
+
+    def save_complete_conversation_to_airtable(user_name, feedback, rating):
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
         try:
-            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            conversation = f"User: {user_input}\nAI: {output}\n"
-            airtable_question_answer.insert(
-                {
-                    "username": user_name,
-                    "conversation": conversation,
-                    "complete_conversation": complete_conversation,
-                    "feedback": feedback if feedback is not None else "",
-                    "timestamp": timestamp,
-                }
-            )
-            print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
+            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") 
+            airtable_feedback.insert({
+                "username": user_name,
+                "complete_conversation": complete_conversation,
+                "user_feedback": feedback,
+                "rating": rating,
+                "timestamp": timestamp,
+            })
+              
+            st.success("Complete conversation saved to Airtable.")
         except Exception as e:
             st.error(f"An error occurred while saving data to Airtable: {e}")
         
