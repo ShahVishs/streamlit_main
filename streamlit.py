@@ -386,7 +386,7 @@ else:
             if "records" in data and data["records"]:
                 # Use the first matching question-and-answer pair from Airtable
                 answer_from_airtable = data["records"][0]["fields"]["Answer"]
-                print("airtable data_------>",answer_from_airtable)
+                print("Airtable data-------------------->:", answer_from_airtable)
                 return answer_from_airtable, "Airtable"
         except Exception as e:
             st.error(f"Error fetching data from Airtable: {e}")
@@ -394,9 +394,10 @@ else:
         # If no matching pair is found in Airtable, use the original agent_executor
         result = agent_executor({"input": user_input})
         response = result["output"]
+        print("Original agent executor data----------->:", response)
         feedback = None
-        print("csv file data--------------->",response)
-        return response, "Generated"
+    return response, "Generated"
+
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
