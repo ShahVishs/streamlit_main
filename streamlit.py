@@ -341,7 +341,7 @@ else:
             if entry[0] is not None and entry[1] is not None and (len(entry) == 4 or (len(entry) == 3 and entry[2] is not None))
         ]
         # filtered_chat_history = [(query, answer, feedback, source) for query, answer, feedback, source in st.session_state.chat_history if query is not None and answer is not None and feedback is not None]
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}\nFeedback:{feedback}" for query, answer, feedback, _ in st.session_state.chat_history])
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}\nFeedback:{feedback}" if feedback is not None else f"user:{query}\nAI:{answer}" for query, answer, feedback, _ in st.session_state.chat_history])
     
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
