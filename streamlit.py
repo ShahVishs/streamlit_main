@@ -333,11 +333,11 @@ else:
     airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
     def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
         if 'chat_history' not in st.session_state or not st.session_state.chat_history:
-            st.session_state.chat_history = []
-    
-        filtered_chat_history = [(query, answer, feedback) for query, answer, feedback in st.session_state.chat_history if query is not None and answer is not None and feedback is not None]
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}\nFeedback:{feedback}" for query, answer, feedback in st.session_state.chat_history if query is not None and answer is not None and feedback is not None])
-
+            # If chat history is empty, just return without saving to Airtable
+            return
+        
+        filtered_chat_history = [(query, answer, feedback, source) for query, answer, feedback, source in st.session_state.chat_history if query is not None and answer is not None and feedback is not None]
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}\nFeedback:{feedback}" for query, answer, feedback, _ in st.session_state.chat_history])
     
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -349,7 +349,7 @@ else:
                     "complete_conversation": complete_conversation,
                     "feedback": feedback if feedback is not None else "",
                     "timestamp": timestamp,
-                    "source": filtered_chat_history[-1][-1],  
+                    "source": filtered_chat_history[-1][-1] if filtered_chat_history else "",  
                 }
             )
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
