@@ -336,7 +336,8 @@ else:
             st.session_state.chat_history = []
     
         filtered_chat_history = [(query, answer, feedback) for query, answer, feedback in st.session_state.chat_history if query is not None and answer is not None and feedback is not None]
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _, _ in st.session_state.chat_history])
+        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}\nFeedback:{feedback}" for query, answer, feedback in st.session_state.chat_history if query is not None and answer is not None and feedback is not None])
+
     
         try:
             timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
