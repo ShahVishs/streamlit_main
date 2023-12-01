@@ -388,7 +388,7 @@ else:
             
             if "records" in data and data["records"]:
                 # Use the first matching question-and-answer pair from Airtable
-                answer_from_airtable = data["records"][0]["fields"]["Answer"]
+                answer_from_airtable = data["records"][0]["fields"]["complete_conversation"]
                 print("Airtable data--------------->:", answer_from_airtable)
                 return answer_from_airtable, "Airtable"
         except Exception as e:
