@@ -383,7 +383,8 @@ else:
     def conversational_chat(user_input):
         with st.spinner('processing...'):
             # Add the historical chat to the user input
-            full_input = f"{user_input}\n\n{' '.join([f'user: {query}\nAI: {answer}' for query, answer, _ in st.session_state.chat_history])}"
+            history_str = ' '.join([f'user: {query}\nAI: {answer}' for query, answer, _ in st.session_state.chat_history])
+            full_input = f"{user_input}\n\n{history_str}"
             
             # Use the modified input for inference
             result = agent_executor({"input": full_input})
