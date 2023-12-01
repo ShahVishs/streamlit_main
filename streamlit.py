@@ -386,7 +386,7 @@ else:
             if "records" in data and data["records"]:
                 # Use the first matching question-and-answer pair from Airtable
                 answer_from_airtable = data["records"][0]["fields"]["Answer"]
-                return answer_from_airtable, None
+                return answer_from_airtable, "Airtable"
         except Exception as e:
             st.error(f"Error fetching data from Airtable: {e}")
     
@@ -394,7 +394,7 @@ else:
         result = agent_executor({"input": user_input})
         response = result["output"]
         feedback = None
-        return response, feedback 
+        return response, "Generated"
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -418,8 +418,8 @@ else:
         submit_button = st.form_submit_button(label='Send')
     
     if submit_button and user_input:
-        output, feedback = conversational_chat(user_input)
-        st.session_state.chat_history.append((user_input, output, feedback))
+        output, source = conversational_chat(user_input)
+        st.session_state.chat_history.append((user_input, output, source))
         complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)}" for query, answer, _ in st.session_state.chat_history])
         save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
 
