@@ -378,28 +378,28 @@ else:
         airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
         headers = {"Authorization": f"Bearer {airtable_api_key}"}
         params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{Question}}))>0", "maxRecords": 1}
-    
+        
         try:
             response = requests.get(airtable_url, headers=headers, params=params)
-            print("Airtable API response:", response.text)
+            print("Airtable API response status code:", response.status_code)
+            print("Airtable API response content:", response.content)
             data = response.json()
-    
+            
             if "records" in data and data["records"]:
                 # Use the first matching question-and-answer pair from Airtable
                 answer_from_airtable = data["records"][0]["fields"]["Answer"]
-                print("Airtable data:", answer_from_airtable)
+                print("Airtable data--------------->:", answer_from_airtable)
                 return answer_from_airtable, "Airtable"
         except Exception as e:
             st.error(f"Error fetching data from Airtable: {e}")
+            print("Airtable API request failed. Exception details:", e)
     
-        # # If no matching pair is found in Airtable, use the original agent executor
-        # result = agent_executor({"input": user_input})
-        # response = result["output"]
-        # feedback = None
-        # print("Agent response:", response)
-        # return response, "Generated"
-
-
+        # If no matching pair is found in Airtable, use the original agent_executor
+        result = agent_executor({"input": user_input})
+        response = result["output"]
+        feedback = None
+        print("csv file data--------------->:", response)
+        return response, "Generated"
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
