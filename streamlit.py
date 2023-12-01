@@ -377,7 +377,8 @@ else:
         # Fetch question-and-answer pairs from Airtable based on the user's input
         airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
         headers = {"Authorization": f"Bearer {airtable_api_key}"}
-        params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{Question}}))>0", "maxRecords": 1}
+        params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{complete_conversation}}))>0", "maxRecords": 1}
+        # filter_formula = f"{{'username': '{user_name}', 'conversation': '{conversation}', 'complete_conversation': '{complete_conversation}', 'feedback': '{feedback if feedback is not None else ''}', 'timestamp': '{timestamp}'}}
         
         try:
             response = requests.get(airtable_url, headers=headers, params=params)
