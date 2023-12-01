@@ -347,8 +347,8 @@ else:
                     "conversation": conversation,
                     "complete_conversation": complete_conversation,
                     "feedback": feedback if feedback is not None else "",
-                    "source": filtered_chat_history[-1][-1],  # Use the source from the last message in history
                     "timestamp": timestamp,
+                    "source": filtered_chat_history[-1][-1],  
                 }
             )
             print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
