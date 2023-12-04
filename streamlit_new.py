@@ -36,6 +36,7 @@ from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
 import json
 import requests 
+import time
 
 hide_share_button_style = """
     <style>
@@ -88,6 +89,22 @@ days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sun
 current_day = days[day_of_week]
 todays_date = current_date
 day_of_the_week = current_day
+
+def load_latest_inventory_data():
+    file_path = "your_latest_inventory_file.csv"
+    loader = CSVLoader(file_path=file_path)
+    return loader.load()
+
+# Initial load of inventory data
+inventory_data = load_latest_inventory_data()
+
+# Function to check if it's time to update the inventory data
+def should_update_inventory_data(last_update_time, interval_minutes=30):
+    current_time = time.time()
+    return current_time - last_update_time >= interval_minutes * 60
+
+# Variable to keep track of the last update time
+last_inventory_update_time = time.time()
 
 business_details_text = [
     "working days: all Days except sunday",
@@ -272,226 +289,230 @@ if st.session_state.user_name == "vishakha":
 else:
     if 'new_session' not in st.session_state and st.session_state.user_name != "vishakha":
         st.session_state.new_session = True
-    llm = ChatOpenAI(model="gpt-4-1106-preview", temperature = 0)
-    langchain.debug=True
-    memory_key = "history"
-    memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm);
-    template = (
-        """You are a customer care support at a car dealership responsible for handling inquiries related to car inventory, 
-        business details, and appointment scheduling. Please adhere to the following guidelines:
-        
-        Car Inventory Inquiries:
-        If a customer asks about car makes and models, you can provide them with our inventory details. 
-        [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv)
-        
-        Appointment Scheduling:
-        After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available. 
-        For appointments, check availability using our appointment schedule data, stored in the `df` dataframe. If no specific details are provided in the inquiry, engage with the customer to ascertain their preferences.
-        If the customer ask about appointment you can guide them to our scheduling page or  If they wish to reschedule, they can use the following link.
-        [Schedule or Reschedule Appointment](https://app.funnelai.com/shorten/JiXfGCEElA)
-        Keep responses concise and assist the customers promptly.""")
+    while True:
+        if should_update_inventory_data(last_inventory_update_time):
+            inventory_data = load_latest_inventory_data()
+            last_inventory_update_time = time.time()
 
-    details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
-    
-    class PythonInputs(BaseModel):
-        query: str = Field(description="code snippet to run")
-
-    df = pd.read_csv("appointment_new.csv")
-    df1 = pd.read_csv("make_model.csv")
-  
-    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details) 
-    system_message = SystemMessage(content=input_template)
-
-    prompt = OpenAIFunctionsAgent.create_prompt(
-        system_message=system_message,
-        extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
-    )
-
-    repl = PythonAstREPLTool(locals={"df": df}, name="python_repl",
-        description="Use to check on available appointment times for a given date and time. strictly input to\
-        this tool should be a string in this format mm/dd/yy, for example  october 21st 2023 is taken as 10/21/2023 format not 10-21-2023\
-                         . This is the only way for you to answer questions about available appointments.\
-        This tool will reply with available times for the specified date in 12 hour time format, for example: 15:00 and 3pm are the same.")
-    repl_1 = PythonAstREPLTool(locals={"df1": df1}, name="python_repl_1",
-        description="Use to check on what are the various available models and make of the car, output should be either list of make or model of the cars"
-        )
-    tools = [tool1, repl, tool3,repl_1]
-    agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
-    if 'agent_executor' not in st.session_state:
-        agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-            return_generated_question=True, return_intermediate_steps=True)
-        st.session_state.agent_executor = agent_executor
-    else:
-        agent_executor = st.session_state.agent_executor
-
-    chat_history=[]
-
-    response_container = st.container()
-    container = st.container()
-
-    airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
-    airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
-    def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
-        if 'chat_history' not in st.session_state or not st.session_state.chat_history:
-            st.session_state.chat_history = []
-    
-        filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
-    
-        try:
-            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            conversation = f"User: {user_input}\nAI: {output}\n"
-            airtable_question_answer.insert(
-                {
-                    "username": user_name,
-                    "question": user_input,
-                    "answer": output,
-                    "conversation": conversation,
-                    "complete_conversation": complete_conversation,
-                    "feedback": feedback if feedback is not None else "",
-                    "timestamp": timestamp,
-                }
-            )
-            print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
-        except Exception as e:
-            st.error(f"An error occurred while saving data to Airtable: {e}")
-    def save_complete_conversation_to_airtable(user_name, feedback, rating):
-        complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
-        try:
-            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") 
-            airtable_feedback.insert({
-                "username": user_name,
-                "complete_conversation": complete_conversation,
-                "user_feedback": feedback,
-                "rating": rating,
-                "timestamp": timestamp,
-            })
-              
-            st.success("Complete conversation saved to Airtable.")
-        except Exception as e:
-            st.error(f"An error occurred while saving data to Airtable: {e}")
-        
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
-    
-
-    def conversational_chat(user_input):
-        # Fetch question-and-answer pairs from Airtable based on the user's input
-        airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
-        headers = {"Authorization": f"Bearer {airtable_api_key}"}
-        params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{conversation}}))>0", "maxRecords": 1}
-        # filter_formula = f"{{'username': '{user_name}', 'conversation': '{conversation}', 'complete_conversation': '{complete_conversation}', 'feedback': '{feedback if feedback is not None else ''}', 'timestamp': '{timestamp}'}}
-        
-        try:
-            response = requests.get(airtable_url, headers=headers, params=params)
-            print("Airtable API response status code:", response.status_code)
-            print("Airtable API response content:", response.content)
-            data = response.json()
+        llm = ChatOpenAI(model="gpt-4-1106-preview", temperature = 0)
+        langchain.debug=True
+        memory_key = "history"
+        memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm);
+        template = (
+            """You are a customer care support at a car dealership responsible for handling inquiries related to car inventory, 
+            business details, and appointment scheduling. Please adhere to the following guidelines:
             
-            if "records" in data and data["records"]:
-                # Use the first matching question-and-answer pair from Airtable
-                answer_from_airtable = data["records"][0]["fields"]["answer"]
-                print("Airtable data--------------->:", answer_from_airtable)
-                return answer_from_airtable, "Airtable"
-        except Exception as e:
-            st.error(f"Error fetching data from Airtable: {e}")
-            print("Airtable API request failed. Exception details:", e)
-    
-        # If no matching pair is found in Airtable, use the original agent_executor
-        result = agent_executor({"input": user_input})
-        response = result["output"]
-        feedback = None
-        print("csv file data--------------->:", response)
-        return response, "Generated"
+            Car Inventory Inquiries:
+            If a customer asks about car makes and models, you can provide them with our inventory details. 
+            [Inventory Link](https://github.com/ShahVishs/streamlit_main/blob/main/make_model.csv)
+            
+            Appointment Scheduling:
+            After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available. 
+            For appointments, check availability using our appointment schedule data, stored in the `df` dataframe. If no specific details are provided in the inquiry, engage with the customer to ascertain their preferences.
+            If the customer ask about appointment you can guide them to our scheduling page or  If they wish to reschedule, they can use the following link.
+            [Schedule or Reschedule Appointment](https://app.funnelai.com/shorten/JiXfGCEElA)
+            Keep responses concise and assist the customers promptly.""")
+
+        details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
         
-    if st.session_state.user_name is None:
-        user_name = st.text_input("Your name:")
-        if user_name:
-            st.session_state.user_name = user_name
-        if user_name == "vishakha":
-           
-            is_admin = True
-            st.session_state.user_role = "admin"
-            st.session_state.user_name = user_name
-            st.session_state.new_session = False  
-            st.session_state.sessions = load_previous_sessions()
-  
-    user_input = ""
-    output = ""
-    feedback = None  
-    complete_conversation = ""  
-    with st.form(key='my_form', clear_on_submit=True):
-        if st.session_state.user_name != "vishakha":
-            user_input = st.text_input("Query:", placeholder="Type your question here :)", key='input')
-        submit_button = st.form_submit_button(label='Send')
+        class PythonInputs(BaseModel):
+            query: str = Field(description="code snippet to run")
+
+        df = pd.read_csv("appointment_new.csv")
+        df1 = pd.read_csv("make_model.csv")
     
-    if submit_button and user_input:
-        output, source = conversational_chat(user_input)
-        st.session_state.chat_history.append((user_input, output, source))
-        complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)} ({source})" for query, answer, source in st.session_state.chat_history])
-        save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
+        input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details) 
+        system_message = SystemMessage(content=input_template)
 
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
+        prompt = OpenAIFunctionsAgent.create_prompt(
+            system_message=system_message,
+            extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
+        )
 
-    if 'thumbs_up_states' not in st.session_state:
-        st.session_state.thumbs_up_states = {}
+        repl = PythonAstREPLTool(locals={"df": df}, name="python_repl",
+            description="Use to check on available appointment times for a given date and time. strictly input to\
+            this tool should be a string in this format mm/dd/yy, for example  october 21st 2023 is taken as 10/21/2023 format not 10-21-2023\
+                            . This is the only way for you to answer questions about available appointments.\
+            This tool will reply with available times for the specified date in 12 hour time format, for example: 15:00 and 3pm are the same.")
+        repl_1 = PythonAstREPLTool(locals={"df1": df1}, name="python_repl_1",
+            description="Use to check on what are the various available models and make of the car, output should be either list of make or model of the cars"
+            )
+        tools = [tool1, repl, tool3,repl_1]
+        agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
+        if 'agent_executor' not in st.session_state:
+            agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+                return_generated_question=True, return_intermediate_steps=True)
+            st.session_state.agent_executor = agent_executor
+        else:
+            agent_executor = st.session_state.agent_executor
 
-    if 'thumbs_down_states' not in st.session_state:
-        st.session_state.thumbs_down_states = {}
+        chat_history=[]
 
-    with response_container:
-        for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
-            user_name = st.session_state.user_name
-            message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-            col1, col2 = st.columns([0.7, 10])
-            with col1:
-                st.image("icon-1024.png", width=50)
-            with col2:
-                st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                    f'</div>',
-                    unsafe_allow_html=True
+        response_container = st.container()
+        container = st.container()
+
+        airtable_feedback = Airtable(AIRTABLE_BASE_ID, AIRTABLE_FEEDBACK_TABLE_NAME, api_key=airtable_api_key)
+        airtable_question_answer = Airtable(AIRTABLE_BASE_ID, AIRTABLE_QUESTION_ANSWER_TABLE_NAME, api_key=airtable_api_key)
+        def save_chat_to_airtable(user_name, user_input, output, complete_conversation, feedback):
+            if 'chat_history' not in st.session_state or not st.session_state.chat_history:
+                st.session_state.chat_history = []
+        
+            filtered_chat_history = [(query, answer) for query, answer, _ in st.session_state.chat_history if query is not None and answer is not None]
+            complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer in filtered_chat_history])
+        
+            try:
+                timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                conversation = f"User: {user_input}\nAI: {output}\n"
+                airtable_question_answer.insert(
+                    {
+                        "username": user_name,
+                        "question": user_input,
+                        "answer": output,
+                        "conversation": conversation,
+                        "complete_conversation": complete_conversation,
+                        "feedback": feedback if feedback is not None else "",
+                        "timestamp": timestamp,
+                    }
                 )
-    
-            if feedback is None and st.session_state.user_name != "vishakha":
-                thumbs_up_col, thumbs_down_col = st.columns(2)
-                with thumbs_up_col:
-                    thumbs_up_key = f"thumbs_up_{i}"
-                    if thumbs_up_key not in st.session_state.thumbs_up_states or not st.session_state.thumbs_up_states[thumbs_up_key]:
-                        thumbs_up = st.button("👍", key=thumbs_up_key, help="thumbs_up_button",)
-                        if thumbs_up:
-                            st.session_state.thumbs_up_states[thumbs_up_key] = True
-                            st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
-                    elif thumbs_up_key in st.session_state.thumbs_up_states:
-                        st.markdown("👍", unsafe_allow_html=True)
+                print(f"Data saved to Airtable - User: {user_name}, Question: {user_input}, Answer: {output}, Feedback: {feedback}")
+            except Exception as e:
+                st.error(f"An error occurred while saving data to Airtable: {e}")
+        def save_complete_conversation_to_airtable(user_name, feedback, rating):
+            complete_conversation = "\n".join([f"user:{query}\nAI:{answer}" for query, answer, _ in st.session_state.chat_history if len(query) > 0 and len(answer) > 0])
+            try:
+                timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") 
+                airtable_feedback.insert({
+                    "username": user_name,
+                    "complete_conversation": complete_conversation,
+                    "user_feedback": feedback,
+                    "rating": rating,
+                    "timestamp": timestamp,
+                })
                 
-                # Display thumbs-down button conditionally based on its state
-                with thumbs_down_col:
-                    thumbs_down_key = f"thumbs_down_{i}"
-                    if thumbs_down_key not in st.session_state.thumbs_down_states or not st.session_state.thumbs_down_states[thumbs_down_key]:
-                        thumbs_down = st.button("👎", key=thumbs_down_key, help="thumbs_down_button",)
-                        if thumbs_down:
-                            st.session_state.thumbs_down_states[thumbs_down_key] = True
-                            st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
-                            save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
-                    elif thumbs_down_key in st.session_state.thumbs_down_states:
-                        st.markdown("👎", unsafe_allow_html=True)
-    
-                if feedback is not None:
-                    st.session_state.chat_history[i] = (query, answer, feedback)
- 
-with st.form(key='feedback_form'):
-    feedback_text = st.text_area("Please provide feedback about your experience:")
-    st.write("How would you rate your overall experience?")
-    feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
-    submit_button = st.form_submit_button("Submit Feedback")
+                st.success("Complete conversation saved to Airtable.")
+            except Exception as e:
+                st.error(f"An error occurred while saving data to Airtable: {e}")
+            
+        if 'chat_history' not in st.session_state:
+            st.session_state.chat_history = []
+        
 
-    if submit_button:
-        st.success("Thank you for your feedback!")
-        save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text,feedback_rating)
-       
+        def conversational_chat(user_input):
+            # Fetch question-and-answer pairs from Airtable based on the user's input
+            airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
+            headers = {"Authorization": f"Bearer {airtable_api_key}"}
+            params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{conversation}}))>0", "maxRecords": 1}
+            # filter_formula = f"{{'username': '{user_name}', 'conversation': '{conversation}', 'complete_conversation': '{complete_conversation}', 'feedback': '{feedback if feedback is not None else ''}', 'timestamp': '{timestamp}'}}
+            
+            try:
+                response = requests.get(airtable_url, headers=headers, params=params)
+                print("Airtable API response status code:", response.status_code)
+                print("Airtable API response content:", response.content)
+                data = response.json()
+                
+                if "records" in data and data["records"]:
+                    # Use the first matching question-and-answer pair from Airtable
+                    answer_from_airtable = data["records"][0]["fields"]["answer"]
+                    print("Airtable data--------------->:", answer_from_airtable)
+                    return answer_from_airtable, "Airtable"
+            except Exception as e:
+                st.error(f"Error fetching data from Airtable: {e}")
+                print("Airtable API request failed. Exception details:", e)
+        
+            # If no matching pair is found in Airtable, use the original agent_executor
+            result = agent_executor({"input": user_input})
+            response = result["output"]
+            feedback = None
+            print("csv file data--------------->:", response)
+            return response, "Generated"
+            
+        if st.session_state.user_name is None:
+            user_name = st.text_input("Your name:")
+            if user_name:
+                st.session_state.user_name = user_name
+            if user_name == "vishakha":
+            
+                is_admin = True
+                st.session_state.user_role = "admin"
+                st.session_state.user_name = user_name
+                st.session_state.new_session = False  
+                st.session_state.sessions = load_previous_sessions()
+    
+        user_input = ""
+        output = ""
+        feedback = None  
+        complete_conversation = ""  
+        with st.form(key='my_form', clear_on_submit=True):
+            if st.session_state.user_name != "vishakha":
+                user_input = st.text_input("Query:", placeholder="Type your question here :)", key='input')
+            submit_button = st.form_submit_button(label='Send')
+        
+        if submit_button and user_input:
+            output, source = conversational_chat(user_input)
+            st.session_state.chat_history.append((user_input, output, source))
+            complete_conversation = "\n".join([f"user:{str(query)}\nAI:{str(answer)} ({source})" for query, answer, source in st.session_state.chat_history])
+            save_chat_to_airtable(st.session_state.user_name, user_input, output, complete_conversation, feedback)
+
+        if 'chat_history' not in st.session_state:
+            st.session_state.chat_history = []
+
+        if 'thumbs_up_states' not in st.session_state:
+            st.session_state.thumbs_up_states = {}
+
+        if 'thumbs_down_states' not in st.session_state:
+            st.session_state.thumbs_down_states = {}
+
+        with response_container:
+            for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
+                user_name = st.session_state.user_name
+                message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
+                col1, col2 = st.columns([0.7, 10])
+                with col1:
+                    st.image("icon-1024.png", width=50)
+                with col2:
+                    st.markdown(
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+        
+                if feedback is None and st.session_state.user_name != "vishakha":
+                    thumbs_up_col, thumbs_down_col = st.columns(2)
+                    with thumbs_up_col:
+                        thumbs_up_key = f"thumbs_up_{i}"
+                        if thumbs_up_key not in st.session_state.thumbs_up_states or not st.session_state.thumbs_up_states[thumbs_up_key]:
+                            thumbs_up = st.button("👍", key=thumbs_up_key, help="thumbs_up_button",)
+                            if thumbs_up:
+                                st.session_state.thumbs_up_states[thumbs_up_key] = True
+                                st.session_state.thumbs_down_states.pop(thumbs_up_key, None)
+                                save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
+                        elif thumbs_up_key in st.session_state.thumbs_up_states:
+                            st.markdown("👍", unsafe_allow_html=True)
+                    
+                    # Display thumbs-down button conditionally based on its state
+                    with thumbs_down_col:
+                        thumbs_down_key = f"thumbs_down_{i}"
+                        if thumbs_down_key not in st.session_state.thumbs_down_states or not st.session_state.thumbs_down_states[thumbs_down_key]:
+                            thumbs_down = st.button("👎", key=thumbs_down_key, help="thumbs_down_button",)
+                            if thumbs_down:
+                                st.session_state.thumbs_down_states[thumbs_down_key] = True
+                                st.session_state.thumbs_up_states.pop(thumbs_down_key, None)
+                                save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
+                        elif thumbs_down_key in st.session_state.thumbs_down_states:
+                            st.markdown("👎", unsafe_allow_html=True)
+        
+                    if feedback is not None:
+                        st.session_state.chat_history[i] = (query, answer, feedback)
+ 
+        with st.form(key='feedback_form'):
+            feedback_text = st.text_area("Please provide feedback about your experience:")
+            st.write("How would you rate your overall experience?")
+            feedback_rating = st.selectbox("Choose a rating:", ["Excellent", "Good", "Average", "Poor"])
+            submit_button = st.form_submit_button("Submit Feedback")
+
+            if submit_button:
+                st.success("Thank you for your feedback!")
+                save_complete_conversation_to_airtable(st.session_state.user_name, feedback_text,feedback_rating)
