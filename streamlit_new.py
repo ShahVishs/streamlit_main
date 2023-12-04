@@ -444,7 +444,7 @@ else:
         output = ""
         feedback = None  
         complete_conversation = ""  
-        with st.form(key='my_form', clear_on_submit=True):
+        with st.form(key='unique_form_key', clear_on_submit=True):
             if st.session_state.user_name != "vishakha":
                 user_input = st.text_input("Query:", placeholder="Type your question here :)", key='input')
             submit_button = st.form_submit_button(label='Send')
