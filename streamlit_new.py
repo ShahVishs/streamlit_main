@@ -506,7 +506,7 @@ else:
         
                     if feedback is not None:
                         st.session_state.chat_history[i] = (query, answer, feedback)
- 
+        time.sleep(1)
         with st.form(key='feedback_form'):
             feedback_text = st.text_area("Please provide feedback about your experience:")
             st.write("How would you rate your overall experience?")
