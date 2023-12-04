@@ -91,7 +91,7 @@ todays_date = current_date
 day_of_the_week = current_day
 
 def load_latest_inventory_data():
-    file_path = "your_latest_inventory_file.csv"
+    file_path = "vehicle_inventory.csv"
     loader = CSVLoader(file_path=file_path)
     return loader.load()
 
