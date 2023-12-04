@@ -426,8 +426,10 @@ else:
             print("csv file data--------------->:", response)
             return response, "Generated"
             
-        if st.session_state.user_name is None:
-            user_name = st.text_input("Your name:",key="user_name_input")
+        # if st.session_state.user_name is None:
+        if 'user_name_input' not in st.session_state:
+            st.session_state.user_name_input = None
+            user_name = st.text_input("Your name:", key="user_name_input_unique")
             if user_name:
                 st.session_state.user_name = user_name
             if user_name == "vishakha":
