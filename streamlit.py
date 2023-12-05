@@ -292,8 +292,7 @@ else:
         9. Disclose the selling price only upon explicit customer request but provide range not exactly selling price figure.
         10. Provide details (Make, Year, Model, Trim) and links for up to three cars.
            If more options match, convey that several models are available.
-        
-        Remember: Keep responses concise and only share selling prices when requested.
+        Remember: Keep responses concise and only share selling prices when requested but don't answer be like If you would like to know the selling price .
         Appointment Scheduling:
         After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available. 
         For appointments, check availability using our appointment schedule data, stored in the `df` dataframe. If no specific details are provided in the inquiry, engage with the customer to ascertain their preferences.
