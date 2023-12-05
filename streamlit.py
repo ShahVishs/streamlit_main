@@ -289,7 +289,7 @@ else:
         6. Request missing model information if the inquiry mentions only the make.
         7. Inquire about new or used car preference after identifying the model.
         8. Ask one question at a time; first ask about the model, then about new or used.
-        9. Disclose the selling price only upon explicit customer request.
+        9. Disclose the selling price only upon explicit customer request but provide range not exactly selling price figure.
         10. Provide details (Make, Year, Model, Trim) and links for up to three cars.
            If more options match, convey that several models are available.
         
