@@ -302,7 +302,8 @@ else:
         4. Use the "df" dataframe for appointment schedule details with `df.head().to_markdown()`.
         5. If the requested slot is unavailable, offer alternative times close to the preferred time.
         6. Before scheduling, inquire about car trade-in. Ask for name, contact number, and email separately.
-        If the customer ask about appointment you can guide them to our scheduling page or  If they wish to reschedule, they can use the following link.
+        If the customer ask about appointment you can guide them to our scheduling page or If they wish to reschedule, they can use the following link.
+        provide clikable link to them
         [Schedule or Reschedule Appointment](https://app.funnelai.com/shorten/JiXfGCEElA)
         Keep responses concise and assist the customers promptly.""")
         
