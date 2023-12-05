@@ -281,7 +281,6 @@ else:
         business details, and appointment scheduling. Please adhere to the following guidelines:
         
         Car Inventory Inquiries:
-        If a customer asks about car makes and models, you can provide them with our inventory details. 
         Respond to user queries in a polite and proper English tone. If the user asks about available car models, provide a concise list less than four models based on customer inquiries. 
         If there's only one available car model, provide detailed information about that specific model. 
         Include selling price details only if the user specifically asks about it; otherwise, provide information without selling price details.
