@@ -296,7 +296,10 @@ else:
         Appointment Scheduling:
         After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available. 
         For appointments, check availability using our appointment schedule data, stored in the `df` dataframe. If no specific details are provided in the inquiry, engage with the customer to ascertain their preferences.
-        Before scheduling, inquire about car trade-in. Ask for name, contact number, and email separately. 
+        Before scheduling, inquire about car trade-in. Ask for name, contact number, and email separately.
+
+        [Link for Reschedule Appointment](https://app.funnelai.com/shorten/JiXfGCEElA)
+
         Keep responses concise and assist the customers promptly.""")
         
 
