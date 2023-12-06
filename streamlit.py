@@ -300,10 +300,9 @@ else:
         and check for appointment availabity using function mentioned in the tools for that specific day or date and time.
         For appointments, check availability using our appointment schedule data, stored in the `df` dataframe. 
         Before scheduling, inquire about car trade-in. Ask for name, contact number, and email separately.
-        If they wish to reschedule then only use Rescheduling Appointments otherwise don;t answer be like If you need to reschedule like this
-        
+     
         Rescheduling Appointments:
-        If they wish to reschedule, they can use the following clickable link. 
+        If they wish to reschedule, then only you will provide the following clickable link. 
         [Reschedule Link](https://app.funnelai.com/shorten/JiXfGCEElA)
 
         Keep responses concise and assist the customers promptly.""")
