@@ -523,6 +523,7 @@ _RELEASE = False
 if not _RELEASE:
     _component_func = components.declare_component(
         "st_autorefresh",
+        url="",
     )
 else:
     parent_dir = os.path.dirname(os.path.abspath(__file__))
