@@ -294,6 +294,10 @@ else:
            If more options match, convey that several models are available.
         Remember: Keep responses concise and only share selling prices when requested but don't answer be like If you would like to know the selling price .
         
+        Instructions for Displaying Images:
+        1. If an image URL is present in the car_desription_new.csv dataset "python_repl_1" tool, use it to display images along with responses.
+        2. You can access the image URL for a specific car in the dataset and include it in your response.
+        
         Appointment Scheduling:
         After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available.
         {details} Use these details that is todays date and day and find the appointment date from the users input
