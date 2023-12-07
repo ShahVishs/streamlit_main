@@ -393,33 +393,34 @@ else:
     
 
     def conversational_chat(user_input):
-        # Fetch question-and-answer pairs from Airtable based on the user's input
-        airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
-        headers = {"Authorization": f"Bearer {airtable_api_key}"}
-        params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{conversation}}))>0", "maxRecords": 1}
-        # filter_formula = f"{{'username': '{user_name}', 'conversation': '{conversation}', 'complete_conversation': '{complete_conversation}', 'feedback': '{feedback if feedback is not None else ''}', 'timestamp': '{timestamp}'}}
-        
-        # try:
-        #     response = requests.get(airtable_url, headers=headers, params=params)
-        #     print("Airtable API response status code:", response.status_code)
-        #     print("Airtable API response content:", response.content)
-        #     data = response.json()
+        with st.spinner('processing...'):
+            # Fetch question-and-answer pairs from Airtable based on the user's input
+            airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
+            headers = {"Authorization": f"Bearer {airtable_api_key}"}
+            params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{conversation}}))>0", "maxRecords": 1}
+            # filter_formula = f"{{'username': '{user_name}', 'conversation': '{conversation}', 'complete_conversation': '{complete_conversation}', 'feedback': '{feedback if feedback is not None else ''}', 'timestamp': '{timestamp}'}}
             
-        #     if "records" in data and data["records"]:
-        #         # Use the first matching question-and-answer pair from Airtable
-        #         answer_from_airtable = data["records"][0]["fields"]["answer"]
-        #         print("Airtable data--------------->:", answer_from_airtable)
-        #         return answer_from_airtable, "Airtable"
-        # except Exception as e:
-        #     st.error(f"Error fetching data from Airtable: {e}")
-        #     print("Airtable API request failed. Exception details:", e)
-    
-        # If no matching pair is found in Airtable, use the original agent_executor
-        result = agent_executor({"input": user_input})
-        response = result["output"]
-        feedback = None
-        print("csv file data--------------->:", response)
-        return response, "Generated"
+            # try:
+            #     response = requests.get(airtable_url, headers=headers, params=params)
+            #     print("Airtable API response status code:", response.status_code)
+            #     print("Airtable API response content:", response.content)
+            #     data = response.json()
+                
+            #     if "records" in data and data["records"]:
+            #         # Use the first matching question-and-answer pair from Airtable
+            #         answer_from_airtable = data["records"][0]["fields"]["answer"]
+            #         print("Airtable data--------------->:", answer_from_airtable)
+            #         return answer_from_airtable, "Airtable"
+            # except Exception as e:
+            #     st.error(f"Error fetching data from Airtable: {e}")
+            #     print("Airtable API request failed. Exception details:", e)
+        
+            # If no matching pair is found in Airtable, use the original agent_executor
+            result = agent_executor({"input": user_input})
+            response = result["output"]
+            feedback = None
+            print("csv file data--------------->:", response)
+            return response, "Generated"
         
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
