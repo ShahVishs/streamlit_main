@@ -74,7 +74,7 @@ st.markdown(hide_share_button_style, unsafe_allow_html=True)
 st.markdown(hide_star_and_github_style, unsafe_allow_html=True)
 st.markdown(hide_mainmenu_style, unsafe_allow_html=True)
 st.markdown(hide_fork_app_button_style, unsafe_allow_html=True)
-
+st.write("Streamlit version:", st.__version__)
 pd.set_option('display.max_rows', 20)
 pd.set_option('display.max_columns', 20)
 
