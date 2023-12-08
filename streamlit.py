@@ -507,7 +507,9 @@ else:
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
- 
+                if "image_url" in answer:
+                    image_url = answer["image_url"]
+                    st.image(image_url, caption="Image Caption", use_column_width=True)
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
