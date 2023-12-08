@@ -492,7 +492,7 @@ else:
                             save_chat_to_airtable(st.session_state.user_name, query, answer, complete_conversation, "👍")
                     elif thumbs_up_key in st.session_state.thumbs_up_states:
                         st.markdown("👍", unsafe_allow_html=True)
-                
+    
                 # Display thumbs-down button conditionally based on its state
                 with thumbs_down_col:
                     thumbs_down_key = f"thumbs_down_{i}"
@@ -509,7 +509,8 @@ else:
                     st.session_state.chat_history[i] = (query, answer, feedback)
                 if "image_url" in answer:
                     image_url = answer["image_url"]
-                    st.image(image_url, caption="Image Caption", use_column_width=True)
+                    # Adjust the width parameter to control the size of the displayed image
+                    st.image(image_url, caption="Image Caption", width=200)
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
