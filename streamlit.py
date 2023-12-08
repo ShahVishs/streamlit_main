@@ -394,38 +394,69 @@ else:
         
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
+    def resize_and_display_image(image_url):
+        try:
+            response = requests.get(image_url)
+            img = Image.open(BytesIO(response.content))
     
+            # Resize the image (adjust the size as needed)
+            new_size = (100, 100)  # Set the desired size
+            img = img.resize(new_size)
+    
+            # Display the resized image
+            st.image(img, caption="Resized Image", width=200)
+        except Exception as e:
+            st.error(f"Error loading and resizing image: {e}")
 
+    # def conversational_chat(user_input):
+    #     with st.spinner('processing...'):
+    #         # Fetch question-and-answer pairs from Airtable based on the user's input
+    #         airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
+    #         headers = {"Authorization": f"Bearer {airtable_api_key}"}
+    #         params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{conversation}}))>0", "maxRecords": 1}
+    #         # filter_formula = f"{{'username': '{user_name}', 'conversation': '{conversation}', 'complete_conversation': '{complete_conversation}', 'feedback': '{feedback if feedback is not None else ''}', 'timestamp': '{timestamp}'}}
+            
+    #         # try:
+    #         #     response = requests.get(airtable_url, headers=headers, params=params)
+    #         #     print("Airtable API response status code:", response.status_code)
+    #         #     print("Airtable API response content:", response.content)
+    #         #     data = response.json()
+                
+    #         #     if "records" in data and data["records"]:
+    #         #         # Use the first matching question-and-answer pair from Airtable
+    #         #         answer_from_airtable = data["records"][0]["fields"]["answer"]
+    #         #         print("Airtable data--------------->:", answer_from_airtable)
+    #         #         return answer_from_airtable, "Airtable"
+    #         # except Exception as e:
+    #         #     st.error(f"Error fetching data from Airtable: {e}")
+    #         #     print("Airtable API request failed. Exception details:", e)
+        
+    #         # If no matching pair is found in Airtable, use the original agent_executor
+    #         result = agent_executor({"input": user_input})
+    #         response = result["output"]
+    #         feedback = None
+    #         print("csv file data--------------->:", response)
+    #         return response, "Generated"
     def conversational_chat(user_input):
         with st.spinner('processing...'):
-            # Fetch question-and-answer pairs from Airtable based on the user's input
-            airtable_url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_QUESTION_ANSWER_TABLE_NAME}"
-            headers = {"Authorization": f"Bearer {airtable_api_key}"}
-            params = {"filterByFormula": f"SEARCH('{user_input}', LOWER({{conversation}}))>0", "maxRecords": 1}
-            # filter_formula = f"{{'username': '{user_name}', 'conversation': '{conversation}', 'complete_conversation': '{complete_conversation}', 'feedback': '{feedback if feedback is not None else ''}', 'timestamp': '{timestamp}'}}
-            
-            # try:
-            #     response = requests.get(airtable_url, headers=headers, params=params)
-            #     print("Airtable API response status code:", response.status_code)
-            #     print("Airtable API response content:", response.content)
-            #     data = response.json()
-                
-            #     if "records" in data and data["records"]:
-            #         # Use the first matching question-and-answer pair from Airtable
-            #         answer_from_airtable = data["records"][0]["fields"]["answer"]
-            #         print("Airtable data--------------->:", answer_from_airtable)
-            #         return answer_from_airtable, "Airtable"
-            # except Exception as e:
-            #     st.error(f"Error fetching data from Airtable: {e}")
-            #     print("Airtable API request failed. Exception details:", e)
-        
             # If no matching pair is found in Airtable, use the original agent_executor
             result = agent_executor({"input": user_input})
             response = result["output"]
             feedback = None
             print("csv file data--------------->:", response)
+    
+            # Check if the response contains images
+            if "website Link for images" in response:
+                image_urls = response["website Link for images"]
+    
+                # Display the response text
+                st.text(response["text"])
+    
+                # Display images separately
+                for image_url in image_urls:
+                    resize_and_display_image(image_url)
+    
             return response, "Generated"
-        
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
         if user_name:
@@ -507,6 +538,7 @@ else:
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
+                # Extracting image URL from the answer and displaying the image
                 if "image_url" in answer:
                     image_url = answer["image_url"]
                     # Adjust the width parameter to control the size of the displayed image
