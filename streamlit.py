@@ -234,14 +234,15 @@ df_image_links = pd.read_csv(csv_file_path)
 # Extract image links from the 'website Link for images' column
 image_links_list = df_image_links['website Link for images'].tolist()
 
-# Convert the list of image links to clickable links
+# Convert the list of image links to clickable links with resized images
 formatted_image_links_list = [
-    f'<a href="{image_link}" target="_blank">Click here to view image {i+1}</a>'
+    f'[{i+1}. Click here to view image]({image_link})'
     for i, image_link in enumerate(image_links_list)
 ]
 
 # Join the clickable links into a formatted string
 formatted_image_links = "\n".join(formatted_image_links_list)
+
 
 # Create the first tool
 tool1 = create_retriever_tool(
@@ -304,10 +305,8 @@ else:
         Remember: Keep responses concise and only share selling prices when requested but don't answer be like If you would like to know the selling price .
         
         Instructions for Displaying Images:
-            1. If an image URL is present in the car_desription_new.csv file, use "python_repl_1" tool. 
-               Display images along with responses and reduce the size of that image before displaying.
-               You can access the website Link for images for a specific car in the dataset and include it in your response but reduced that image size.
-               Here are some image links from the dataset:\n{formatted_image_links}\n
+            If an image URL is present in the car_desription_new.csv file
+            Here are some image links from the dataset:{formatted_image_links}
         
         Appointment Scheduling:
         After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available.
@@ -511,7 +510,7 @@ else:
                 st.image("icon-1024.png", width=50)
             with col2:
                 st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 90%;'
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 70%;'
                     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
                     f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
                     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
