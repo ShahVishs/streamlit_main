@@ -225,7 +225,7 @@ else:
                     st.session_state.chat_history = session['chat_history'].copy()
 
 file_1 = r'car_desription_new.csv'
-
+df2 = pd.read_csv(file_1)
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
 embeddings = OpenAIEmbeddings()
@@ -326,12 +326,12 @@ else:
 
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
-  
+    print(df.columns)
     input_template = template.format(
         dhead_1=df1.iloc[:5, :5].to_markdown(),
         dhead=df.head().to_markdown(),
         details="Today's current date is " + todays_date + " today's weekday is " + day_of_the_week + ".",
-        image_links="\n".join(df["website Link for images"].tolist())
+        image_links="\n".join(df2["website Link for images"].tolist())
         )
     system_message = SystemMessage(content=input_template)
 
