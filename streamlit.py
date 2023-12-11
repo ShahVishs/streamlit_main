@@ -461,7 +461,34 @@ else:
         
         # Find all URLs in the text
         return re.findall(url_pattern, text)
-
+    
+    def resize_and_display_image(image_url, max_width=70):
+        try:
+            response = requests.get(image_url)
+            img = Image.open(BytesIO(response.content))
+            
+            # Resize the image to a specific width while maintaining the aspect ratio
+            img.thumbnail((max_width, img.height * max_width // img.width))
+            
+            # Convert the PIL image to bytes
+            img_bytes = BytesIO()
+            img.save(img_bytes, format='JPEG')
+            
+            # Display the resized image with a specified width
+            st.image(img_bytes, caption="Resized Image", use_container_width=False, width=max_width)
+            
+        except Exception as e:
+            st.error(f"Error loading and resizing image: {e}")
+    
+    def resize_images_in_response(response, max_width=70):
+        # Extract and display images from the response text
+        image_urls = extract_image_urls(response)
+        
+        for image_url in image_urls:
+            resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
+    
+        return response
+    
     def conversational_chat(user_input):
         with st.spinner('processing...'):
             # If no matching pair is found in Airtable, use the original agent_executor
@@ -469,17 +496,11 @@ else:
             response = result["output"]
             feedback = None
     
-            if isinstance(response, str):
-                # If the response is a string, assume it is the text
-                st.text(response)
-            else:
-                # Extract and display images from the response text
-                image_urls = extract_image_urls(response.get("text", ""))
-                for image_url in image_urls:
-                    resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
+            # Resize images in the response
+            response = resize_images_in_response(response)
     
-                # Display the response text
-                st.text(response.get("text", ""))
+            # Display the response text
+            st.text(response)
     
             return response, "Generated"
 
