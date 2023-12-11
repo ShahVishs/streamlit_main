@@ -557,27 +557,10 @@ else:
                 st.image("icon-1024.png", width=50)
     
             with col2:
-                # Use another column for the actual response content
-                container_style = (
-                    'background-color: black; color: white; border-radius: 0; padding: 5px; width: 100%;'
-                    ' box-shadow: 2px 2px 5px #888888;'
-                )
-                
-                if "website Link for images" in answer:
-                    # If the response contains an image, set a wider width
-                    container_style = (
-                        'background-color: black; color: white; border-radius: 0; padding: 5px; width: 100%;'
-                        ' box-shadow: 2px 2px 5px #888888;'
-                    )
-                else:
-                    # If there is no image, set a narrower width
-                    container_style = (
-                        'background-color: black; color: white; border-radius: 0; padding: 5px; width: 90%;'
-                        ' box-shadow: 2px 2px 5px #888888;'
-                    )
-                
                 st.markdown(
-                    f'<div style="{container_style}">'
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
                     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
                     f'</div>',
                     unsafe_allow_html=True
