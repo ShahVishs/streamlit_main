@@ -463,15 +463,15 @@ else:
             feedback = None
             print("csv file data--------------->:", response)
     
-            # Display the response text
-            st.text(response)
+            # # Display the response text
+            # st.text(response)
     
             # Check if the response contains images
             if "website Link for images" in response:
                 image_urls = response["website Link for images"]
     
-                # Display the response text
-                st.text(response["text"])
+                # # Display the response text
+                # st.text(response["text"])
     
                 # Display images separately
                 for image_url in image_urls:
@@ -542,10 +542,10 @@ else:
         #             image_urls = answer["website Link for images"]
         
         #             # Ensure that images stay within the layout
-        #             with st.container(max_width=200):  # Adjust the max_width as needed
+        #             with st.container(max_width=100):  # Adjust the max_width as needed
         #                 # Display images separately
         #                 for image_url in image_urls:
-        #                     st.image(image_url, width=200) 
+        #                     st.image(image_url, width=100) 
     # with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
@@ -560,7 +560,7 @@ else:
             with col2:
                 # Use another column for the actual response content
                 st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 95%;'
+                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 99%;'
                     f' box-shadow: 2px 2px 5px #888888;">'
                     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
                     f'</div>',
