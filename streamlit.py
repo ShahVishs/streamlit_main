@@ -409,7 +409,7 @@ else:
     #         st.image(img, caption="Resized Image", use_column_width=True)
     #     except Exception as e:
     #         st.error(f"Error loading and resizing image: {e}")
-    def resize_and_display_image(image_url, max_width=2000):
+    def resize_and_display_image(image_url, max_width=50):
         try:
             response = requests.get(image_url)
             img = Image.open(BytesIO(response.content))
@@ -475,7 +475,7 @@ else:
             
                 # Display images separately
                 for image_url in image_urls:
-                    resize_and_display_image(image_url, max_width=500)
+                    resize_and_display_image(image_url, max_width=80)
             return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -572,7 +572,7 @@ else:
     
                     # Display images separately
                     for image_url in image_urls:
-                        resize_and_display_image(image_url, max_width=2000)  # Adjust max_width as needed
+                        resize_and_display_image(image_url, max_width=80)  # Adjust max_width as needed
             if feedback is None and st.session_state.user_name != "vishakha":
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
