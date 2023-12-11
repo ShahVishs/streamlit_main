@@ -475,7 +475,7 @@ else:
             
                 # Display images separately
                 for image_url in image_urls:
-                    resize_and_display_image(image_url, max_width=2000)
+                    resize_and_display_image(image_url, max_width=500)
             return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
