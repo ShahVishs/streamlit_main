@@ -394,19 +394,19 @@ else:
         
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
-    def resize_and_display_image(image_url):
-        try:
-            response = requests.get(image_url)
-            img = Image.open(BytesIO(response.content))
+    # def resize_and_display_image(image_url):
+    #     try:
+    #         response = requests.get(image_url)
+    #         img = Image.open(BytesIO(response.content))
     
-            # Resize the image (adjust the size as needed)
-            new_size = (100, 100)  # Set the desired size
-            img = img.resize(new_size)
+    #         # Resize the image (adjust the size as needed)
+    #         new_size = (100, 100)  # Set the desired size
+    #         img = img.resize(new_size)
     
-            # Display the resized image
-            st.image(img, caption="Resized Image", width=200)
-        except Exception as e:
-            st.error(f"Error loading and resizing image: {e}")
+    #         # Display the resized image
+    #         st.image(img, caption="Resized Image", width=200)
+    #     except Exception as e:
+    #         st.error(f"Error loading and resizing image: {e}")
 
     # def conversational_chat(user_input):
     #     with st.spinner('processing...'):
@@ -445,16 +445,16 @@ else:
             feedback = None
             print("csv file data--------------->:", response)
     
-            # Check if the response contains images
-            if "website Link for images" in response:
-                image_urls = response["website Link for images"]
+            # # Check if the response contains images
+            # if "website Link for images" in response:
+            #     image_urls = response["website Link for images"]
     
-                # Display the response text
-                st.text(response["text"])
+            #     # Display the response text
+            #     st.text(response["text"])
     
-                # Display images separately
-                for image_url in image_urls:
-                    resize_and_display_image(image_url)
+            #     # Display images separately
+            #     for image_url in image_urls:
+            #         resize_and_display_image(image_url)
     
             return response, "Generated"
     if st.session_state.user_name is None:
