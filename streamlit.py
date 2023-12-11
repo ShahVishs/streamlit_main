@@ -466,9 +466,9 @@ else:
             # Display the response text
             st.text(response["text"])
     
-            # Check if the response contains images
-            if "website Link for images" in response:
-                # Assuming df is your DataFrame loaded from the CSV
+            # Assuming df is your DataFrame loaded from the CSV
+            if "website Link for images" in df.columns:
+                # Check if the CSV contains a column named "website Link for images"
                 image_urls = df["website Link for images"].tolist()
     
                 # Display images separately
