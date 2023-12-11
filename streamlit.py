@@ -572,7 +572,7 @@ else:
                 else:
                     # If there is no image, set a narrower width
                     container_style = (
-                        'background-color: black; color: white; border-radius: 0; padding: 5px; width: 70%;'
+                        'background-color: black; color: white; border-radius: 0; padding: 5px; width: 90%;'
                         ' box-shadow: 2px 2px 5px #888888;'
                     )
                 
