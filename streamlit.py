@@ -462,22 +462,33 @@ else:
             response = result["output"]
             feedback = None
             print("csv file data--------------->:", response)
-    
-            # # Display the response text
-            # st.text(response)
-    
             # Check if the response contains images
             if "website Link for images" in response:
                 image_urls = response["website Link for images"]
     
-                # # Display the response text
-                # st.text(response["text"])
+                # Display the response text
+                st.text(response["text"])
     
                 # Display images separately
                 for image_url in image_urls:
-                    st.image(image_url, caption="Image Caption", width=70)
+                    resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
     
             return response, "Generated"
+            # # Display the response text
+            # st.text(response)
+    
+            # Check if the response contains images
+            # if "website Link for images" in response:
+            #     image_urls = response["website Link for images"]
+    
+            #     # # Display the response text
+            #     # st.text(response["text"])
+    
+            #     # Display images separately
+            #     for image_url in image_urls:
+            #         st.image(image_url, caption="Image Caption", width=70)
+    
+            # return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
         if user_name:
@@ -560,7 +571,7 @@ else:
             with col2:
                 # Use another column for the actual response content
                 st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 99%;'
+                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 100%;'
                     f' box-shadow: 2px 2px 5px #888888;">'
                     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
                     f'</div>',
