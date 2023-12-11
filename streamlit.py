@@ -318,7 +318,7 @@ else:
         [Reschedule Link](https://app.funnelai.com/shorten/JiXfGCEElA)
     
         Keep responses concise and assist the customers promptly."""
-    )
+        )
     
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
