@@ -298,8 +298,8 @@ else:
         Remember: Keep responses concise and only share selling prices when requested but don't answer be like If you would like to know the selling price .
         
         Instructions for Displaying Images:
-        1. If an image URL is present in the car_desription_new.csv file use "python_repl_1" tool, use it to display images along with responses.
-        2. You can access the website Link for images for a specific car in the dataset and include it in your response.
+        1. If an image URL is present in the car_desription_new.csv file use "python_repl_1" tool, use it to display images along with responses and reduced the size of that imgae before displaying.
+        2. You can access the website Link for images for a specific car in the dataset and include it in your response but reduced that image size.
         
         Appointment Scheduling:
         After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available.
