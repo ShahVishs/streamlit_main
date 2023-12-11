@@ -320,18 +320,17 @@ else:
         Keep responses concise and assist the customers promptly."""
     )
     
-    # Generate the input template
-    
+    details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
         query: str = Field(description="code snippet to run")
 
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
-    
-    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
+  
+    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details) 
     system_message = SystemMessage(content=input_template)
-
+   
     prompt = OpenAIFunctionsAgent.create_prompt(
         system_message=system_message,
         extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
