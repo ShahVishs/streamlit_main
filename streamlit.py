@@ -559,7 +559,7 @@ else:
             with col2:
                 # Use another column for the actual response content
                 st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 95%;'
+                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 100%;'
                     f' box-shadow: 2px 2px 5px #888888;">'
                     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
                     f'</div>',
