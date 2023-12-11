@@ -445,16 +445,16 @@ else:
             feedback = None
             print("csv file data--------------->:", response)
     
-            # # Check if the response contains images
-            # if "website Link for images" in response:
-            #     image_urls = response["website Link for images"]
+            # Display the response text
+            st.text(response)
     
-            #     # Display the response text
-            #     st.text(response["text"])
+            # Check if the response contains images
+            if "website Link for images" in response:
+                image_urls = response["website Link for images"]
     
-            #     # Display images separately
-            #     for image_url in image_urls:
-            #         resize_and_display_image(image_url)
+                # Display images separately
+                for image_url in image_urls:
+                    st.image(image_url, caption="Image Caption", width=200)
     
             return response, "Generated"
     if st.session_state.user_name is None:
