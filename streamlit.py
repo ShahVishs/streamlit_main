@@ -399,8 +399,8 @@ else:
             response = requests.get(image_url)
             img = Image.open(BytesIO(response.content))
     
-            # Resize the image (adjust the size as needed)
-            new_size = (200, 200)  # Set the desired size
+            # Resize the image to a specific size
+            new_size = (400, 300)  # Set the desired size (width, height)
             img = img.resize(new_size)
     
             # Display the resized image
@@ -458,7 +458,6 @@ else:
                 # Display images separately
                 for image_url in image_urls:
                     resize_and_display_image(image_url)
-    
             return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
