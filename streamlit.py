@@ -39,7 +39,7 @@ import requests
 from PIL import Image
 import requests
 from io import BytesIO
-
+import re
 hide_share_button_style = """
     <style>
     .st-emotion-cache-zq5wmm.ezrtsby0 .stActionButton:nth-child(1) {
@@ -455,23 +455,26 @@ else:
     #         feedback = None
     #         print("csv file data--------------->:", response)
     #         return response, "Generated"
+    def extract_image_urls(text):
+        # Regular expression to match URLs
+        url_pattern = re.compile(r'https?://\S+')
+        
+        # Find all URLs in the text
+        return re.findall(url_pattern, text)
     def conversational_chat(user_input):
         with st.spinner('processing...'):
             # If no matching pair is found in Airtable, use the original agent_executor
             result = agent_executor({"input": user_input})
             response = result["output"]
             feedback = None
-            print("csv file data--------------->:", response)
-            # Check if the response contains images
-            if "website Link for images" in response:
-                image_urls = response["website Link for images"]
     
-                # Display the response text
-                st.text(response["text"])
+            # Display the response text
+            st.text(response.get("text", ""))
     
-                # Display images separately
-                for image_url in image_urls:
-                    resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
+            # Extract and display images from the response text
+            image_urls = extract_image_urls(response.get("text", ""))
+            for image_url in image_urls:
+                resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
     
             return response, "Generated"
 
