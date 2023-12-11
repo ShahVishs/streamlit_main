@@ -458,11 +458,17 @@ else:
             img_bytes = BytesIO()
             img.save(img_bytes, format='JPEG')
             
+            # Close the image
+            img.close()
+            
             # Display the resized image with a specified width
             st.image(img_bytes, caption="Resized Image", width=max_width)
             
             # Print a message indicating successful resizing
             print(f"Image resized successfully: {image_url}")
+            
+        except Exception as e:
+            st.error(f"Error loading and resizing image: {e}")
             
         except Exception as e:
             st.error(f"Error loading and resizing image: {e}")
