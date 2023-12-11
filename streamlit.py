@@ -394,7 +394,7 @@ else:
         
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
-    def resize_and_display_image(image_url, max_width=500):
+    def resize_and_display_image(image_url, max_width=200):
         try:
             response = requests.get(image_url)
             img = Image.open(BytesIO(response.content))
@@ -522,10 +522,10 @@ else:
                     image_urls = answer["website Link for images"]
         
                     # Ensure that images stay within the layout
-                    with st.container(max_width=500):  # Adjust the max_width as needed
+                    with st.container(max_width=200):  # Adjust the max_width as needed
                         # Display images separately
                         for image_url in image_urls:
-                            st.image(image_url, width=100) 
+                            st.image(image_url, width=200) 
     
             if feedback is None and st.session_state.user_name != "vishakha":
                 thumbs_up_col, thumbs_down_col = st.columns(2)
