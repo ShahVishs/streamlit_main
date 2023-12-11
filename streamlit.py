@@ -539,10 +539,10 @@ else:
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
                 # Extracting image URL from the answer and displaying the image
-                if "image_url" in answer:
-                    image_url = answer["image_url"]
-                    # Adjust the width parameter to control the size of the displayed image
-                    st.image(image_url, caption="Image Caption", width=200)
+                # if "image_url" in answer:
+                #     image_url = answer["image_url"]
+                #     # Adjust the width parameter to control the size of the displayed image
+                #     st.image(image_url, caption="Image Caption", width=200)
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
