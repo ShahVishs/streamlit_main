@@ -459,12 +459,13 @@ else:
         with st.spinner('processing...'):
             # If no matching pair is found in Airtable, use the original agent_executor
             result = agent_executor({"input": user_input})
-            response = result["output"]
+            response = result.get("output", {})
+            text_response = response.get("text", "")
             feedback = None
-            print("csv file data--------------->:", response)
+            print("csv file data--------------->:", text_response)
     
             # Display the response text
-            st.text(response["text"])
+            st.text(text_response)
     
             # Assuming df is your DataFrame loaded from the CSV
             if "website Link for images" in df.columns:
@@ -476,6 +477,7 @@ else:
                     resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
     
             return response, "Generated"
+
             # # Display the response text
             # st.text(response)
     
