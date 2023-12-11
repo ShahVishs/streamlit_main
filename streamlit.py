@@ -394,19 +394,19 @@ else:
         
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
-    # def resize_and_display_image(image_url):
-    #     try:
-    #         response = requests.get(image_url)
-    #         img = Image.open(BytesIO(response.content))
+    def resize_and_display_image(image_url):
+        try:
+            response = requests.get(image_url)
+            img = Image.open(BytesIO(response.content))
     
-    #         # Resize the image (adjust the size as needed)
-    #         new_size = (100, 100)  # Set the desired size
-    #         img = img.resize(new_size)
+            # Resize the image (adjust the size as needed)
+            new_size = (200, 200)  # Set the desired size
+            img = img.resize(new_size)
     
-    #         # Display the resized image
-    #         st.image(img, caption="Resized Image", width=200)
-    #     except Exception as e:
-    #         st.error(f"Error loading and resizing image: {e}")
+            # Display the resized image
+            st.image(img, caption="Resized Image", use_column_width=True)
+        except Exception as e:
+            st.error(f"Error loading and resizing image: {e}")
 
     # def conversational_chat(user_input):
     #     with st.spinner('processing...'):
@@ -451,10 +451,13 @@ else:
             # Check if the response contains images
             if "website Link for images" in response:
                 image_urls = response["website Link for images"]
-    
+            
+                # Display the response text
+                st.text(response["text"])
+            
                 # Display images separately
                 for image_url in image_urls:
-                    st.image(image_url, caption="Image Caption", width=200)
+                    resize_and_display_image(image_url)
     
             return response, "Generated"
     if st.session_state.user_name is None:
@@ -539,10 +542,10 @@ else:
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
                 # Extracting image URL from the answer and displaying the image
-                # if "image_url" in answer:
-                #     image_url = answer["image_url"]
-                #     # Adjust the width parameter to control the size of the displayed image
-                #     st.image(image_url, caption="Image Caption", width=200)
+                if "image_url" in answer:
+                    image_url = answer["image_url"]
+                    # Adjust the width parameter to control the size of the displayed image
+                    st.image(image_url, caption="Image Caption", width=200)
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
