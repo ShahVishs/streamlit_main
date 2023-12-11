@@ -394,16 +394,15 @@ else:
         
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
-    def resize_and_display_image(image_url):
+    def resize_and_display_image(image_url, max_width=800):
         try:
             response = requests.get(image_url)
             img = Image.open(BytesIO(response.content))
     
-            # Resize the image to a specific size
-            new_size = (400, 300)  # Set the desired size (width, height)
-            img = img.resize(new_size)
+            # Resize the image to a specific width while maintaining the aspect ratio
+            img.thumbnail((max_width, img.height * max_width // img.width))
     
-            # Display the resized image
+            # Display the resized image with a maximum width
             st.image(img, caption="Resized Image", use_column_width=True)
         except Exception as e:
             st.error(f"Error loading and resizing image: {e}")
@@ -457,7 +456,7 @@ else:
             
                 # Display images separately
                 for image_url in image_urls:
-                    resize_and_display_image(image_url)
+                    resize_and_display_image(image_url, max_width=800)
             return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
