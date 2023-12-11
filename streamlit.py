@@ -394,7 +394,7 @@ else:
         
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
-    def resize_and_display_image(image_url, max_width=800):
+    def resize_and_display_image(image_url, max_width=500):
         try:
             response = requests.get(image_url)
             img = Image.open(BytesIO(response.content))
@@ -522,7 +522,7 @@ else:
                     image_urls = answer["website Link for images"]
         
                     # Ensure that images stay within the layout
-                    with st.container(max_width=800):  # Adjust the max_width as needed
+                    with st.container(max_width=500):  # Adjust the max_width as needed
                         # Display images separately
                         for image_url in image_urls:
                             st.image(image_url, width=100) 
