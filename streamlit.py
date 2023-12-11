@@ -414,8 +414,8 @@ else:
             # Resize the image to a specific width while maintaining the aspect ratio
             img.thumbnail((max_width, img.height * max_width // img.width))
     
-            # Display the resized image with a maximum width using CSS styling
-            st.image(img, caption="Resized Image", output_format='PNG', use_container_width=True, style=f"max-width: {max_width}px; height: auto;")
+            # Display the resized image with a maximum width
+            st.image(img, caption="Resized Image", width=max_width, use_container_width=False)
     
         except Exception as e:
             st.error(f"Error loading and resizing image: {e}")
