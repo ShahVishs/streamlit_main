@@ -525,7 +525,7 @@ else:
                     with st.container(max_width=800):  # Adjust the max_width as needed
                         # Display images separately
                         for image_url in image_urls:
-                            resize_and_display_image(image_url, max_width=800)  # Adjust the max_width as needed
+                            st.image(image_url, width=300) 
     
             if feedback is None and st.session_state.user_name != "vishakha":
                 thumbs_up_col, thumbs_down_col = st.columns(2)
