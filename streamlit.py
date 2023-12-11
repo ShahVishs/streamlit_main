@@ -422,7 +422,7 @@ else:
             img.save(img_bytes, format='JPEG')
     
             # Display the resized image with a maximum width
-            st.image(img_bytes, caption="Resized Image", use_container_width=True)
+            st.image(img_bytes, caption="Resized Image", use_container_width=True, width=max_width)
     
         except Exception as e:
             st.error(f"Error loading and resizing image: {e}")
@@ -475,7 +475,7 @@ else:
             
                 # Display images separately
                 for image_url in image_urls:
-                    resize_and_display_image(image_url, max_width=50)
+                    resize_and_display_image(image_url, max_width=80)
             return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
