@@ -469,13 +469,17 @@ else:
             # Check if the response contains images
             if "website Link for images" in response:
                 image_urls = response["website Link for images"]
-            
+    
                 # Display the response text
                 st.text(response["text"])
-            
+    
+                # Choose the desired max_width parameter based on your requirements
+                max_width = 80  # or any other value you prefer
+    
                 # Display images separately
                 for image_url in image_urls:
-                    resize_and_display_image(image_url, max_width=80)
+                    resize_and_display_image(image_url, max_width=max_width)
+    
             return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -566,13 +570,13 @@ else:
                     unsafe_allow_html=True
                 )
     
-                # Extracting image URL from the answer and displaying the image
-                if "website Link for images" in answer:
-                    image_urls = answer["website Link for images"]
+                # # Extracting image URL from the answer and displaying the image
+                # if "website Link for images" in answer:
+                #     image_urls = answer["website Link for images"]
     
-                    # Display images separately
-                    for image_url in image_urls:
-                        resize_and_display_image(image_url, max_width=80)  # Adjust max_width as needed
+                #     # Display images separately
+                #     for image_url in image_urls:
+                #         resize_and_display_image(image_url, max_width=30)  # Adjust max_width as needed
             if feedback is None and st.session_state.user_name != "vishakha":
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
@@ -601,10 +605,10 @@ else:
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
                 # Extracting image URL from the answer and displaying the image
-                if "image_url" in answer:
-                    image_url = answer["image_url"]
-                    # Adjust the width parameter to control the size of the displayed image
-                    st.image(image_url, caption="Image Caption", width=200)
+                # if "image_url" in answer:
+                #     image_url = answer["image_url"]
+                #     # Adjust the width parameter to control the size of the displayed image
+                #     st.image(image_url, caption="Image Caption", width=200)
     
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
