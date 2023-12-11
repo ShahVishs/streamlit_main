@@ -238,17 +238,13 @@ df_image_links['image_links'] = df_image_links['website Link for images'].astype
 image_links_list = df_image_links['image_links'].tolist()
 
 # Convert the list of image links to a formatted string
-# formatted_image_links = "\n".join(image_links_list)
 formatted_image_links_list = "\n".join(image_links_list)
-
 
 # Create the first tool
 tool1 = create_retriever_tool(
     retriever_1, 
      "search_car_model_make",
-     "This tool is used only when you know model of the car or features of the car for example good mileage car, toeing car,\
-     pickup truck or and new or used car and \
-      Searches and returns documents regarding the car details. Input to this should be the car's model or car features and new or used car as a single argument"
+     "This tool is used only when you know model of the car or features of the car for example good mileage car, towing car, pickup truck or new or used car. Searches and returns documents regarding the car details. Input to this should be the car's model or car features and new or used car as a single argument"
 )
 
 
