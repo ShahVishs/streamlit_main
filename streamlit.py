@@ -228,6 +228,14 @@ docs_1 = loader.load()
 embeddings = OpenAIEmbeddings()
 vectorstore_1 = FAISS.from_documents(docs_1, embeddings)
 retriever_1 = vectorstore_1.as_retriever(search_type="similarity", search_kwargs={"k": 3})#check without similarity search and k=8
+csv_file_path = file_1
+df_image_links = pd.read_csv(csv_file_path)
+
+# Extract image links from the 'image_links' column
+image_links_list = df_image_links['website Link for images'].tolist()
+
+# Convert the list of image links to a formatted string
+formatted_image_links = "\n".join(image_links_list)
 
 
 # Create the first tool
@@ -299,7 +307,7 @@ else:
        Display images along with responses and reduce the size of that image before displaying.
        You can access the website Link for images for a specific car in the dataset and include it in your response but reduced that image size.
        Here are some image links from the dataset:
-       {image_links}
+       {formatted_image_links}
         
         Appointment Scheduling:
         After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available.
