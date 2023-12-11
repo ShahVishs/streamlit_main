@@ -509,16 +509,47 @@ else:
         st.session_state.thumbs_down_states = {}
 
     with response_container:
+        # for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
+        #     user_name = st.session_state.user_name
+        #     message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
+        
+        #     # Use one column to display the user avatar and another for the response
+        #     col1, col2 = st.columns([0.2, 10])
+        
+        #     with col1:
+        #         st.image("icon-1024.png", width=50)
+        
+        #     with col2:
+        #         # Use another column for the actual response content
+        #         st.markdown(
+        #             f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
+        #             f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+        #             f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+        #             f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+        #             f'</div>',
+        #             unsafe_allow_html=True
+        #         )
+        
+        #         # Extracting image URL from the answer and displaying the image
+        #         if "website Link for images" in answer:
+        #             image_urls = answer["website Link for images"]
+        
+        #             # Ensure that images stay within the layout
+        #             with st.container(max_width=200):  # Adjust the max_width as needed
+        #                 # Display images separately
+        #                 for image_url in image_urls:
+        #                     st.image(image_url, width=200) 
+    # with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-        
+    
             # Use one column to display the user avatar and another for the response
             col1, col2 = st.columns([0.2, 10])
-        
+    
             with col1:
                 st.image("icon-1024.png", width=50)
-        
+    
             with col2:
                 # Use another column for the actual response content
                 st.markdown(
@@ -529,17 +560,14 @@ else:
                     f'</div>',
                     unsafe_allow_html=True
                 )
-        
+    
                 # Extracting image URL from the answer and displaying the image
                 if "website Link for images" in answer:
                     image_urls = answer["website Link for images"]
-        
-                    # Ensure that images stay within the layout
-                    with st.container(max_width=200):  # Adjust the max_width as needed
-                        # Display images separately
-                        for image_url in image_urls:
-                            st.image(image_url, width=200) 
     
+                    # Display images separately
+                    for image_url in image_urls:
+                        resize_and_display_image(image_url, max_width=200)  # Adjust max_width as needed
             if feedback is None and st.session_state.user_name != "vishakha":
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
@@ -572,6 +600,7 @@ else:
                     image_url = answer["image_url"]
                     # Adjust the width parameter to control the size of the displayed image
                     st.image(image_url, caption="Image Caption", width=200)
+    
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
