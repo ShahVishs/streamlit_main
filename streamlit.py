@@ -340,7 +340,7 @@ else:
     print("details:", details)
     
     # Format the template
-    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(), dhead=df.head().to_markdown(), details=details)
+    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(), dhead=df.head().to_markdown(), details=details, formatted_image_links=formatted_image_links_list)
     
     print("After formatting:")
     print(input_template)
