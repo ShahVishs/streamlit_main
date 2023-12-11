@@ -36,10 +36,7 @@ from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
 import json
 import requests 
-from PIL import Image
-import requests
-from io import BytesIO
-import re
+
 hide_share_button_style = """
     <style>
     .st-emotion-cache-zq5wmm.ezrtsby0 .stActionButton:nth-child(1) {
@@ -225,9 +222,7 @@ else:
                     st.session_state.chat_history = session['chat_history'].copy()
 
 file_1 = r'car_desription_new.csv'
-df2 = pd.read_csv(file_1)
-print("df2 contents:")
-print(df2.head()) 
+
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
 embeddings = OpenAIEmbeddings()
@@ -295,31 +290,31 @@ else:
         7. Inquire about new or used car preference after identifying the model.
         8. Ask one question at a time; first ask about the model, then about new or used.
         9. Disclose the selling price only upon explicit customer request but provide range not exactly selling price figure.
-        10. Provide details (Make, Year, Model, Trim) and links for up to three cars in sentence format.
+        10. Provide details (Make, Year, Model, Trim) and links for up to three carsin sentence formate.
            If more options match, convey that several models are available.
-        Remember: Keep responses concise and only share selling prices when requested but don't answer be like If you would like to know the selling price.
-    
+        Remember: Keep responses concise and only share selling prices when requested but don't answer be like If you would like to know the selling price .
+        
         Instructions for Displaying Images:
-        1. If an image URL is present in the car_desription_new.csv file, use "python_repl_1" tool. 
-           Display images along with responses and reduce the size of that image before displaying.
-           You can access the website Link for images for a specific car in the dataset and include it in your response but reduced that image size.
-           Here are some image links from the dataset:
-           {image_links}
+    1. If an image URL is present in the car_desription_new.csv file, use "python_repl_1" tool. 
+       Display images along with responses and reduce the size of that image before displaying.
+       You can access the website Link for images for a specific car in the dataset and include it in your response but reduced that image size.
+       Here are some image links from the dataset:
+       {image_links}
         
         Appointment Scheduling:
         After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available.
-        {details} Use these details that are today's date and day and find the appointment date from the user's input
-        and check for appointment availability using the function mentioned in the tools for that specific day or date and time.
+        {details} Use these details that is todays date and day and find the appointment date from the users input
+        and check for appointment availabity using function mentioned in the tools for that specific day or date and time.
         For appointments, check availability using our appointment schedule data, stored in the `df` dataframe. 
         Before scheduling, inquire about car trade-in. Ask for name, contact number, and email separately.
      
         Rescheduling Appointments:
         If they wish to reschedule, then only you will provide the following clickable link. 
         [Reschedule Link](https://app.funnelai.com/shorten/JiXfGCEElA)
-    
-        Keep responses concise and assist the customers promptly."""
-        )
-    
+
+        Keep responses concise and assist the customers promptly.""")
+        
+
     details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
     
     class PythonInputs(BaseModel):
@@ -330,7 +325,7 @@ else:
   
     input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details) 
     system_message = SystemMessage(content=input_template)
-   
+
     prompt = OpenAIFunctionsAgent.create_prompt(
         system_message=system_message,
         extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
@@ -402,16 +397,17 @@ else:
         
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
-    # def resize_and_display_image(image_url, max_width=200):
+    # def resize_and_display_image(image_url):
     #     try:
     #         response = requests.get(image_url)
     #         img = Image.open(BytesIO(response.content))
     
-    #         # Resize the image to a specific width while maintaining the aspect ratio
-    #         img.thumbnail((max_width, img.height * max_width // img.width))
+    #         # Resize the image (adjust the size as needed)
+    #         new_size = (100, 100)  # Set the desired size
+    #         img = img.resize(new_size)
     
-    #         # Display the resized image with a maximum width
-    #         st.image(img, caption="Resized Image", use_column_width=True)
+    #         # Display the resized image
+    #         st.image(img, caption="Resized Image", width=200)
     #     except Exception as e:
     #         st.error(f"Error loading and resizing image: {e}")
 
@@ -444,55 +440,13 @@ else:
     #         feedback = None
     #         print("csv file data--------------->:", response)
     #         return response, "Generated"
-    def extract_image_urls(text):
-        # Regular expression to match URLs
-        url_pattern = re.compile(r'https?://\S+')
-        
-        # Find all URLs in the text
-        return re.findall(url_pattern, text)
-    
-    def resize_and_display_image(image_url, max_width=70):
-        try:
-            response = requests.get(image_url)
-            img = Image.open(BytesIO(response.content))
-            
-            # Resize the image to a specific width while maintaining the aspect ratio
-            img.thumbnail((max_width, img.height * max_width // img.width))
-            
-            # Convert the PIL image to bytes
-            img_bytes = BytesIO()
-            img.save(img_bytes, format='JPEG')
-            
-            # Close the image
-            img.close()
-            
-            # Display the resized image with a specified width
-            st.image(img_bytes, caption="Resized Image", width=max_width)
-            
-            # Print a message indicating successful resizing
-            print(f"Image resized successfully: {image_url}")
-            
-        except Exception as e:
-            st.error(f"Error loading and resizing image: {e}")
-            
-        except Exception as e:
-            st.error(f"Error loading and resizing image: {e}")
-    
-    def resize_images_in_response(response, max_width=70):
-        # Extract and display images from the response text
-        image_urls = extract_image_urls(response)
-        
-        for image_url in image_urls:
-            resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
-    
-        return response
-    
     def conversational_chat(user_input):
         with st.spinner('processing...'):
             # If no matching pair is found in Airtable, use the original agent_executor
             result = agent_executor({"input": user_input})
             response = result["output"]
             feedback = None
+            print("csv file data--------------->:", response)
             return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -532,64 +486,22 @@ else:
         st.session_state.thumbs_down_states = {}
 
     with response_container:
-        # for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
-        #     user_name = st.session_state.user_name
-        #     message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-        
-        #     # Use one column to display the user avatar and another for the response
-        #     col1, col2 = st.columns([0.2, 10])
-        
-        #     with col1:
-        #         st.image("icon-1024.png", width=50)
-        
-        #     with col2:
-        #         # Use another column for the actual response content
-        #         st.markdown(
-        #             f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
-        #             f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-        #             f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-        #             f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-        #             f'</div>',
-        #             unsafe_allow_html=True
-        #         )
-        
-        #         # Extracting image URL from the answer and displaying the image
-        #         if "website Link for images" in answer:
-        #             image_urls = answer["website Link for images"]
-        
-        #             # Ensure that images stay within the layout
-        #             with st.container(max_width=100):  # Adjust the max_width as needed
-        #                 # Display images separately
-        #                 for image_url in image_urls:
-        #                     st.image(image_url, width=100) 
-    # with response_container:
         for i, (query, answer, feedback) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-    
-            # Use one column to display the user avatar and another for the response
             col1, col2 = st.columns([0.7, 10])
-    
             with col1:
                 st.image("icon-1024.png", width=50)
-    
             with col2:
-                # Use another column for the actual response content
                 st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 100%;'
-                    f' box-shadow: 2px 2px 5px #888888;">'
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 90%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
                     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
     
-                # # Extracting image URL from the answer and displaying the image
-                # if "website Link for images" in answer:
-                #     image_urls = answer["website Link for images"]
-    
-                #     # Display images separately
-                #     for image_url in image_urls:
-                #         resize_and_display_image(image_url, max_width=30)  # Adjust max_width as needed
             if feedback is None and st.session_state.user_name != "vishakha":
                 thumbs_up_col, thumbs_down_col = st.columns(2)
                 with thumbs_up_col:
@@ -617,12 +529,7 @@ else:
     
                 if feedback is not None:
                     st.session_state.chat_history[i] = (query, answer, feedback)
-                # Extracting image URL from the answer and displaying the image
-                # if "image_url" in answer:
-                #     image_url = answer["image_url"]
-                #     # Adjust the width parameter to control the size of the displayed image
-                #     st.image(image_url, caption="Image Caption", width=200)
-    
+                
 with st.form(key='feedback_form'):
     feedback_text = st.text_area("Please provide feedback about your experience:")
     st.write("How would you rate your overall experience?")
