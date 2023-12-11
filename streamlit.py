@@ -409,23 +409,7 @@ else:
     #         st.image(img, caption="Resized Image", use_column_width=True)
     #     except Exception as e:
     #         st.error(f"Error loading and resizing image: {e}")
-    def resize_and_display_image(image_url, max_width=50):
-        try:
-            response = requests.get(image_url)
-            img = Image.open(BytesIO(response.content))
-    
-            # Resize the image to a specific width while maintaining the aspect ratio
-            img.thumbnail((max_width, img.height * max_width // img.width))
-    
-            # Convert the PIL image to bytes
-            img_bytes = BytesIO()
-            img.save(img_bytes, format='JPEG')
-    
-            # Display the resized image with a specified width
-            st.image(img_bytes, caption="Resized Image", use_container_width=False, width=max_width)
-    
-        except Exception as e:
-            st.error(f"Error loading and resizing image: {e}")
+
     # def conversational_chat(user_input):
     #     with st.spinner('processing...'):
     #         # Fetch question-and-answer pairs from Airtable based on the user's input
@@ -475,7 +459,10 @@ else:
             img.save(img_bytes, format='JPEG')
             
             # Display the resized image with a specified width
-            st.image(img_bytes, caption="Resized Image", use_container_width=False, width=max_width)
+            st.image(img_bytes, caption="Resized Image", width=max_width)
+            
+            # Print a message indicating successful resizing
+            print(f"Image resized successfully: {image_url}")
             
         except Exception as e:
             st.error(f"Error loading and resizing image: {e}")
