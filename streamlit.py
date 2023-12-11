@@ -473,12 +473,9 @@ else:
                 # Display the response text
                 st.text(response["text"])
     
-                # Choose the desired max_width parameter based on your requirements
-                max_width = 80  # or any other value you prefer
-    
                 # Display images separately
                 for image_url in image_urls:
-                    resize_and_display_image(image_url, max_width=max_width)
+                    st.image(image_url, caption="Image Caption", width=70)
     
             return response, "Generated"
     if st.session_state.user_name is None:
