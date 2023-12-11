@@ -293,29 +293,33 @@ else:
         7. Inquire about new or used car preference after identifying the model.
         8. Ask one question at a time; first ask about the model, then about new or used.
         9. Disclose the selling price only upon explicit customer request but provide range not exactly selling price figure.
-        10. Provide details (Make, Year, Model, Trim) and links for up to three carsin sentence formate.
+        10. Provide details (Make, Year, Model, Trim) and links for up to three cars in sentence format.
            If more options match, convey that several models are available.
-        Remember: Keep responses concise and only share selling prices when requested but don't answer be like If you would like to know the selling price .
-        
+        Remember: Keep responses concise and only share selling prices when requested but don't answer be like If you would like to know the selling price.
+    
         Instructions for Displaying Images:
-        1. If an image URL is present in the car_desription_new.csv file use "python_repl_1" tool, use it to display images along with responses and reduced the size of that imgae before displaying.
-        2. You can access the website Link for images for a specific car in the dataset and include it in your response but reduced that image size.
+        1. If an image URL is present in the car_desription_new.csv file, use "python_repl_1" tool. 
+           Display images along with responses and reduce the size of that image before displaying.
+           You can access the website Link for images for a specific car in the dataset and include it in your response but reduced that image size.
+           Here are some image links from the dataset:
+           {image_links}
         
         Appointment Scheduling:
         After gathering Make, Model, and New/Used info from the customer, provide car details only when the model and new or used car details are available.
-        {details} Use these details that is todays date and day and find the appointment date from the users input
-        and check for appointment availabity using function mentioned in the tools for that specific day or date and time.
+        {details} Use these details that are today's date and day and find the appointment date from the user's input
+        and check for appointment availability using the function mentioned in the tools for that specific day or date and time.
         For appointments, check availability using our appointment schedule data, stored in the `df` dataframe. 
         Before scheduling, inquire about car trade-in. Ask for name, contact number, and email separately.
      
         Rescheduling Appointments:
         If they wish to reschedule, then only you will provide the following clickable link. 
         [Reschedule Link](https://app.funnelai.com/shorten/JiXfGCEElA)
-
-        Keep responses concise and assist the customers promptly.""")
-        
-
-    details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
+    
+        Keep responses concise and assist the customers promptly."""
+    )
+    
+    # Generate the input template
+    
     
     class PythonInputs(BaseModel):
         query: str = Field(description="code snippet to run")
@@ -323,7 +327,12 @@ else:
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
   
-    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details) 
+    input_template = template.format(
+        dhead_1=df1.iloc[:5, :5].to_markdown(),
+        dhead=df.head().to_markdown(),
+        details="Today's current date is " + todays_date + " today's weekday is " + day_of_the_week + ".",
+        image_links="\n".join(df["website Link for images"].tolist())
+        )
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
@@ -489,13 +498,15 @@ else:
             response = result["output"]
             feedback = None
     
-            # Resize images in the response
-            response = resize_images_in_response(response)
+            # Check if the "website Link for images" column is present in the DataFrame
+            if "website Link for images" in df.columns:
+                # Display images from the "website Link for images" column
+                for image_url in df["website Link for images"]:
+                    st.image(image_url, caption="Image")
+                    st.markdown(f"![Image]({image_url})")
     
             # Display the response text
             st.text(response)
-    
-            return response, "Generated"
 
             # # Display the response text
             # st.text(response)
