@@ -551,7 +551,7 @@ else:
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
     
             # Use one column to display the user avatar and another for the response
-            col1, col2 = st.columns([0.2, 10])
+            col1, col2 = st.columns([0.7, 10])
     
             with col1:
                 st.image("icon-1024.png", width=50)
@@ -559,7 +559,7 @@ else:
             with col2:
                 # Use another column for the actual response content
                 st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 100%;'
+                    f'<div style="background-color: black; color: white; border-radius: 0; padding: 5px; width: 70%;'
                     f' box-shadow: 2px 2px 5px #888888;">'
                     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
                     f'</div>',
