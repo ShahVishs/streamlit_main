@@ -461,6 +461,7 @@ else:
         
         # Find all URLs in the text
         return re.findall(url_pattern, text)
+
     def conversational_chat(user_input):
         with st.spinner('processing...'):
             # If no matching pair is found in Airtable, use the original agent_executor
@@ -468,13 +469,17 @@ else:
             response = result["output"]
             feedback = None
     
-            # Display the response text
-            st.text(response.get("text", ""))
+            if isinstance(response, str):
+                # If the response is a string, assume it is the text
+                st.text(response)
+            else:
+                # Extract and display images from the response text
+                image_urls = extract_image_urls(response.get("text", ""))
+                for image_url in image_urls:
+                    resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
     
-            # Extract and display images from the response text
-            image_urls = extract_image_urls(response.get("text", ""))
-            for image_url in image_urls:
-                resize_and_display_image(image_url, max_width=70)  # Adjust max_width as needed
+                # Display the response text
+                st.text(response.get("text", ""))
     
             return response, "Generated"
 
