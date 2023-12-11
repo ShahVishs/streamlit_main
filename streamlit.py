@@ -238,8 +238,8 @@ df_image_links['image_links'] = df_image_links['website Link for images'].astype
 image_links_list = df_image_links['image_links'].tolist()
 
 # Convert the list of image links to a formatted string
-formatted_image_links = "\n".join(image_links_list)
-
+# formatted_image_links = "\n".join(image_links_list)
+formatted_image_links_list = "\n".join(image_links_list)
 
 
 # Create the first tool
