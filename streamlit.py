@@ -36,6 +36,9 @@ from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
 import json
 import requests 
+from PIL import Image
+import requests
+from io import BytesIO
 
 hide_share_button_style = """
     <style>
@@ -414,12 +417,15 @@ else:
             # Resize the image to a specific width while maintaining the aspect ratio
             img.thumbnail((max_width, img.height * max_width // img.width))
     
+            # Convert the PIL image to bytes
+            img_bytes = BytesIO()
+            img.save(img_bytes, format='JPEG')
+    
             # Display the resized image with a maximum width
-            st.image(img, caption="Resized Image", width=max_width, use_container_width=False)
+            st.image(img_bytes, caption="Resized Image", use_container_width=True)
     
         except Exception as e:
             st.error(f"Error loading and resizing image: {e}")
-
     # def conversational_chat(user_input):
     #     with st.spinner('processing...'):
     #         # Fetch question-and-answer pairs from Airtable based on the user's input
