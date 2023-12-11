@@ -226,6 +226,8 @@ else:
 
 file_1 = r'car_desription_new.csv'
 df2 = pd.read_csv(file_1)
+print("df2 contents:")
+print(df2.head()) 
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
 embeddings = OpenAIEmbeddings()
@@ -326,13 +328,8 @@ else:
 
     df = pd.read_csv("appointment_new.csv")
     df1 = pd.read_csv("make_model.csv")
-    print(df.columns)
-    input_template = template.format(
-        dhead_1=df1.iloc[:5, :5].to_markdown(),
-        dhead=df.head().to_markdown(),
-        details="Today's current date is " + todays_date + " today's weekday is " + day_of_the_week + ".",
-        image_links="\n".join(df2["website Link for images"].tolist())
-        )
+    
+    input_template = template.format(dhead_1=df1.iloc[:5, :5].to_markdown(),dhead=df.head().to_markdown(),details=details)
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
@@ -497,32 +494,7 @@ else:
             result = agent_executor({"input": user_input})
             response = result["output"]
             feedback = None
-    
-            # Check if the "website Link for images" column is present in the DataFrame
-            if "website Link for images" in df.columns:
-                # Display images from the "website Link for images" column
-                for image_url in df["website Link for images"]:
-                    st.image(image_url, caption="Image")
-                    st.markdown(f"![Image]({image_url})")
-    
-            # Display the response text
-            st.text(response)
-
-            # # Display the response text
-            # st.text(response)
-    
-            # Check if the response contains images
-            # if "website Link for images" in response:
-            #     image_urls = response["website Link for images"]
-    
-            #     # # Display the response text
-            #     # st.text(response["text"])
-    
-            #     # Display images separately
-            #     for image_url in image_urls:
-            #         st.image(image_url, caption="Image Caption", width=70)
-    
-            # return response, "Generated"
+            return response, "Generated"
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
         if user_name:
