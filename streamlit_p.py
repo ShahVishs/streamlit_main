@@ -342,6 +342,21 @@ def save_chat_to_airtable(user_name, user_input, output):
 #     result = agent_executor({"input": user_input})
 #     st.session_state.chat_history.append((user_input, result["output"]))
 #     return result["output"]
+# def conversational_chat(user_input, user_name):
+#     # Modify the input to include the username
+#     input_with_username = f"{user_name}: {user_input}"
+    
+#     # Pass the modified input to the agent_executor
+#     result = agent_executor({"input": input_with_username})
+    
+#     # Extract the output from the result
+#     output = result["output"]
+    
+#     # Save the chat history
+#     st.session_state.chat_history.append((input_with_username, output))
+    
+#     return result["output"]
+
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -352,10 +367,10 @@ def conversational_chat(user_input, user_name):
     # Extract the output from the result
     output = result["output"]
     
-    # Save the chat history
-    st.session_state.chat_history.append((input_with_username, output))
+    # Save the chat history without displaying the username in the user's message
+    st.session_state.chat_history.append((user_input, output))
     
-    return result["output"]
+    return output
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -372,7 +387,6 @@ with container:
         output = conversational_chat(user_input, st.session_state.user_name)
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
-            user_name = st.session_state.user_name
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
             col1, col2 = st.columns([0.7, 10]) 
             with col1:
