@@ -353,7 +353,7 @@ def conversational_chat(user_input, user_name):
     output = result["output"]
     
     # Save the chat history
-    st.session_state.chat_history.append((input_with_username, output))
+    st.session_state.chat_history.append((output))
     
     return result["output"]
 output = ""
