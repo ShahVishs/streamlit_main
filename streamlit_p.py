@@ -338,11 +338,24 @@ def save_chat_to_airtable(user_name, user_input, output):
         st.error(f"An error occurred while saving data to Airtable: {e}")
 
 # Function to perform conversational chat
-def conversational_chat(user_input):
-    result = agent_executor({"input": user_input})
-    st.session_state.chat_history.append((user_input, result["output"]))
-    return result["output"]
+# def conversational_chat(user_input):
+#     result = agent_executor({"input": user_input})
+#     st.session_state.chat_history.append((user_input, result["output"]))
+#     return result["output"]
+def conversational_chat(user_input, user_name):
+    # Modify the input to include the username
+    input_with_username = f"{user_name}: {user_input}"
     
+    # Pass the modified input to the agent_executor
+    result = agent_executor({"input": input_with_username})
+    
+    # Extract the output from the result
+    output = result["output"]
+    
+    # Save the chat history
+    st.session_state.chat_history.append((input_with_username, output))
+    
+    return result["output"]
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -355,8 +368,8 @@ with container:
         submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
-        output = conversational_chat(user_input)
-
+        # output = conversational_chat(user_input)
+        output = conversational_chat(user_input, st.session_state.user_name)
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             user_name = st.session_state.user_name
