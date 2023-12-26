@@ -321,7 +321,7 @@ class AgentExecutor:
         resized_image_html = self.process_image(image_link, width=300)
         return f'{output}\n{resized_image_html}' if resized_image_html else output
 
-    def __call__(self, inputs):
+        def __call__(self, inputs):
         user_input = inputs.get("input", "")
 
         # Check if the agent is OpenAIFunctionsAgent or ChatOpenAI
