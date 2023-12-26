@@ -357,6 +357,20 @@ def save_chat_to_airtable(user_name, user_input, output):
     
 #     return result["output"]
 
+# def conversational_chat(user_input, user_name):
+#     # Modify the input to include the username
+#     input_with_username = f"{user_name}: {user_input}"
+    
+#     # Pass the modified input to the agent_executor
+#     result = agent_executor({"input": input_with_username})
+    
+#     # Extract the output from the result
+#     output = result["output"]
+    
+#     # Save the chat history without displaying the username in the user's message
+#     st.session_state.chat_history.append((user_input, output))
+    
+#     return output
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -369,6 +383,14 @@ def conversational_chat(user_input, user_name):
     
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
+    
+    # Check if the response includes car details and an image
+    car_info = json.loads(output)
+    
+    # Modify the following lines based on the actual structure of your response
+    if 'make' in car_info and 'model' in car_info and 'image' in car_info:
+        # Display the resized image
+        display_resized_image(car_info['image'], width=300, height=200)
     
     return output
 output = ""
