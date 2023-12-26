@@ -375,7 +375,7 @@ def get_image_link(vehicle_details, df):
     # Assuming df is the DataFrame with columns like "Make," "Model," and "website Link for images"
     # Modify this logic based on the actual structure of your DataFrame
     vehicle_row = df[
-        (df["Make"] == vehicle_details["make"]) & (df["Model"] == vehicle_details["model"])
+        (df["Make"] == vehicle_details["Make"]) & (df["Model"] == vehicle_details["Model"])
     ]
     image_link = vehicle_row["website Link for images"].values[0] if not vehicle_row.empty else None
     return image_link
