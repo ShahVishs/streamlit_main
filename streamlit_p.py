@@ -406,24 +406,23 @@ def conversational_chat(user_input, user_name):
     # Extract the output from the result
     output = result["output"]
     
+    # Check if the response contains an image URL
+    image_url = result.get("info", {}).get("website Link for images")
+    if image_url:
+        # Display the image along with the answer
+        try:
+            response = requests.get(image_url, stream=True)
+            response.raise_for_status()
+            image = PILImage.open(io.BytesIO(response.content)).convert("RGB")
+            st.image(image, caption='Car Image', use_column_width=True)
+        except Exception as e:
+            st.warning(f"Error displaying image: {e}")
+    
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
     
-    # Display the output
-    st.text(output)
-
-    # Attempt to load the output as JSON
-    try:
-        response_json = json.loads(output)
-        
-        # Check if the response includes an image URL
-        if "image_url" in response_json:
-            # Display the resized image
-            display_resized_image(response_json["image_url"], width=400, height=None)
-    except json.JSONDecodeError:
-        pass
-
     return output
+
 output = ""
 with container:
     if st.session_state.user_name is None:
