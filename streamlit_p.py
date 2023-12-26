@@ -255,7 +255,7 @@ color, and basic features, kindly invite the customer to schedule an appointment
 for a comprehensive product overview by our experts.
 Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
 and contact details use search_business_details tool to get information.
-<img src="{website Link for images}" style="max-width: 60px; max-height: 60px;">
+<img src="{image_link}" style="max-width: 60px; max-height: 60px;">
 
 
 Keep responses concise, not exceeding two sentences and answers should be interactive.
@@ -278,7 +278,8 @@ class PythonInputs(BaseModel):
 
 #     input_template = template.format(dhead=df1.head().to_markdown(),details=details,available_makers=available_makers)
 # input_template = template.format(dhead_1=df1.iloc[:3, :5].to_markdown(),dhead=df.iloc[:5, :5].to_markdown(),details=details)
-input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(),details=details,name=name,dealership_name=dealership_name)
+# input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(),details=details,name=name,dealership_name=dealership_name)
+input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(), details=details, name=name, dealership_name=dealership_name, image_link=df.iloc[0]["website Link for images"])
 # class PythonInputs(BaseModel):
 #     query: str = Field(description="code snippet to run")
 # df1 = pd.read_csv("car_desription_new.csv")
