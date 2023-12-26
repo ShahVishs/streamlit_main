@@ -418,23 +418,18 @@ with container:
                 st.image("icon-1024.png", width=50)
             with col2:
                 st.markdown(
-                    f'<div style="display: flex; align-items: center;">'
-                    f'  <div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
                     f'    border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
                     f'    border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
                     f'    <span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                    f'  </div>'
-                    f'  <img src="{image_url}" alt="Car Image" width="100" height="100" style="margin-left: 10px; border-radius: 10px;">'
                     f'</div>',
                     unsafe_allow_html=True
                 )
-            
+        
             # Display image if available
             if image_url:
-                response = requests.get(image_url)
-                img = Image.open(BytesIO(response.content))
-                st.image(img, caption="Car Image", use_column_width=True)
-
+                st.image(image_url, caption="Car Image", use_column_width=True)
+         
         if st.session_state.user_name:
             try:
                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
