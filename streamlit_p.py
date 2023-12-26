@@ -324,8 +324,15 @@ class AgentExecutor:
     def __call__(self, inputs):
         user_input = inputs.get("input", "")
 
-        # Perform the conversation using the agent
-        result = self.agent({"input": user_input})
+        # Check if the agent is OpenAIFunctionsAgent or ChatOpenAI
+        if isinstance(self.agent, OpenAIFunctionsAgent):
+            # If it's an OpenAIFunctionsAgent, use the agent's process method
+            result = self.agent.process(inputs)
+        elif isinstance(self.agent, ChatOpenAI):
+            # If it's a ChatOpenAI, use the agent directly
+            result = self.agent({"input": user_input})
+        else:
+            raise ValueError("Unsupported agent type")
 
         # Extract the output and vehicle details from the result
         output = result["output"]
