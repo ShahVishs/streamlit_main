@@ -374,6 +374,32 @@ print("Car Description Columns:", df.columns)
     
 #     return result["output"]
 
+# def conversational_chat(user_input, user_name):
+#     # Modify the input to include the username
+#     input_with_username = f"{user_name}: {user_input}"
+    
+#     # Pass the modified input to the agent_executor
+#     result = agent_executor({"input": input_with_username})
+    
+#     # Extract the output from the result
+#     output = result["output"]
+    
+#     # Save the chat history without displaying the username in the user's message
+#     st.session_state.chat_history.append((user_input, output))
+    
+#     # Check if the response contains an image link
+#     if "[Car Image]" in output:
+#         try:
+#             # Extract the image link
+#             image_link = output.split("[Car Image](")[1].split(")")[0]
+            
+#             # Display the resized image
+#             st.image(image_link, caption="Car Image", use_container_width=True)
+#         except Exception as e:
+#             # Handle any potential errors
+#             st.error(f"An error occurred while displaying the image: {e}")
+    
+#     return output
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -393,8 +419,8 @@ def conversational_chat(user_input, user_name):
             # Extract the image link
             image_link = output.split("[Car Image](")[1].split(")")[0]
             
-            # Display the resized image
-            st.image(image_link, caption="Car Image", use_container_width=True)
+            # Display the image using HTML
+            st.markdown(f'<img src="{image_link}" alt="Car Image" style="max-width:100%;">', unsafe_allow_html=True)
         except Exception as e:
             # Handle any potential errors
             st.error(f"An error occurred while displaying the image: {e}")
