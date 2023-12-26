@@ -398,15 +398,17 @@ def conversational_chat(user_input, user_name):
     # Pass the modified input to the agent_executor
     result = agent_executor({"input": input_with_username})
     
-    # Extract the output and vehicle details from the result
+    # Extract the output from the result
     output = result["output"]
+    
+    # Get the vehicle details from the generated question (if available)
+    generated_question = result.get("generated_question", "")
     vehicle_details = {"make": "Toyota", "model": "Camry"}  # Example details, modify based on your response
     
     # Get the image link based on the vehicle details
     image_link = get_image_link(vehicle_details, df)
     
     # Save the chat history without displaying the username in the user's message
-    # st.session_state.chat_history.append((user_input, output))
     st.session_state.chat_history.append((user_input, (output, image_link)))
     
     return output, image_link
