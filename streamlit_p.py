@@ -399,6 +399,7 @@ def conversational_chat(user_input, user_name):
     
     return output, image_link
 output = ""
+image_link = ""
 with container:
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
