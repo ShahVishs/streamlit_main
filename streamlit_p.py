@@ -357,6 +357,13 @@ def save_chat_to_airtable(user_name, user_input, output):
     
 #     return result["output"]
 
+def extract_image_url(response):
+    # Use a regular expression to extract the image URL from the response
+    match = re.search(r'View image\s*:\s*(\S+)', response)
+    if match:
+        return match.group(1)
+    return None
+
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -370,10 +377,14 @@ def conversational_chat(user_input, user_name):
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
     
-    # Check if the output contains an image link
-    if "<img src=" in output:
-        # Modify the HTML to display the image in a smaller size
-        output = output.replace('<img', '<img style="max-width: 200px; max-height: 200px;"')
+    # Check if the output contains a clickable link to view images
+    if "View image" in output:
+        # Extract the dynamic image URL
+        image_url = extract_image_url(output)
+        
+        # Replace the link with an embedded image tag
+        if image_url:
+            output = output.replace('View image', f'<img src="{image_url}" style="max-width: 60px; max-height: 60px;" />')
 
     return output
 output = ""
