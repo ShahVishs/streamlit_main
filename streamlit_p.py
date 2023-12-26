@@ -374,11 +374,18 @@ def save_chat_to_airtable(user_name, user_input, output):
 def get_image_link(vehicle_details, df):
     # Assuming df is the DataFrame with columns like "Make," "Model," and "website Link for images"
     # Modify this logic based on the actual structure of your DataFrame
-    vehicle_row = df[
-        (df["Make"] == vehicle_details["Make"]) & (df["Model"] == vehicle_details["Model"])
-    ]
-    image_link = vehicle_row["website Link for images"].values[0] if not vehicle_row.empty else None
-    return image_link
+    make_col = [col for col in df.columns if col.lower() == "make"]
+    model_col = [col for col in df.columns if col.lower() == "model"]
+
+    if make_col and model_col:
+        vehicle_row = df[
+            (df[make_col[0]] == vehicle_details["Make"]) & (df[model_col[0]] == vehicle_details["Model"])
+        ]
+        image_link_col = "website Link for images"
+        image_link = vehicle_row[image_link_col].values[0] if not vehicle_row.empty else None
+        return image_link
+    else:
+        return None
 
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
