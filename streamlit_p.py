@@ -255,7 +255,7 @@ color, and basic features, kindly invite the customer to schedule an appointment
 for a comprehensive product overview by our experts.
 Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
 and contact details use search_business_details tool to get information.
-<img src="{image_link}" style="max-width: 60px; max-height: 60px;">
+<img src="{website Link for images}" style="max-width: 60px; max-height: 60px;">
 
 
 Keep responses concise, not exceeding two sentences and answers should be interactive.
@@ -358,14 +358,7 @@ def save_chat_to_airtable(user_name, user_input, output):
     
 #     return result["output"]
 
-def extract_image_url(response):
-    # Use a regular expression to extract the image URL from the response
-    match = re.search(r'(?i)(?:View images here|images are available here)\s*:\s*([^\s]+)', response)
-    if match:
-        return match.group(1)
-    return None
-
-def conversational_chat(user_input, user_name, template):
+def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
     
@@ -378,17 +371,7 @@ def conversational_chat(user_input, user_name, template):
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
     
-    # Check if the output contains an image link
-    if "<img src=" in output:
-        # Modify the HTML to display the image in a smaller size
-        output = output.replace('<img', '<img style="max-width: 60px; max-height: 60px;"')
-
-    # If you have a dynamic image link, replace the placeholder in the template
-    dynamic_image_link = "your_dynamic_image_url.jpg"  # Replace with the actual dynamically retrieved image link
-    dynamic_image_tag = f'<img src="{dynamic_image_link}" style="max-width: 200px; max-height: 200px;">'
-    output_with_dynamic_image = output.replace('{image_tag}', dynamic_image_tag)
-
-    return output_with_dynamic_image
+    return output
 output = ""
 with container:
     if st.session_state.user_name is None:
