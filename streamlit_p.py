@@ -437,7 +437,7 @@ def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
 
     # Pass the modified input to the agent_executor
-    result = agent_executor({"input": input_with_username})
+    result = agent_executor.agent.execute({"input": input_with_username})
 
     # Extract the processed output
     processed_output = result["output"]
