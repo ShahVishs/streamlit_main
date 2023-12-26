@@ -173,6 +173,7 @@ langchain.debug=True
 # memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
 template = """You are an costumer care support exectutive respond in 
 Personable, Humorous, emotional intelligent, creative, witty and engaging.
 The name of the costumer is {name} and the dealership name is {dealership_name} and 
@@ -300,10 +301,50 @@ repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
 # repl_1 = PythonAstREPLTool(locals={"df1": df1}, name="python_repl_1",
 #         description="Use this to get full comprehensive list of make, model of cars and also for checking a single model or make availability")
 tools = [tool1, repl, tool2, tool3]
+class AgentExecutor:
+    def __init__(self, agent, tools, memory, verbose=False, return_source_documents=False, return_generated_question=False):
+        self.agent = agent
+        self.tools = tools
+        self.memory = memory
+        self.verbose = verbose
+        self.return_source_documents = return_source_documents
+        self.return_generated_question = return_generated_question
+
+    def process_image(self, image_link, width=300):
+        # Add your image processing logic here (e.g., resizing)
+        # Return the HTML code for displaying the resized image
+        if image_link:
+            return f'<img src="{image_link}" alt="Vehicle Image" width="{width}" />'
+        return ""
+
+    def process_output(self, output, image_link):
+        resized_image_html = self.process_image(image_link, width=300)
+        return f'{output}\n{resized_image_html}' if resized_image_html else output
+
+    def __call__(self, inputs):
+        user_input = inputs.get("input", "")
+
+        # Perform the conversation using the agent
+        result = self.agent({"input": user_input})
+
+        # Extract the output and vehicle details from the result
+        output = result["output"]
+        vehicle_details = {"make": "Toyota", "model": "Camry"}  # Example details, modify based on your response
+
+        # Get the image link based on the vehicle details
+        image_link = get_image_link(vehicle_details, df)
+
+        # Save the chat history without displaying the username in the user's message
+        st.session_state.chat_history.append((user_input, (output, image_link)))
+
+        # Process the output to include the resized image
+        processed_output = self.process_output(output, image_link)
+
+        return {"output": processed_output}
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
-    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-        return_generated_question=True)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
+                                   return_source_documents=True, return_generated_question=True)
     st.session_state.agent_executor = agent_executor
 else:
     agent_executor = st.session_state.agent_executor
@@ -394,24 +435,14 @@ def get_image_link(vehicle_details, df):
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
-    
+
     # Pass the modified input to the agent_executor
     result = agent_executor({"input": input_with_username})
-    
-    # Extract the output from the result
-    output = result["output"]
-    
-    # Get the vehicle details from the generated question (if available)
-    generated_question = result.get("generated_question", "")
-    vehicle_details = {"make": "Toyota", "model": "Camry"}  # Example details, modify based on your response
-    
-    # Get the image link based on the vehicle details
-    image_link = get_image_link(vehicle_details, df)
-    
-    # Save the chat history without displaying the username in the user's message
-    st.session_state.chat_history.append((user_input, (output, image_link)))
-    
-    return output, image_link
+
+    # Extract the processed output
+    processed_output = result["output"]
+
+    return processed_output
 output = ""
 image_link = ""
 with container:
