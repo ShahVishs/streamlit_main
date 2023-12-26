@@ -197,8 +197,13 @@ Do not disclose or ask the costumer if he likes to know the selling price of a c
 disclose selling price only when the customer explicitly requests it use "details_of_car" tool.
 Here's a suggested response format while providing car details:
 "We have several models available. Here are a few options:"
-If the customer's query matches a car model, respond with a list of car without square brackets, 
+If the customer's query matches a car model, respond with a list of cars without square brackets,
 including the make, year, model, and trim, and provide their respective links in the answer.
+
+Example:
+- [Car 1](link_to_image_1)
+- [Car 2](link_to_image_2)
+- [Car 3](link_to_image_3)
 
 checking Appointments Avaliability: If inquiry lacks specific details like day, date or time kindly engage by 
 asking for these specifics.
@@ -256,12 +261,14 @@ color, and basic features, kindly invite the customer to schedule an appointment
 for a comprehensive product overview by our experts.
 Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
 and contact details use search_business_details tool to get information.
-<img src="{image_link}" style="max-width: 60px; max-height: 60px;">
+
 
 
 Keep responses concise, not exceeding two sentences and answers should be interactive.
 Respond in a polite US english.
 answer only from the provided content dont makeup answers.
+
+{image_link_placeholder}
 """
 details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
 # name="peter"
@@ -280,7 +287,13 @@ class PythonInputs(BaseModel):
 #     input_template = template.format(dhead=df1.head().to_markdown(),details=details,available_makers=available_makers)
 # input_template = template.format(dhead_1=df1.iloc[:3, :5].to_markdown(),dhead=df.iloc[:5, :5].to_markdown(),details=details)
 # input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(),details=details,name=name,dealership_name=dealership_name)
-input_template = template.format(dhead=df_car_description.iloc[:3, :5].to_markdown(), details=details, name=name, dealership_name=dealership_name, image_link=df_car_description.iloc[0]["website Link for images"])
+input_template = template.format(
+    dhead=df.iloc[:3, :5].to_markdown(),
+    details=details,
+    name=name,
+    dealership_name=dealership_name,
+    image_link_placeholder="[Car Image](link_to_resized_image)",
+)
 # class PythonInputs(BaseModel):
 #     query: str = Field(description="code snippet to run")
 # df1 = pd.read_csv("car_desription_new.csv")
@@ -373,6 +386,12 @@ def conversational_chat(user_input, user_name):
     
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
+    
+    # Check if the response contains an image link
+    if "[Car Image]" in output:
+        # Extract the image link and display the resized image
+        image_link = output.split("[Car Image](")[1].split(")")[0]
+        st.image(image_link, caption="Car Image", use_container_width=True)
     
     return output
 output = ""
