@@ -389,9 +389,15 @@ def conversational_chat(user_input, user_name):
     
     # Check if the response contains an image link
     if "[Car Image]" in output:
-        # Extract the image link and display the resized image
-        image_link = output.split("[Car Image](")[1].split(")")[0]
-        st.image(image_link, caption="Car Image", use_container_width=True)
+        try:
+            # Extract the image link
+            image_link = output.split("[Car Image](")[1].split(")")[0]
+            
+            # Display the resized image
+            st.image(image_link, caption="Car Image", use_container_width=True)
+        except Exception as e:
+            # Handle any potential errors
+            st.error(f"An error occurred while displaying the image: {e}")
     
     return output
 output = ""
