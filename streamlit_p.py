@@ -418,12 +418,14 @@ def conversational_chat(user_input, user_name):
             st.image(image, caption='Car Image', use_column_width=True)
         except Exception as e:
             st.warning(f"Error displaying image: {e}")
+    else:
+        # If no image URL is provided, display the regular text response
+        st.write(output)
     
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
     
     return output
-
 
 output = ""
 with container:
