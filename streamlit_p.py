@@ -438,7 +438,7 @@ with container:
         
             # Display image if available
             if image_link:
-                st.image(image_link, width=100, caption="Vehicle Image")
+                st.image(image_link, width=60, caption="Vehicle Image")
          
         if st.session_state.user_name:
             try:
