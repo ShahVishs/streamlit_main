@@ -409,21 +409,19 @@ def conversational_chat(user_input, user_name):
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
     
+    # Display the output
+    st.text(output)
+
+    # Attempt to load the output as JSON
     try:
         response_json = json.loads(output)
-        if 'info' in response_json and 'image_url' in response_json['info']:
-            # Display the text response
-            st.text(response_json['info'])
-
-            # Display the image
-            display_resized_image(response_json['info']['image_url'], width=300, height=200)
-        else:
-            # Print the plain text output
-            st.text("Output received:", output)
-
+        
+        # Check if the response includes an image URL
+        if "image_url" in response_json:
+            # Display the resized image
+            display_resized_image(response_json["image_url"], width=400, height=None)
     except json.JSONDecodeError:
-        # Print the plain text output
-        st.text("Output received:", output)
+        pass
 
     return output
 output = ""
