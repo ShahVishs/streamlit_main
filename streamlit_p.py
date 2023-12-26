@@ -402,7 +402,8 @@ def conversational_chat(user_input, user_name):
     image_link = get_image_link(vehicle_details, df)
     
     # Save the chat history without displaying the username in the user's message
-    st.session_state.chat_history.append((user_input, output))
+    # st.session_state.chat_history.append((user_input, output))
+    st.session_state.chat_history.append((user_input, (output, image_link)))
     
     return output, image_link
 output = ""
@@ -421,7 +422,7 @@ with container:
         # output = conversational_chat(user_input)
         output = conversational_chat(user_input, st.session_state.user_name)
     with response_container:
-        for i, (query, answer, image_url) in enumerate(st.session_state.chat_history):
+        for i, (query, (output, image_link)) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
             col1, col2 = st.columns([0.7, 10]) 
             with col1:
