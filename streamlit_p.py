@@ -35,7 +35,7 @@ from langchain.prompts import MessagesPlaceholder
 from langchain.agents import AgentExecutor
 from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
-import json
+
 hide_share_button_style = """
     <style>
     .st-emotion-cache-zq5wmm.ezrtsby0 .stActionButton:nth-child(1) {
@@ -173,7 +173,6 @@ langchain.debug=True
 # memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-
 template = """You are an costumer care support exectutive respond in 
 Personable, Humorous, emotional intelligent, creative, witty and engaging.
 The name of the costumer is {name} and the dealership name is {dealership_name} and 
@@ -301,57 +300,10 @@ repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
 # repl_1 = PythonAstREPLTool(locals={"df1": df1}, name="python_repl_1",
 #         description="Use this to get full comprehensive list of make, model of cars and also for checking a single model or make availability")
 tools = [tool1, repl, tool2, tool3]
-class AgentExecutor:
-    def __init__(self, agent, tools, memory, verbose=False, return_source_documents=False, return_generated_question=False):
-        self.agent = agent
-        self.tools = tools
-        self.memory = memory
-        self.verbose = verbose
-        self.return_source_documents = return_source_documents
-        self.return_generated_question = return_generated_question
-
-    def process_image(self, image_link, width=300):
-        # Add your image processing logic here (e.g., resizing)
-        # Return the HTML code for displaying the resized image
-        if image_link:
-            return f'<img src="{image_link}" alt="Vehicle Image" width="{width}" />'
-        return ""
-
-    def process_output(self, output, image_link):
-        resized_image_html = self.process_image(image_link, width=300)
-        return f'{output}\n{resized_image_html}' if resized_image_html else output
-
-        def __call__(self, inputs):
-        user_input = inputs.get("input", "")
-
-        # Check if the agent is OpenAIFunctionsAgent or ChatOpenAI
-        if isinstance(self.agent, OpenAIFunctionsAgent):
-            # If it's an OpenAIFunctionsAgent, use the agent's process method
-            result = self.agent.process(inputs)
-        elif isinstance(self.agent, ChatOpenAI):
-            # If it's a ChatOpenAI, use the agent directly
-            result = self.agent({"input": user_input})
-        else:
-            raise ValueError("Unsupported agent type")
-
-        # Extract the output and vehicle details from the result
-        output = result["output"]
-        vehicle_details = {"make": "Toyota", "model": "Camry"}  # Example details, modify based on your response
-
-        # Get the image link based on the vehicle details
-        image_link = get_image_link(vehicle_details, df)
-
-        # Save the chat history without displaying the username in the user's message
-        st.session_state.chat_history.append((user_input, (output, image_link)))
-
-        # Process the output to include the resized image
-        processed_output = self.process_output(output, image_link)
-
-        return {"output": processed_output}
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
-    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
-                                   return_source_documents=True, return_generated_question=True)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+        return_generated_question=True)
     st.session_state.agent_executor = agent_executor
 else:
     agent_executor = st.session_state.agent_executor
@@ -405,40 +357,6 @@ def save_chat_to_airtable(user_name, user_input, output):
     
 #     return result["output"]
 
-# def conversational_chat(user_input, user_name):
-#     # Modify the input to include the username
-#     input_with_username = f"{user_name}: {user_input}"
-    
-#     # Pass the modified input to the agent_executor
-#     result = agent_executor({"input": input_with_username})
-    
-#     # Extract the output from the result
-#     output = result["output"]
-    
-#     # Save the chat history without displaying the username in the user's message
-#     st.session_state.chat_history.append((user_input, output))
-    
-#     return output
-def get_image_link(vehicle_details, df):
-    # Assuming df is the DataFrame with columns like "Make," "Model," and "website Link for images"
-    # Modify this logic based on the actual structure of your DataFrame
-    make_col = [col for col in df.columns if col.lower() == "make"]
-    model_col = [col for col in df.columns if col.lower() == "model"]
-
-    if make_col and model_col:
-        vehicle_row = df[
-            (df[make_col[0]] == vehicle_details["Make"]) & (df[model_col[0]] == vehicle_details["Model"])
-        ]
-        image_link_col = "website Link for images"
-        image_link = vehicle_row[image_link_col].values[0] if not vehicle_row.empty else None
-        
-        # Print image_link for debugging
-        print("Image Link:", image_link)
-        
-        return image_link
-    else:
-        return None
-
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -452,34 +370,13 @@ def conversational_chat(user_input, user_name):
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
     
-    # Check if the output contains an image URL with a specific structure
-    img_urls = re.findall(r'https://\S+\.png', output)
-
-    if img_urls:
-        # Resize and display each image
-        for img_url in img_urls:
-            resized_image_stream = resize_image(img_url)
-            st.image(resized_image_stream)
-    else:
-        # Display the text output
-        st.write(output)
+    # Check if the output contains an image link
+    if "<img src=" in output:
+        # Modify the HTML to display the image in a smaller size
+        output = output.replace('<img', '<img style="max-width: 200px; max-height: 200px;"')
 
     return output
-
-def resize_image(img_url):
-    # Download and resize the image
-    response = requests.get(img_url)
-    img = Image.open(BytesIO(response.content))
-    resized_img = img.resize((100, 100))  # Adjust the size as needed
-
-    # Display the resized image
-    resized_image_stream = BytesIO()
-    resized_img.save(resized_image_stream, format="PNG")
-    resized_image_stream.seek(0)
-
-    return resized_image_stream
 output = ""
-image_link = ""
 with container:
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -494,26 +391,21 @@ with container:
         # output = conversational_chat(user_input)
         output = conversational_chat(user_input, st.session_state.user_name)
     with response_container:
-        for i, (query, (output, image_link)) in enumerate(st.session_state.chat_history):
+        for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
             col1, col2 = st.columns([0.7, 10]) 
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
                 st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                    f'    border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                    f'    border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                    f'    <span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output}</span>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-                
-                # Display image if available
-                if image_link:
-                    st.image(image_link, width=300, caption="Vehicle Image")
-           
-         
+                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
         if st.session_state.user_name:
             try:
                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
