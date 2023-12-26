@@ -255,6 +255,7 @@ color, and basic features, kindly invite the customer to schedule an appointment
 for a comprehensive product overview by our experts.
 Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
 and contact details use search_business_details tool to get information.
+<img src="{image_link}" style="max-width: 60px; max-height: 60px;">
 
 
 Keep responses concise, not exceeding two sentences and answers should be interactive.
@@ -364,7 +365,7 @@ def extract_image_url(response):
         return match.group(1)
     return None
 
-def conversational_chat(user_input, user_name):
+def conversational_chat(user_input, user_name, template):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
     
@@ -377,16 +378,17 @@ def conversational_chat(user_input, user_name):
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
     
-    # Check if the output contains a clickable link to view images
-    if "View image" in output:
-        # Extract the dynamic image URL
-        image_url = extract_image_url(output)
-        
-        # Replace the link with an embedded image tag
-        if image_url:
-            output = output.replace('View image', f'<img src="{image_url}" style="max-width: 60px; max-height: 60px;" />')
+    # Check if the output contains an image link
+    if "<img src=" in output:
+        # Modify the HTML to display the image in a smaller size
+        output = output.replace('<img', '<img style="max-width: 60px; max-height: 60px;"')
 
-    return output
+    # If you have a dynamic image link, replace the placeholder in the template
+    dynamic_image_link = "your_dynamic_image_url.jpg"  # Replace with the actual dynamically retrieved image link
+    dynamic_image_tag = f'<img src="{dynamic_image_link}" style="max-width: 200px; max-height: 200px;">'
+    output_with_dynamic_image = output.replace('{image_tag}', dynamic_image_tag)
+
+    return output_with_dynamic_image
 output = ""
 with container:
     if st.session_state.user_name is None:
