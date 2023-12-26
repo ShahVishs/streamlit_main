@@ -396,6 +396,7 @@ def display_resized_image(image_url, width=None, height=None):
     except Exception as e:
         print(f"Error displaying image: {e}")
         
+
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -422,6 +423,7 @@ def conversational_chat(user_input, user_name):
     st.session_state.chat_history.append((user_input, output))
     
     return output
+
 
 output = ""
 with container:
