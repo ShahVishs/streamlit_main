@@ -397,6 +397,15 @@ def display_resized_image(image_url, width=None, height=None):
         print(f"Error displaying image: {e}")
         
 
+def display_image(image_url):
+    try:
+        response = requests.get(image_url, stream=True)
+        response.raise_for_status()
+        image = PILImage.open(io.BytesIO(response.content)).convert("RGB")
+        st.image(image, caption='Car Image', use_column_width=True)
+    except Exception as e:
+        st.warning(f"Error displaying image: {e}")
+
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -411,13 +420,7 @@ def conversational_chat(user_input, user_name):
     image_url = result.get("info", {}).get("website Link for images")
     if image_url:
         # Display the image along with the answer
-        try:
-            response = requests.get(image_url, stream=True)
-            response.raise_for_status()
-            image = PILImage.open(io.BytesIO(response.content)).convert("RGB")
-            st.image(image, caption='Car Image', use_column_width=True)
-        except Exception as e:
-            st.warning(f"Error displaying image: {e}")
+        display_image(image_url)
     else:
         # If no image URL is provided, display the regular text response
         st.write(output)
@@ -426,7 +429,6 @@ def conversational_chat(user_input, user_name):
     st.session_state.chat_history.append((user_input, output))
     
     return output
-
 output = ""
 with container:
     if st.session_state.user_name is None:
