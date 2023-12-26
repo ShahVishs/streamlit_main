@@ -101,7 +101,8 @@ file_1 = r'car_desription_new.csv'
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
 embeddings = OpenAIEmbeddings()
-vectorstore_1 = FAISS.from_documents(docs_1, embeddings)
+vectorstore_1 = FAISS.from_documents(docs_1, embeddings)df
+df_car_description = pd.read_csv(file_1)  # Adjust this line to read the car description DataFrame
 retriever_1 = vectorstore_1.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.5,"k": 3})
 # retriever_1 = vectorstore_1.as_retriever(search_type="similarity", search_kwargs={"k": 3})#check without similarity search and k=8
 file_2 = r'short_car_details.csv'
@@ -279,7 +280,7 @@ class PythonInputs(BaseModel):
 #     input_template = template.format(dhead=df1.head().to_markdown(),details=details,available_makers=available_makers)
 # input_template = template.format(dhead_1=df1.iloc[:3, :5].to_markdown(),dhead=df.iloc[:5, :5].to_markdown(),details=details)
 # input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(),details=details,name=name,dealership_name=dealership_name)
-input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(), details=details, name=name, dealership_name=dealership_name, image_link=df.iloc[0]["website Link for images"])
+input_template = template.format(dhead=df_car_description.iloc[:3, :5].to_markdown(), details=details, name=name, dealership_name=dealership_name, image_link=df_car_description.iloc[0]["website Link for images"])
 # class PythonInputs(BaseModel):
 #     query: str = Field(description="code snippet to run")
 # df1 = pd.read_csv("car_desription_new.csv")
