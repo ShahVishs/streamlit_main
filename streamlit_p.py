@@ -371,6 +371,13 @@ def save_chat_to_airtable(user_name, user_input, output):
 #     st.session_state.chat_history.append((user_input, output))
     
 #     return output
+def get_image_link(vehicle_details):
+    # Assuming df is the DataFrame with columns like "Make," "Model," and "Image_Link"
+    # Modify this logic based on the actual structure of your DataFrame
+    vehicle_row = df[(df["Make"] == vehicle_details["make"]) & (df["Model"] == vehicle_details["model"])]
+    image_link = vehicle_row["website Link for images"].values[0] if not vehicle_row.empty else None
+    return image_link
+
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -380,22 +387,17 @@ def conversational_chat(user_input, user_name):
     
     # Extract the output from the result
     output = result["output"]
-
-    # Extract image URL if present in the output
-    image_url = extract_image_url(output)
+    
+    # Extract the vehicle details from the response (modify this based on your response format)
+    vehicle_details = {"make": "Toyota", "model": "Camry"}  # Example details, modify based on your response
+    
+    # Get the image link based on the vehicle details
+    image_link = get_image_link(vehicle_details)
     
     # Save the chat history without displaying the username in the user's message
-    st.session_state.chat_history.append((user_input, output, image_url))
+    st.session_state.chat_history.append((user_input, output, image_link))
     
-    return output
-
-# Function to extract image URL from the output
-def extract_image_url(output):
-    try:
-        output_json = json.loads(output)
-        return output_json.get("info", {}).get("website Link for images")
-    except json.JSONDecodeError:
-        return None
+    return output, image_link
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -427,8 +429,8 @@ with container:
                 )
         
             # Display image if available
-            if image_url:
-                st.image(image_url, caption="Car Image", use_column_width=True)
+            if image_link:
+                st.image(image_link, width=100, caption="Vehicle Image")
          
         if st.session_state.user_name:
             try:
