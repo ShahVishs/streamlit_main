@@ -393,7 +393,7 @@ def conversational_chat(user_input, user_name):
 def extract_image_url(output):
     try:
         output_json = json.loads(output)
-        return output_json.get("info", {}).get(website Link for images)
+        return output_json.get("info", {}).get("website Link for images")
     except json.JSONDecodeError:
         return None
 output = ""
