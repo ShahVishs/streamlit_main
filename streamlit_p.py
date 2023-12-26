@@ -371,10 +371,12 @@ def save_chat_to_airtable(user_name, user_input, output):
 #     st.session_state.chat_history.append((user_input, output))
     
 #     return output
-def get_image_link(vehicle_details):
-    # Assuming df is the DataFrame with columns like "Make," "Model," and "Image_Link"
+def get_image_link(vehicle_details, df):
+    # Assuming df is the DataFrame with columns like "Make," "Model," and "website Link for images"
     # Modify this logic based on the actual structure of your DataFrame
-    vehicle_row = df[(df["Make"] == vehicle_details["make"]) & (df["Model"] == vehicle_details["model"])]
+    vehicle_row = df[
+        (df["Make"] == vehicle_details["make"]) & (df["Model"] == vehicle_details["model"])
+    ]
     image_link = vehicle_row["website Link for images"].values[0] if not vehicle_row.empty else None
     return image_link
 
@@ -385,14 +387,12 @@ def conversational_chat(user_input, user_name):
     # Pass the modified input to the agent_executor
     result = agent_executor({"input": input_with_username})
     
-    # Extract the output from the result
+    # Extract the output and vehicle details from the result
     output = result["output"]
-    
-    # Extract the vehicle details from the response (modify this based on your response format)
     vehicle_details = {"make": "Toyota", "model": "Camry"}  # Example details, modify based on your response
     
     # Get the image link based on the vehicle details
-    image_link = get_image_link(vehicle_details)
+    image_link = get_image_link(vehicle_details, df)
     
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output, image_link))
