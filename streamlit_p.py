@@ -402,7 +402,7 @@ def conversational_chat(user_input, user_name):
     image_link = get_image_link(vehicle_details, df)
     
     # Save the chat history without displaying the username in the user's message
-    st.session_state.chat_history.append((user_input, output, image_link))
+    st.session_state.chat_history.append((user_input, output))
     
     return output, image_link
 output = ""
