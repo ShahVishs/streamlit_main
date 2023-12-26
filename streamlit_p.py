@@ -383,6 +383,10 @@ def get_image_link(vehicle_details, df):
         ]
         image_link_col = "website Link for images"
         image_link = vehicle_row[image_link_col].values[0] if not vehicle_row.empty else None
+        
+        # Print image_link for debugging
+        print("Image Link:", image_link)
+        
         return image_link
     else:
         return None
