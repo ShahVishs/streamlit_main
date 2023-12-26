@@ -339,7 +339,8 @@ def save_chat_to_airtable(user_name, user_input, output):
         )
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
-
+print("Car Description Columns:", df.columns)
+print("Appointment Columns:", appointment_df.columns)
 # Function to perform conversational chat
 # def conversational_chat(user_input):
 #     result = agent_executor({"input": user_input})
