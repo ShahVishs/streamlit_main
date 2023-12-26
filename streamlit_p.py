@@ -442,14 +442,42 @@ def get_image_link(vehicle_details, df):
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
-
+    
     # Pass the modified input to the agent_executor
-    result = agent_executor.agent.execute({"input": input_with_username})
+    result = agent_executor({"input": input_with_username})
+    
+    # Extract the output from the result
+    output = result["output"]
+    
+    # Save the chat history without displaying the username in the user's message
+    st.session_state.chat_history.append((user_input, output))
+    
+    # Check if the output contains an image URL with a specific structure
+    img_urls = re.findall(r'https://\S+\.png', output)
 
-    # Extract the processed output
-    processed_output = result["output"]
+    if img_urls:
+        # Resize and display each image
+        for img_url in img_urls:
+            resized_image_stream = resize_image(img_url)
+            st.image(resized_image_stream)
+    else:
+        # Display the text output
+        st.write(output)
 
-    return processed_output
+    return output
+
+def resize_image(img_url):
+    # Download and resize the image
+    response = requests.get(img_url)
+    img = Image.open(BytesIO(response.content))
+    resized_img = img.resize((100, 100))  # Adjust the size as needed
+
+    # Display the resized image
+    resized_image_stream = BytesIO()
+    resized_img.save(resized_image_stream, format="PNG")
+    resized_image_stream.seek(0)
+
+    return resized_image_stream
 output = ""
 image_link = ""
 with container:
