@@ -384,14 +384,24 @@ def conversational_chat(user_input, user_name):
     # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
     
-    # Check if the response includes car details and an image
-    car_info = json.loads(output)
+    try:
+        # Attempt to load the output as JSON
+        car_info = json.loads(output)
+        
+        # Check if the car_info contains the expected keys
+        if 'info' in car_info and 'image_url' in car_info['info']:
+            # Display car information
+            print(json.dumps(car_info['info'], indent=2))
+            
+            # Display the resized image
+            display_resized_image(car_info['info']['image_url'], width=300, height=200)
+        else:
+            print("Unexpected response format:", output)
     
-    # Modify the following lines based on the actual structure of your response
-    if 'make' in car_info and 'model' in car_info and 'image' in car_info:
-        # Display the resized image
-        display_resized_image(car_info['image'], width=300, height=200)
-    
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        print("Output received:", output)
+
     return output
 output = ""
 with container:
