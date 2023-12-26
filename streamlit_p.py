@@ -371,41 +371,6 @@ def save_chat_to_airtable(user_name, user_input, output):
 #     st.session_state.chat_history.append((user_input, output))
     
 #     return output
-def display_resized_image(image_url, width=None, height=None):
-    try:
-        # Fetch the image and resize it
-        response = requests.get(image_url, stream=True)
-        response.raise_for_status()
-
-        # Open the image from the response content
-        image = PILImage.open(io.BytesIO(response.content)).convert("RGB")
-
-        if width and height:
-            image = image.resize((width, height))
-        elif width:
-            w_percent = (width / float(image.size[0]))
-            h_size = int((float(image.size[1]) * float(w_percent)))
-            image = image.resize((width, h_size), PILImage.ANTIALIAS)
-        elif height:
-            h_percent = (height / float(image.size[1]))
-            w_size = int((float(image.size[0]) * float(h_percent)))
-            image = image.resize((w_size, height), PILImage.ANTIALIAS)
-
-        # Display the resized image
-        display(image)
-    except Exception as e:
-        print(f"Error displaying image: {e}")
-        
-
-def display_image(image_url):
-    try:
-        response = requests.get(image_url, stream=True)
-        response.raise_for_status()
-        image = PILImage.open(io.BytesIO(response.content)).convert("RGB")
-        st.image(image, caption='Car Image', use_column_width=True)
-    except Exception as e:
-        st.warning(f"Error displaying image: {e}")
-
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -415,20 +380,22 @@ def conversational_chat(user_input, user_name):
     
     # Extract the output from the result
     output = result["output"]
-    
-    # Check if the response contains an image URL
-    image_url = result.get("info", {}).get("website Link for images")
-    if image_url:
-        # Display the image along with the answer
-        display_image(image_url)
-    else:
-        # If no image URL is provided, display the regular text response
-        st.write(output)
+
+    # Extract image URL if present in the output
+    image_url = extract_image_url(output)
     
     # Save the chat history without displaying the username in the user's message
-    st.session_state.chat_history.append((user_input, output))
+    st.session_state.chat_history.append((user_input, output, image_url))
     
     return output
+
+# Function to extract image URL from the output
+def extract_image_url(output):
+    try:
+        output_json = json.loads(output)
+        return output_json.get("info", {}).get(website Link for images)
+    except json.JSONDecodeError:
+        return None
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -444,20 +411,26 @@ with container:
         # output = conversational_chat(user_input)
         output = conversational_chat(user_input, st.session_state.user_name)
     with response_container:
-        for i, (query, answer) in enumerate(st.session_state.chat_history):
+        for i, (query, answer, image_url) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
             col1, col2 = st.columns([0.7, 10]) 
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
                 st.markdown(
-                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+            
+            # Display image if available
+            if image_url:
+                response = requests.get(image_url)
+                img = Image.open(BytesIO(response.content))
+                st.image(img, caption="Car Image", use_column_width=True)
 
         if st.session_state.user_name:
             try:
