@@ -359,7 +359,7 @@ def save_chat_to_airtable(user_name, user_input, output):
 
 def extract_image_url(response):
     # Use a regular expression to extract the image URL from the response
-    match = re.search(r'View image\s*:\s*(\S+)', response)
+    match = re.search(r'View image\s*:\s*([^\s]+)', response)
     if match:
         return match.group(1)
     return None
