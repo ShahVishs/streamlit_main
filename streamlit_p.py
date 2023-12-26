@@ -371,6 +371,31 @@ def save_chat_to_airtable(user_name, user_input, output):
 #     st.session_state.chat_history.append((user_input, output))
     
 #     return output
+def display_resized_image(image_url, width=None, height=None):
+    try:
+        # Fetch the image and resize it
+        response = requests.get(image_url, stream=True)
+        response.raise_for_status()
+
+        # Open the image from the response content
+        image = PILImage.open(io.BytesIO(response.content)).convert("RGB")
+
+        if width and height:
+            image = image.resize((width, height))
+        elif width:
+            w_percent = (width / float(image.size[0]))
+            h_size = int((float(image.size[1]) * float(w_percent)))
+            image = image.resize((width, h_size), PILImage.ANTIALIAS)
+        elif height:
+            h_percent = (height / float(image.size[1]))
+            w_size = int((float(image.size[0]) * float(h_percent)))
+            image = image.resize((w_size, height), PILImage.ANTIALIAS)
+
+        # Display the resized image
+        display(image)
+    except Exception as e:
+        print(f"Error displaying image: {e}")
+        
 def conversational_chat(user_input, user_name):
     # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
@@ -385,22 +410,20 @@ def conversational_chat(user_input, user_name):
     st.session_state.chat_history.append((user_input, output))
     
     try:
-        # Attempt to load the output as JSON
-        car_info = json.loads(output)
-        
-        # Check if the car_info contains the expected keys
-        if 'info' in car_info and 'image_url' in car_info['info']:
-            # Display car information
-            print(json.dumps(car_info['info'], indent=2))
-            
-            # Display the resized image
-            display_resized_image(car_info['info']['image_url'], width=300, height=200)
+        response_json = json.loads(output)
+        if 'info' in response_json and 'image_url' in response_json['info']:
+            # Display the text response
+            st.text(response_json['info'])
+
+            # Display the image
+            display_resized_image(response_json['info']['image_url'], width=300, height=200)
         else:
-            print("Unexpected response format:", output)
-    
-    except json.JSONDecodeError as e:
-        print(f"Error decoding JSON: {e}")
-        print("Output received:", output)
+            # Print the plain text output
+            st.text("Output received:", output)
+
+    except json.JSONDecodeError:
+        # Print the plain text output
+        st.text("Output received:", output)
 
     return output
 output = ""
