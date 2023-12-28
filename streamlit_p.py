@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-# from langchain.tools import PythonAstREPLTool
 from langchain_experimental.tools import PythonAstREPLTool
 import os
 import streamlit as st
@@ -102,29 +101,16 @@ loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
 embeddings = OpenAIEmbeddings()
 vectorstore_1 = FAISS.from_documents(docs_1, embeddings)
-df_car_description = pd.read_csv(file_1)  # Adjust this line to read the car description DataFrame
 retriever_1 = vectorstore_1.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.5,"k": 3})
-# retriever_1 = vectorstore_1.as_retriever(search_type="similarity", search_kwargs={"k": 3})#check without similarity search and k=8
+
 file_2 = r'short_car_details.csv'
 loader_2 = CSVLoader(file_path=file_2)
 docs_2 = loader_2.load()
 num_ret=len(docs_2)
 vectordb_2 = FAISS.from_documents(docs_2, embeddings)
-retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})#check without similarity search 
+retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
 
 
-# tool1 = create_retriever_tool(
-#     retriever_1, 
-#      "details_of_car",
-#      "use to get car information and features. Input to this should be the car's model\
-#      or car features and details about new or used car as a single argument for example new toeing car"
-# )
-# # Create the third tool
-# tool3 = create_retriever_tool(
-#     retriever_3, 
-#     "search_business_details",
-#     "Searches and returns documents related to business working days and hours, location and address details."
-# )
 tool1 = create_retriever_tool(
     retriever_1, 
      "details_of_car",
@@ -143,35 +129,29 @@ tool3 = create_retriever_tool(
      "Searches and returns documents related to business working days and hours, location and address details."
 )
 
-# Append all tools to the tools list
+
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
 AIRTABLE_BASE_ID = "appN324U6FsVFVmx2"  
 AIRTABLE_TABLE_NAME = "gpt4_turbo_test_2"
 
-# Streamlit UI setup
+
 st.info("Introducing **Otto**, your cutting-edge partner in streamlining dealership and customer-related operations. At EngagedAi, we specialize in harnessing the power of automation to revolutionize the way dealerships and customers interact. Our advanced solutions seamlessly handle tasks, from managing inventory and customer inquiries to optimizing sales processes, all while enhancing customer satisfaction. Discover a new era of efficiency and convenience with us as your trusted automation ally. [engagedai.io](https://funnelai.com/). For this demo application, we will use the Inventory Dataset. Please explore it [here](https://github.com/ShahVishs/workflow/blob/main/2013_Inventory.csv) to get a sense for what questions you can ask.")
-# Initialize session state
+
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 if 'generated' not in st.session_state:
     st.session_state.generated = []
 if 'past' not in st.session_state:
     st.session_state.past = []
-# Initialize user name in session state
+
 if 'user_name' not in st.session_state:
     st.session_state.user_name = None
-# with container:
-#     if st.session_state.user_name is None:
-#         user_name = st.text_input("Your name:")
-#         if user_name:
-#             st.session_state.user_name = user_name    
 
 llm = ChatOpenAI(model="gpt-4-1106-preview", temperature = 0)
-# llm = ChatOpenAI(model="gpt-4", temperature = 0)
+
 langchain.debug=True
-# memory_key = "history"
-# memory = AgentTokenBufferMemory(memory_key=memory_key, llm=llm)
+
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 template = """You are an costumer care support exectutive respond in 
@@ -197,13 +177,8 @@ Do not disclose or ask the costumer if he likes to know the selling price of a c
 disclose selling price only when the customer explicitly requests it use "details_of_car" tool.
 Here's a suggested response format while providing car details:
 "We have several models available. Here are a few options:"
-If the customer's query matches a car model, respond with a list of cars without square brackets,
+If the customer's query matches a car model, respond with a list of car without square brackets, 
 including the make, year, model, and trim, and provide their respective links in the answer.
-
-Example:
-- [Car 1](link_to_image_1)
-- [Car 2](link_to_image_2)
-- [Car 3](link_to_image_3)
 
 checking Appointments Avaliability: If inquiry lacks specific details like day, date or time kindly engage by 
 asking for these specifics.
@@ -263,45 +238,25 @@ Business details: Enquiry regarding google maps location of the store, address o
 and contact details use search_business_details tool to get information.
 
 
-
 Keep responses concise, not exceeding two sentences and answers should be interactive.
 Respond in a polite US english.
 answer only from the provided content dont makeup answers.
-
-{image_link_placeholder}
 """
 details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
-# name="peter"
+
 name = st.session_state.user_name
 dealership_name="Pine belt cars"
-# available_makers="Chrysler, Jeep, Ram"
+
 
 class PythonInputs(BaseModel):
     query: str = Field(description="code snippet to run")
 df = pd.read_csv("appointment_new.csv")
-# input_template = template.format(dhead=df.head().to_markdown(),details=details)
+
 class PythonInputs(BaseModel):
     query: str = Field(description="code snippet to run")
 
 
-#     input_template = template.format(dhead=df1.head().to_markdown(),details=details,available_makers=available_makers)
-# input_template = template.format(dhead_1=df1.iloc[:3, :5].to_markdown(),dhead=df.iloc[:5, :5].to_markdown(),details=details)
-# input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(),details=details,name=name,dealership_name=dealership_name)
-input_template = template.format(
-    dhead=df.iloc[:3, :5].to_markdown(),
-    details=details,
-    name=name,
-    dealership_name=dealership_name,
-    image_link_placeholder="[Car Image](link_to_resized_image)",
-)
-# class PythonInputs(BaseModel):
-#     query: str = Field(description="code snippet to run")
-# df1 = pd.read_csv("car_desription_new.csv")
-# req_col=  ['NewUsed', 'Make', 'Model']
-# df1=df1[req_col]
-# df1=df1.drop_duplicates()
-# #     input_template = template.format(dhead=df1.head().to_markdown(),details=details,available_makers=available_makers)
-# input_template = template.format(dhead_1=df1.iloc[:3, :5].to_markdown(),dhead=df.iloc[:5, :5].to_markdown(),details=details)
+input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(),details=details,name=name,dealership_name=dealership_name)
 system_message = SystemMessage(content=input_template)
 
 prompt = OpenAIFunctionsAgent.create_prompt(
@@ -309,12 +264,10 @@ prompt = OpenAIFunctionsAgent.create_prompt(
     extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
 )
 
-# repl = PythonAstREPLTool(locals={"df": df}, name="python_repl",
-    # description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy. This is the only way for you to answer questions about available appointments. This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and 3pm are the same")
+
 repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
         description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
-# repl_1 = PythonAstREPLTool(locals={"df1": df1}, name="python_repl_1",
-#         description="Use this to get full comprehensive list of make, model of cars and also for checking a single model or make availability")
+
 tools = [tool1, repl, tool2, tool3]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
@@ -331,14 +284,14 @@ container = st.container()
 
 airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
 
-# Initialize session state
+
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 
 if 'user_name' not in st.session_state:
     st.session_state.user_name = None
 
-# Function to save chat history to Airtable
+
 def save_chat_to_airtable(user_name, user_input, output):
     try:
         timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -352,78 +305,13 @@ def save_chat_to_airtable(user_name, user_input, output):
         )
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
-print("Car Description Columns:", df.columns)
-# print("Appointment Columns:", df1.columns)
-# Function to perform conversational chat
-# def conversational_chat(user_input):
-#     result = agent_executor({"input": user_input})
-#     st.session_state.chat_history.append((user_input, result["output"]))
-#     return result["output"]
-# def conversational_chat(user_input, user_name):
-#     # Modify the input to include the username
-#     input_with_username = f"{user_name}: {user_input}"
-    
-#     # Pass the modified input to the agent_executor
-#     result = agent_executor({"input": input_with_username})
-    
-#     # Extract the output from the result
-#     output = result["output"]
-    
-#     # Save the chat history
-#     st.session_state.chat_history.append((input_with_username, output))
-    
-#     return result["output"]
 
-# def conversational_chat(user_input, user_name):
-#     # Modify the input to include the username
-#     input_with_username = f"{user_name}: {user_input}"
-    
-#     # Pass the modified input to the agent_executor
-#     result = agent_executor({"input": input_with_username})
-    
-#     # Extract the output from the result
-#     output = result["output"]
-    
-#     # Save the chat history without displaying the username in the user's message
-#     st.session_state.chat_history.append((user_input, output))
-    
-#     # Check if the response contains an image link
-#     if "[Car Image]" in output:
-#         try:
-#             # Extract the image link
-#             image_link = output.split("[Car Image](")[1].split(")")[0]
-            
-#             # Display the resized image
-#             st.image(image_link, caption="Car Image", use_container_width=True)
-#         except Exception as e:
-#             # Handle any potential errors
-#             st.error(f"An error occurred while displaying the image: {e}")
-    
-#     return output
+
 def conversational_chat(user_input, user_name):
-    # Modify the input to include the username
     input_with_username = f"{user_name}: {user_input}"
-    
-    # Pass the modified input to the agent_executor
     result = agent_executor({"input": input_with_username})
-    
-    # Extract the output from the result
     output = result["output"]
-    
-    # Save the chat history without displaying the username in the user's message
     st.session_state.chat_history.append((user_input, output))
-    
-    # Check if the response contains an image link
-    if "[Car Image]" in output:
-        try:
-            # Extract the image link
-            image_link = output.split("[Car Image](")[1].split(")")[0]
-            
-            # Display the image using HTML
-            st.markdown(f'<img src="{image_link}" alt="Car Image" style="max-width:100%;">', unsafe_allow_html=True)
-        except Exception as e:
-            # Handle any potential errors
-            st.error(f"An error occurred while displaying the image: {e}")
     
     return output
 output = ""
@@ -438,7 +326,6 @@ with container:
         submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
-        # output = conversational_chat(user_input)
         output = conversational_chat(user_input, st.session_state.user_name)
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
