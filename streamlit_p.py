@@ -105,7 +105,7 @@ business_details_text = [
 ]
 retriever_3 = FAISS.from_texts(business_details_text, OpenAIEmbeddings()).as_retriever()
 
-file_1 = r'car_desription_new.csv'
+file_1 = r'inventory_goush_cleaned_new.csv'
 
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
@@ -316,9 +316,6 @@ def save_chat_to_airtable(user_name, user_input, output):
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
 
-client = OpenAI(
-  organization='org-IEocHZvC0kwypNhPedNmLueo',
-)
 client = OpenAI()
 
 def load_car_data(file_path):
@@ -438,7 +435,7 @@ def run_conversation():
             messages=messages,
         ) 
 
-        # return second_response
+        return second_response
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
