@@ -351,7 +351,7 @@ def get_car_information(make, model):
     else:
         return json.dumps({"error": "Car not found"})
 
-def display_car_info_with_link(car_info_list, link_url, size=(100, 100)):
+def display_car_info_with_link(car_info_list, link_url, size=(50, 50)):
     try:
         for car_info in car_info_list:
             image_links = car_info.get("website Link for images")
@@ -370,8 +370,10 @@ def display_car_info_with_link(car_info_list, link_url, size=(100, 100)):
                 vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-                st.image(resized_image, caption=f'{year} {make} {model}', use_column_width=True)
-                st.write(f'VIN: {vin_number_from_info}')
+                button_label = f'{year} {make} {model} - VIN: {vin_number_from_info}'
+                if st.button(button_label, key=f"{vin_number_from_info}_button"):
+                    st.image(resized_image, caption=button_label)
+
     except Exception as e:
         st.error(f"Error displaying car information: {e}")
 
