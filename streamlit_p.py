@@ -450,11 +450,15 @@ def conversational_chat(user_input, user_name):
     output = result["output"]
     
     # Call run_conversation function
-    run_conversation(user_input)
-    
+    response = run_conversation(user_input)
+
     # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
-    
+
+    # Display the images within the conversation chat response
+    if response and response.choices[0].message.content:
+        st.image(response.choices[0].message.content, caption="Resized Image", use_column_width=True)
+
     return output
 output = ""
 with container:
