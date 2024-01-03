@@ -316,8 +316,6 @@ def save_chat_to_airtable(user_name, user_input, output):
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
 
-
-os.environ["OPENAI_API_KEY"] = "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"
 client = OpenAI(
   organization='org-IEocHZvC0kwypNhPedNmLueo',
 )
