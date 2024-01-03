@@ -35,6 +35,7 @@ from langchain.agents import AgentExecutor
 from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
 import json
+from langchain.document_loaders import JSONLoader
 
 hide_share_button_style = """
     <style>
@@ -111,6 +112,11 @@ num_ret=len(docs_2)
 vectordb_2 = FAISS.from_documents(docs_2, embeddings)
 retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
 
+file_3 = r'csvjson.json'
+loader_3 = JSONLoader(file_path=file_3,jq_schema='.messages[].content',text_content=False)
+data_3 = loader_3.load()
+vectordb_3 = FAISS.from_documents(data_3, embeddings)
+retriever_3 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
 tool1 = create_retriever_tool(
     retriever_1, 
@@ -130,6 +136,11 @@ tool3 = create_retriever_tool(
      "Searches and returns documents related to business working days and hours, location and address details."
 )
 
+tool4 = create_retriever_tool(
+    retriever_4, 
+     "image_details",
+     "Use to search for vehicle information and images based on make and model."
+)
 
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
@@ -230,6 +241,10 @@ After scheduling an appointment, initiate the conversation to get tradein car an
     - Contact Number:
     - Email Address:
 
+**Vehicle Image:**
+
+If you want to see an image of a specific vehicle, provide the make and model, and I'll fetch the corresponding image for you.
+Use the "image_details" tool for this purpose.
 
 Encourage Dealership Visit: Our goal is to encourage customers to visit the dealership for test drives or
 receive product briefings from our team. After providing essential information on the car's make, model,
@@ -270,7 +285,7 @@ prompt = OpenAIFunctionsAgent.create_prompt(
 repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
         description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
 
-tools = [tool1, repl, tool2, tool3]
+tools = [tool1, repl, tool2, tool3, tool4]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
@@ -355,52 +370,14 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
     except Exception as e:
         print(f"Error displaying car information: {e}")
 
-# ... (existing code)
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-
-    # Include both tool calls in the same message
-    messages = [
-        {"role": "user", "content": input_with_username},
-        # Use the existing tools for car information retrieval
-        {
-            "type": "function",
-            "function": {
-                "name": "get_car_information",
-                "description": "Retrieve car information using car_data.json",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": {"type": "string", "description": "The user's query"}
-                    },
-                    "required": ["query"]
-                }
-            }
-        },
-        # Include another tool call for displaying the image
-        {
-            "type": "function",
-            "function": {
-                "name": "display_car_image",
-                "description": "Display car image based on make and model",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "make": {"type": "string", "description": "The car make"},
-                        "model": {"type": "string", "description": "The car model"}
-                    },
-                    "required": ["make", "model"]
-                }
-            }
-        }
-    ]
-
-    # Execute the conversation
-    result = agent_executor(messages)
-
+    result = agent_executor({"input": input_with_username})
     output = result["output"]
-    st.session_state.chat_history.append((input_with_username, output))
+    st.session_state.chat_history.append((user_input, output))
+    
+    return output
 
     # Check if the response includes a tool call for car information
     if "get_car_information" in result.get("tool_calls", []):
@@ -409,7 +386,7 @@ def conversational_chat(user_input, user_name):
             link_url = "https://www.example.com/inventory/"  # Replace with your actual inventory URL
             display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
-# ... (existing code)
+
 
 
 # def conversational_chat(user_input, user_name):
