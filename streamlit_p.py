@@ -494,8 +494,8 @@ with container:
                     unsafe_allow_html=True
                 )
 
-        if st.session_state.user_name:
-            try:
-                save_chat_to_airtable(st.session_state.user_name, user_input, output)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        # if st.session_state.user_name:
+        #     try:
+        #         save_chat_to_airtable(st.session_state.user_name, user_input, output)
+        #     except Exception as e:
+        #         st.error(f"An error occurred: {e}")
