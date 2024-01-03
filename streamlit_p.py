@@ -279,6 +279,15 @@ repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
         description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
 
 tools = [tool1, repl, tool2, tool3]
+
+# Add a new tool for image generation
+image_generation_tool = create_retriever_tool(
+    None,  # You can replace this with the appropriate retriever
+    "generate_car_images",
+    "Generates and displays images of cars based on user queries.",
+)
+tools.append(image_generation_tool)
+
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
@@ -335,27 +344,35 @@ def get_car_information(make, model):
         return json.dumps({"error": "Car not found"})
 
 def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
-    images_with_links = []
-    for car_info in car_info_list:
-        image_links = car_info.get("website Link for images")
-        vin_number = car_info.get("Vin")  
-        year = car_info.get("Year")
-        make = car_info.get("Make")
-        model = car_info.get("Model")
+    try:
+        for car_info in car_info_list:
+            image_links = car_info.get("website Link for images")
+            vin_number = car_info.get("Vin")  
+            year = car_info.get("Year")
+            make = car_info.get("Make")
+            model = car_info.get("Model")
 
-        for image_link in re.findall(r'https://[^ ,]+', image_links):
-            response = requests.get(image_link)
-            response.raise_for_status()
-            image_data = Image.open(BytesIO(response.content))
-            resized_image = image_data.resize(size)
+            for image_link in re.findall(r'https://[^ ,]+', image_links):
+                response = requests.get(image_link)
+                response.raise_for_status()
+                image_data = Image.open(BytesIO(response.content))
+                resized_image = image_data.resize(size)
 
-            vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
-            vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
-            link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+              
+                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
+                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
+                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-            images_with_links.append((resized_image, link_with_vin))
+                
+                display(HTML(f'<div style="text-align:center;">'
+                             f'<a href="{link_with_vin}" target="_blank">'
+                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>'
+                             f'<p>{year} {make} {model}</p>'
+                             f'<p>VIN: {vin_number_from_info}</p></div>'))
+    except Exception as e:
+        print(f"Error displaying car information: {e}")
 
-    return images_with_links
+    
 def image_to_base64(image):
     buffered = BytesIO()
     image.save(buffered, format="PNG")
@@ -391,9 +408,6 @@ def run_conversation(user_input):
     response_message = response.choices[0].message
     tool_calls = response_message.tool_calls
 
-    text_response = response_message.content if response_message.content else None
-    image_response = None
-
     if tool_calls:
         available_functions = {
             "get_car_information": get_car_information,
@@ -422,31 +436,34 @@ def run_conversation(user_input):
             car_info_list = json.loads(function_response)
             if car_info_list:
                 link_url = "https://www.goschchevy.com/inventory/"
-                image_response = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
-    return text_response, image_response
+        second_response = client.chat.completions.create(
+            model="gpt-4-1106-preview",  
+            messages=messages,
+        ) 
+
+        return second_response
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
+
+    # Extract the tool calls from the result
+    tool_calls = result.get("tool_calls", [])
+
+    for tool_call in tool_calls:
+        function_name = tool_call.get("name")
+        content = tool_call.get("content")
+
+        if function_name == "generate_car_images":
+            # Parse the content and call the image generation function
+            car_info_list = json.loads(content)
+            link_url = "https://www.goschchevy.com/inventory/"
+            display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+
     st.session_state.chat_history.append((user_input, output))
-
-    tool_responses = result.get("tools")
-    if tool_responses:
-        for tool_response in tool_responses:
-            tool_name = tool_response["name"]
-            tool_content = tool_response["content"]
-
-            if tool_name == "get_car_information":
-                car_info_list = json.loads(tool_content)
-                link_url = "https://www.goschchevy.com/inventory/"
-                images_with_links = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-                
-                for image, link in images_with_links:
-                    st.image(image, caption=f'{user_input}', use_column_width=True)
-                    st.markdown(f'[Click here to view more details]({link})')
-
     return output
 output = ""
 with container:
