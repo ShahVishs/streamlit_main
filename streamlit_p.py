@@ -466,17 +466,20 @@ def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
 
     # Use retriever_4 for fetching image details
-    image_retrieval_response = retriever_4.query(user_input, k=3)  # Adjust k as needed
+    image_retrieval_response = retriever_4.get_results(user_input, k=3)  # Adjust k as needed
     car_info_list = json.loads(image_retrieval_response)
 
     if car_info_list:
         for car_info in car_info_list:
+            # Attempt to fetch image links from the retrieved data
             image_links = car_info.get("website Link for images")
-            for image_link in re.findall(r'https://[^ ,]+', image_links):
-                response = requests.get(image_link)
-                response.raise_for_status()
-                image_data = Image.open(BytesIO(response.content))
-                st.image(image_data, caption="Car Image")
+            
+            if image_links:
+                for image_link in re.findall(r'https://[^ ,]+', image_links):
+                    response = requests.get(image_link)
+                    response.raise_for_status()
+                    image_data = Image.open(BytesIO(response.content))
+                    st.image(image_data, caption="Car Image")
 
     # Use agent_executor for text-based responses
     text_response = agent_executor({"input": input_with_username})
