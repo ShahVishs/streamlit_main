@@ -34,6 +34,14 @@ from langchain.prompts import MessagesPlaceholder
 from langchain.agents import AgentExecutor
 from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
+from IPython.display import display, HTML
+from PIL import Image
+import requests
+from io import BytesIO
+import json
+from openai import OpenAI
+import base64
+import re
 
 hide_share_button_style = """
     <style>
@@ -305,13 +313,140 @@ def save_chat_to_airtable(user_name, user_input, output):
         )
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
+client = OpenAI()
 
+def load_car_data(file_path):
+    with open(file_path, 'r') as file:
+        car_data = json.load(file)
+    return car_data
+
+car_data = load_car_data(r"C:\Users\shahs\Downloads\csvjson.json")
+
+def get_car_information(make, model):
+    """Get information about a car based on make and model."""
+    matching_cars = [car for car in car_data if car["Make"].lower() == make.lower() and car["Model"].lower() == model.lower()]
+
+    if matching_cars:
+        return json.dumps(matching_cars)
+    else:
+        return json.dumps({"error": "Car not found"})
+
+def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
+    try:
+        for car_info in car_info_list:
+            image_links = car_info.get("website Link for images")
+            vin_number = car_info.get("Vin")  
+            year = car_info.get("Year")
+            make = car_info.get("Make")
+            model = car_info.get("Model")
+
+            for image_link in re.findall(r'https://[^ ,]+', image_links):
+                response = requests.get(image_link)
+                response.raise_for_status()
+                image_data = Image.open(BytesIO(response.content))
+                resized_image = image_data.resize(size)
+
+              
+                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
+                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
+                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+
+                
+                display(HTML(f'<div style="text-align:center;">'
+                             f'<a href="{link_with_vin}" target="_blank">'
+                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>'
+                             f'<p>{year} {make} {model}</p>'
+                             f'<p>VIN: {vin_number_from_info}</p></div>'))
+    except Exception as e:
+        print(f"Error displaying car information: {e}")
+
+
+def image_to_base64(image):
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+def run_conversation():
+    user_input = input("Please enter your car-related question: ")
+    messages = [{"role": "user", "content": user_input}]
+    
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "get_car_information",
+                "description": "Get information about a car",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "make": {"type": "string", "description": "The car make"},
+                        "model": {"type": "string", "description": "The car model"}
+                    },
+                    "required": ["make", "model"]
+                }
+            }
+        }
+    ]
+
+    response = client.chat.completions.create(
+        model="gpt-4-1106-preview",
+        messages=messages,
+        tools=tools,
+    )
+
+    response_message = response.choices[0].message
+    tool_calls = response_message.tool_calls
+
+    if tool_calls:
+        available_functions = {
+            "get_car_information": get_car_information,
+        }
+
+        messages.append(response_message)  
+
+        for tool_call in tool_calls:
+            function_name = tool_call.function.name
+            function_to_call = available_functions[function_name]
+            function_args = json.loads(tool_call.function.arguments)
+            function_response = function_to_call(
+                make=function_args.get("make"),
+                model=function_args.get("model"),
+            )
+
+            messages.append(
+                {
+                    "tool_call_id": tool_call.id,
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response,
+                }
+            )  
+
+            car_info_list = json.loads(function_response)
+            if car_info_list:
+                link_url = "https://www.goschchevy.com/inventory/"
+                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+
+        second_response = client.chat.completions.create(
+            model="gpt-4-1106-preview",  
+            messages=messages,
+        ) 
+
+        # return second_response
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
+    
+    # Call run_conversation function
+    image_response = run_conversation(user_input)
+    
+    # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
+    
+    # Append image-related output to the chat history
+    st.session_state.chat_history.append(("Image Client", image_response))
     
     return output
 output = ""
@@ -328,6 +463,7 @@ with container:
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
     with response_container:
+        # Display conversation chat history
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
             col1, col2 = st.columns([0.7, 10]) 
@@ -342,7 +478,6 @@ with container:
                 f'</div>',
                 unsafe_allow_html=True
             )
-
         if st.session_state.user_name:
             try:
                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
