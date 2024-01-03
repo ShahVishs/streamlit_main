@@ -353,7 +353,8 @@ def get_car_information(make, model):
 
 def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
     try:
-        for index, car_info in enumerate(car_info_list):
+        if car_info_list:
+            car_info = car_info_list[0]  # Display only the first car in the list
             image_links = car_info.get("website Link for images")
             vin_number = car_info.get("Vin")  
             year = car_info.get("Year")
@@ -371,14 +372,12 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
                 button_label = f'{year} {make} {model} - VIN: {vin_number_from_info}'
-                unique_key = f"{vin_number_from_info}_button_{index}"
-            
+                unique_key = f"{vin_number_from_info}_button"
                 if st.button(button_label, key=unique_key):
                     st.image(resized_image, caption=button_label)
-    
-        except Exception as e:
-            st.error(f"Error displaying car information: {e}")
 
+    except Exception as e:
+        st.error(f"Error displaying car information: {e}")
   
 def image_to_base64(image):
     buffered = BytesIO()
