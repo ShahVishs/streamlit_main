@@ -361,19 +361,20 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
             make = car_info.get("Make")
             model = car_info.get("Model")
 
-            for image_link in re.findall(r'https://[^ ,]+', image_links):
-                response = requests.get(image_link)
-                response.raise_for_status()
-                image_data = Image.open(BytesIO(response.content))
-                resized_image = image_data.resize(size)
+            # Display button for the first car
+            button_label = f'{year} {make} {model} - VIN: {vin_number}'
+            unique_key = f"{vin_number}_button"
+            if st.button(button_label, key=unique_key):
+                for image_link in re.findall(r'https://[^ ,]+', image_links):
+                    response = requests.get(image_link)
+                    response.raise_for_status()
+                    image_data = Image.open(BytesIO(response.content))
+                    resized_image = image_data.resize(size)
 
-                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
-                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
-                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+                    vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
+                    vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
+                    link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-                button_label = f'{year} {make} {model} - VIN: {vin_number_from_info}'
-                unique_key = f"{vin_number_from_info}_button"
-                if st.button(button_label, key=unique_key):
                     st.image(resized_image, caption=button_label)
 
     except Exception as e:
