@@ -448,7 +448,7 @@ def run_conversation(user_input):
             messages=messages,
         ) 
 
-        return second_response
+        return  tool_calls
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
@@ -476,7 +476,7 @@ with container:
   
 
         # Assuming the response from conversational_chat contains car information
-        car_images = display_car_info_with_link(car_info_list, link_url, size=(50, 50))
+        car_images = run_conversation(user_input)
         
         # Display images in Streamlit
         for car_image in car_images:
