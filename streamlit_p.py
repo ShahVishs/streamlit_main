@@ -511,7 +511,7 @@ with container:
 
     if submit_button and user_input:
         # Call the run_conversation function instead of agent_executor
-        response = run_conversation()
+        response = run_conversation(user_input)
         output = response.choices[0].message.content
 
     with response_container:
