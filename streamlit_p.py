@@ -127,10 +127,11 @@ class JSONFileRetrieverTool:
         # Search for information in the JSON file based on the query (make and model)
         # Return relevant information, including image URLs
         return self.get_relevant_documents(query)
-        
+
 # Integration of the New Tool into the Agent
 json_tool = JSONFileRetrieverTool("csvjson.json")
 tool4 = create_retriever_tool(json_tool, "website Link for images", "Search for vehicle information and image.")
+
 
 tool1 = create_retriever_tool(
     retriever_1, 
