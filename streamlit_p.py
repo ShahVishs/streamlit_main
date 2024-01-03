@@ -354,12 +354,14 @@ def get_car_information(make, model):
 def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
     try:
         if car_info_list:
-            car_info = car_info_list[0]  # Display only the first car in the list
-            image_links = car_info.get("website Link for images")
-            vin_number = car_info.get("Vin")  
-            year = car_info.get("Year")
-            make = car_info.get("Make")
-            model = car_info.get("Model")
+            selected_car_info = car_info_list[0]  # Display only the first car in the list
+            st.session_state.selected_car_info = selected_car_info  # Store selected car info in session state
+
+            image_links = selected_car_info.get("website Link for images")
+            vin_number = selected_car_info.get("Vin")  
+            year = selected_car_info.get("Year")
+            make = selected_car_info.get("Make")
+            model = selected_car_info.get("Model")
 
             # Display button for the first car
             button_label = f'{year} {make} {model} - VIN: {vin_number}'
