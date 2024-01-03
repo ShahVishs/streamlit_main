@@ -423,7 +423,7 @@ def run_conversation(user_input):
             "get_car_information": get_car_information,
         }
 
-        messages.append(response_message)
+        messages.append(response_message)  
 
         for tool_call in tool_calls:
             function_name = tool_call.function.name
@@ -441,16 +441,19 @@ def run_conversation(user_input):
                     "name": function_name,
                     "content": function_response,
                 }
-            )
+            )  
+
+            car_info_list = json.loads(function_response)
+            if car_info_list:
+                link_url = "https://www.goschchevy.com/inventory/"
+                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
         second_response = client.chat.completions.create(
-            model="gpt-4-1106-preview",
+            model="gpt-4-1106-preview",  
             messages=messages,
-        )
+        ) 
 
-        print(f"DEBUG: run_conversation Output: {second_response.choices[0].message.content}")
-
-        return second_response.choices[0].message.content
+        return second_response
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
