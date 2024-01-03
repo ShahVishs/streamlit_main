@@ -452,21 +452,28 @@ def run_conversation(user_input):
 
         return second_response
 
+# def conversational_chat(user_input, user_name):
+#     input_with_username = f"{user_name}: {user_input}"
+#     output = run_conversation(input_with_username)
+#     st.session_state.chat_history.append((user_input, output))
+    
+#     return output
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-    output = run_conversation(input_with_username)
-    st.session_state.chat_history.append((user_input, output))
-    
-    return output
-    # input_with_username = f"{user_name}: {user_input}"
-    # result = agent_executor({"input": input_with_username})
-    # output = result["output"]
-    # st.session_state.chat_history.append((user_input, output))
 
-    # # Use run_conversation to get the response
-    # run_conversation_output = run_conversation(user_input)
+    # Use retriever_4 for fetching image details
+    image_retrieval_response = retriever_4.get_results(user_input)
+    car_info_list = json.loads(image_retrieval_response)
 
-    # return run_conversation_output
+    if car_info_list:
+        link_url = "https://www.goschchevy.com/inventory/"
+        display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+
+    # Use agent_executor for text-based responses
+    text_response = agent_executor({"input": input_with_username})
+    st.session_state.chat_history.append((user_input, text_response))
+
+    return text_response
 
 output = ""
 with container:
