@@ -394,7 +394,7 @@ def run_conversation(user_input):
     tool_calls = response_message.tool_calls
 
     text_response = response_message.content if response_message.content else None
-    image_response = response_message.content if response_message.content else None
+    image_response = None
 
     if tool_calls:
         available_functions = {
@@ -443,7 +443,9 @@ def conversational_chat(user_input, user_name):
             if tool_name == "get_car_information":
                 car_info_list = json.loads(tool_content)
                 link_url = "https://www.goschchevy.com/inventory/"
-                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+                image_response = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+                if image_response:
+                    st.image(image_response, caption=f'{user_input}', use_column_width=True)
 
     return output
 output = ""
