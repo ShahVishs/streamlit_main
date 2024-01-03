@@ -398,44 +398,24 @@ def run_conversation(user_input):
 
     response_message = response.choices[0].message
     tool_calls = response_message.tool_calls
+    image_responses = []
 
-    if tool_calls:
-        available_functions = {
-            "get_car_information": get_car_information,
-        }
+    for tool_call in tool_calls:
+        function_name = tool_call.function.name
+        function_args = json.loads(tool_call.function.arguments)
+        if function_name == "get_car_information":
+            make = function_args.get("make")
+            model = function_args.get("model")
+            image_responses.append({"make": make, "model": model})
 
-        messages.append(response_message)  
-
-        for tool_call in tool_calls:
-            function_name = tool_call.function.name
-            function_to_call = available_functions[function_name]
-            function_args = json.loads(tool_call.function.arguments)
-            function_response = function_to_call(
-                make=function_args.get("make"),
-                model=function_args.get("model"),
-            )
-
-            messages.append(
-                {
-                    "tool_call_id": tool_call.id,
-                    "role": "tool",
-                    "name": function_name,
-                    "content": function_response,
-                }
-            )  
-
+            # Extract car information and display it with a link
+            function_response = get_car_information(make=make, model=model)
             car_info_list = json.loads(function_response)
             if car_info_list:
                 link_url = "https://www.goschchevy.com/inventory/"
                 display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
-        second_response = client.chat.completions.create(
-            model="gpt-4-1106-preview",  
-            messages=messages,
-        ) 
-
-        # return second_response
-        return response
+    return image_responses
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
