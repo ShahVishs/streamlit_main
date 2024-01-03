@@ -370,8 +370,9 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-                st.image(resized_image, caption=f'{year} {make} {model}', use_column_width=True)
-                st.write(f'VIN: {vin_number_from_info}')
+                if st.button(f'{year} {make} {model} - VIN: {vin_number_from_info}'):
+                    st.image(resized_image, caption=f'{year} {make} {model} - VIN: {vin_number_from_info}', use_container_width=True)
+
     except Exception as e:
         st.error(f"Error displaying car information: {e}")
 
