@@ -393,7 +393,7 @@ def run_conversation(user_input):
 
     response_message = response.choices[0].message
     tool_calls = response_message.tool_calls
-    image_responses = []
+    text_output = ""  # Initialize text_output
 
     if tool_calls:
         for tool_call in tool_calls:
@@ -402,32 +402,18 @@ def run_conversation(user_input):
             if function_name == "get_car_information":
                 make = function_args.get("make")
                 model = function_args.get("model")
-                image_responses.append({"make": make, "model": model})
 
                 # Extract car information and display it with a link
                 function_response = get_car_information(make=make, model=model)
                 car_info_list = json.loads(function_response)
                 if car_info_list:
                     link_url = "https://www.goschchevy.com/inventory/"
+                    text_output = f"Text-based response: {function_response}"  # Modify as needed
+
+                    # Display car information with images
                     display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
-    return image_responses
-
-def conversational_chat(user_input, user_name):
-    input_with_username = f"{user_name}: {user_input}"
-    result = agent_executor({"input": input_with_username})
-    output = result["output"]
-
-    # Call run_conversation function
-    text_output, image_responses = run_conversation(user_input)
-
-    # Append conversation chat output to the chat history
-    st.session_state.chat_history.append((user_input, text_output))
-
-    # Append image-related output to the chat history
-    st.session_state.chat_history.append(("Image Client", image_responses))
-
-    return output, text_output, image_responses
+    return text_output
 output = ""
 text_output = ""
 image_responses = []
@@ -446,31 +432,36 @@ with container:
         output, text_output, image_responses = conversational_chat(user_input, st.session_state.user_name)
 
     with response_container:
-        # Display conversation chat history
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
             col1, col2 = st.columns([0.7, 10]) 
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
-                # Display text-based response
-                st.markdown(f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                            f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                            f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                            f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output}</span>'
-                            f'</div>',
-                            unsafe_allow_html=True)
-
-                # Display images
-                for image_response in image_responses:
-                    make = image_response.get("make")
-                    model = image_response.get("model")
-                    link_url = f"https://www.goschchevy.com/inventory/{make.lower()}_{model.lower()}/"
-                    st.image(f"{link_url}/image.jpg", caption=f"{make} {model}", use_column_width=True)
+                st.markdown(
+                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
 
         if st.session_state.user_name:
             try:
-                save_chat_to_airtable(st.session_state.user_name, user_input, text_output)
+                save_chat_to_airtable(st.session_state.user_name, user_input, output)
             except Exception as e:
                 st.error(f"An error occurred: {e}")
+        #         # Display images
+        #         for image_response in image_responses:
+        #             make = image_response.get("make")
+        #             model = image_response.get("model")
+        #             link_url = f"https://www.goschchevy.com/inventory/{make.lower()}_{model.lower()}/"
+        #             st.image(f"{link_url}/image.jpg", caption=f"{make} {model}", use_column_width=True)
+
+        # if st.session_state.user_name:
+        #     try:
+        #         save_chat_to_airtable(st.session_state.user_name, user_input, text_output)
+        #     except Exception as e:
+        #         st.error(f"An error occurred: {e}")
   
