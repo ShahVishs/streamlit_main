@@ -34,16 +34,6 @@ from langchain.prompts import MessagesPlaceholder
 from langchain.agents import AgentExecutor
 from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
-from IPython.display import display, HTML
-from PIL import Image
-import requests
-from io import BytesIO
-import json
-from openai import OpenAI
-import base64
-import re
-import os
-from openai import OpenAI
 
 hide_share_button_style = """
     <style>
@@ -105,7 +95,7 @@ business_details_text = [
 ]
 retriever_3 = FAISS.from_texts(business_details_text, OpenAIEmbeddings()).as_retriever()
 
-file_1 = r'inventory_goush_cleaned_new.csv'
+file_1 = r'car_desription_new.csv'
 
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
@@ -120,6 +110,21 @@ num_ret=len(docs_2)
 vectordb_2 = FAISS.from_documents(docs_2, embeddings)
 retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
 
+class JSONFileRetrieverTool:
+    def __init__(self, json_file_path):
+        with open(json_file_path, 'r') as json_file:
+            self.data = json.load(json_file)
+
+    def search(self, query):
+        # Search for information in the JSON file based on the query (make and model)
+        # Return relevant information, including image URLs
+        # You can customize this based on your JSON file structure
+        result = self.data.get(query, {"make": "Unknown", "model": "Unknown", "image_url": "https://example.com/default_image.png"})
+        return result
+
+# Integration of the New Tool into the Agent
+json_tool = JSONFileRetrieverTool("csvjson.json")
+tool4 = create_retriever_tool(json_tool, "website Link for images", "Search for vehicle information and image.")
 
 tool1 = create_retriever_tool(
     retriever_1, 
@@ -278,7 +283,7 @@ prompt = OpenAIFunctionsAgent.create_prompt(
 repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
         description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
 
-tools = [tool1, repl, tool2, tool3]
+tools = [tool1, repl, tool2, tool3, tool4]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
@@ -316,123 +321,29 @@ def save_chat_to_airtable(user_name, user_input, output):
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
 
-client = OpenAI()
 
-def load_car_data(file_path):
-    with open(file_path, 'r') as file:
-        car_data = json.load(file)
-    return car_data
-
-car_data = load_car_data(r"csvjson.json")
-
-def get_car_information(make, model):
-    """Get information about a car based on make and model."""
-    matching_cars = [car for car in car_data if car["Make"].lower() == make.lower() and car["Model"].lower() == model.lower()]
-
-    if matching_cars:
-        return json.dumps(matching_cars)
-    else:
-        return json.dumps({"error": "Car not found"})
-
-def display_car_info_with_link(car_info_list, link_url, size=(150, 150)):
-    try:
-        for car_info in car_info_list:
-            image_links = car_info.get("website Link for images")
-            vin_number = car_info.get("Vin")
-            year = car_info.get("Year")
-            make = car_info.get("Make")
-            model = car_info.get("Model")
-
-            for image_link in re.findall(r'https://[^ ,]+', image_links):
-                response = requests.get(image_link)
-                response.raise_for_status()
-                image_data = Image.open(BytesIO(response.content))
-                resized_image = image_data.resize(size)
-
-                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
-                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
-                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
-
-                st.image(resized_image, caption=f'{year} {make} {model}\nVIN: {vin_number_from_info}', use_column_width=True)
-                st.write(link_with_vin)
-
-    except Exception as e:
-        print(f"Error displaying car information: {e}")
-
-def image_to_base64(image):
-    buffered = BytesIO()
-    image.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-def run_conversation(user_input):
-    messages = [{"role": "user", "content": user_input}]
-    
-    tools = [
-        {
-            "type": "function",
-            "function": {
-                "name": "get_car_information",
-                "description": "Get information about a car",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "make": {"type": "string", "description": "The car make"},
-                        "model": {"type": "string", "description": "The car model"}
-                    },
-                    "required": ["make", "model"]
-                }
-            }
-        }
-    ]
-
-    response = client.chat.completions.create(
-        model="gpt-4-1106-preview",
-        messages=messages,
-        tools=tools,
-    )
-
-    response_message = response.choices[0].message
-    tool_calls = response_message.tool_calls
-    text_output = ""  # Initialize text_output
-
-    if tool_calls:
-        for tool_call in tool_calls:
-            function_name = tool_call.function.name
-            function_args = json.loads(tool_call.function.arguments)
-            if function_name == "get_car_information":
-                make = function_args.get("make")
-                model = function_args.get("model")
-
-                # Extract car information and display it with a link
-                function_response = get_car_information(make=make, model=model)
-                car_info_list = json.loads(function_response)
-                if car_info_list:
-                    link_url = "https://www.goschchevy.com/inventory/"
-                    text_output = f"Text-based response: {function_response}"  # Modify as needed
-
-                    # Display car information with images
-                    display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-
-    return text_output
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
-
-    # Call run_conversation function
-    text_output = run_conversation(user_input)
-
-    # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
+    
+    # Show image and answer text if the response contains image information
+    if "image_url" in output:
+        st.image(output["image_url"], caption="Vehicle Image", use_column_width=True)
 
-    # Append image-related output to the chat history
-    st.session_state.chat_history.append(("Image Client", text_output))
+    # Show answer text
+    st.markdown(
+        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output["text"]}</span>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
 
-    return output, text_output
+    return output
 output = ""
-text_output = ""
-image_responses = []
-
 with container:
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -444,8 +355,7 @@ with container:
         submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
-        output, text_output, image_responses = conversational_chat(user_input, st.session_state.user_name)
-
+        output = conversational_chat(user_input, st.session_state.user_name)
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
@@ -467,17 +377,3 @@ with container:
                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
             except Exception as e:
                 st.error(f"An error occurred: {e}")
-
-        #         # Display images
-        #         for image_response in image_responses:
-        #             make = image_response.get("make")
-        #             model = image_response.get("model")
-        #             link_url = f"https://www.goschchevy.com/inventory/{make.lower()}_{model.lower()}/"
-        #             st.image(f"{link_url}/image.jpg", caption=f"{make} {model}", use_column_width=True)
-
-        # if st.session_state.user_name:
-        #     try:
-        #         save_chat_to_airtable(st.session_state.user_name, user_input, text_output)
-        #     except Exception as e:
-        #         st.error(f"An error occurred: {e}")
-  
