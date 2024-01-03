@@ -334,7 +334,7 @@ def get_car_information(make, model):
     else:
         return json.dumps({"error": "Car not found"})
 
-def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
+def display_car_info_with_link(car_info_list, link_url, size=(150, 150)):
     try:
         for car_info in car_info_list:
             image_links = car_info.get("website Link for images")
