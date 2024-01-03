@@ -449,24 +449,6 @@ with container:
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
-                st.markdown(
-                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-        if st.session_state.user_name:
-            try:
-                save_chat_to_airtable(st.session_state.user_name, user_input, output)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
-
-        if st.session_state.user_name:
-            try:
-                output, image_responses = conversational_chat(user_input, st.session_state.user_name)
-    
                 # Display text-based response
                 st.markdown(f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
                             f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
@@ -474,12 +456,17 @@ with container:
                             f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output}</span>'
                             f'</div>',
                             unsafe_allow_html=True)
-    
+            
                 # Display images
                 for image_response in image_responses:
                     make = image_response.get("make")
                     model = image_response.get("model")
                     link_url = f"https://www.goschchevy.com/inventory/{make.lower()}_{model.lower()}/"
                     st.image(f"{link_url}/image.jpg", caption=f"{make} {model}", use_column_width=True)
+        if st.session_state.user_name:
+            try:
+                save_chat_to_airtable(st.session_state.user_name, user_input, output)
             except Exception as e:
                 st.error(f"An error occurred: {e}")
+
+  
