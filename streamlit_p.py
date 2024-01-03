@@ -338,7 +338,7 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
     try:
         for car_info in car_info_list:
             image_links = car_info.get("website Link for images")
-            vin_number = car_info.get("Vin")  
+            vin_number = car_info.get("Vin")
             year = car_info.get("Year")
             make = car_info.get("Make")
             model = car_info.get("Model")
@@ -349,20 +349,15 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 image_data = Image.open(BytesIO(response.content))
                 resized_image = image_data.resize(size)
 
-              
                 vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
                 vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-                
-                display(HTML(f'<div style="text-align:center;">'
-                             f'<a href="{link_with_vin}" target="_blank">'
-                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>'
-                             f'<p>{year} {make} {model}</p>'
-                             f'<p>VIN: {vin_number_from_info}</p></div>'))
+                st.image(resized_image, caption=f'{year} {make} {model}\nVIN: {vin_number_from_info}', use_column_width=True)
+                st.write(link_with_vin)
+
     except Exception as e:
         print(f"Error displaying car information: {e}")
-
 
 def image_to_base64(image):
     buffered = BytesIO()
@@ -422,17 +417,17 @@ def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
-    
-    # Call run_conversation function with user_input
-    image_response = run_conversation(user_input)
-    
+
+    # Call run_conversation function
+    image_responses = run_conversation(user_input)
+
     # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
-    
+
     # Append image-related output to the chat history
-    st.session_state.chat_history.append(("Image Client", image_response))
-    
-    return output
+    st.session_state.chat_history.append(("Image Client", image_responses))
+
+    return output, image_responses
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -467,3 +462,24 @@ with container:
                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
             except Exception as e:
                 st.error(f"An error occurred: {e}")
+
+        if st.session_state.user_name:
+        try:
+            output, image_responses = conversational_chat(user_input, st.session_state.user_name)
+
+            # Display text-based response
+            st.markdown(f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True)
+
+            # Display images
+            for image_response in image_responses:
+                make = image_response.get("make")
+                model = image_response.get("model")
+                link_url = f"https://www.goschchevy.com/inventory/{make.lower()}_{model.lower()}/"
+                st.image(f"{link_url}/image.jpg", caption=f"{make} {model}", use_column_width=True)
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
