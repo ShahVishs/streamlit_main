@@ -457,7 +457,7 @@ def conversational_chat(user_input, user_name):
         function_name = tool_call.get("name")
         content = tool_call.get("content")
 
-        if function_name == "generate_car_images":
+        if function_name == "get_car_information":
             # Parse the content and call the image generation function
             car_info_list = json.loads(content)
             link_url = "https://www.goschchevy.com/inventory/"
