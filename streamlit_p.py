@@ -119,7 +119,7 @@ file_3 = r'csvjson.json'
 loader_3 = JSONLoader(file_path=file_3, jq_schema='.', text_content=False)
 data_3 = loader_3.load()
 vectordb_3 = FAISS.from_documents(data_3, embeddings)
-retriever_3 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+retriever_4 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
 tool1 = create_retriever_tool(
     retriever_1, 
@@ -140,7 +140,7 @@ tool3 = create_retriever_tool(
 )
 
 tool4 = create_retriever_tool(
-    retriever_3, 
+    retriever_4, 
      "image_details",
      "Use to search for vehicle information and images based on make and model."
 )
@@ -442,14 +442,13 @@ def run_conversation(user_input):
             if car_info_list:
                 link_url = "https://www.goschchevy.com/inventory/"
                 display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+                
+                # Extract information for the first response and return
+                return car_info_list
 
-        second_response = client.chat.completions.create(
-            model="gpt-4-1106-preview",  
-            messages=messages,
-        ) 
-
-        return  tool_calls
-
+        # If no tool calls match, return an empty list
+        return []
+        
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
@@ -470,19 +469,17 @@ with container:
 
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
-        car_info_list = ...  # Extract car information from 'output' or any other relevant source
-        link_url = "https://www.goschchevy.com/inventory/"  # Set your link URL
-
-  
-
-        # Assuming the response from conversational_chat contains car information
-        car_images = run_conversation(user_input)
+        car_info_list = run_conversation(user_input)
+    
+        # Assuming the response from run_conversation contains car information
+        link_url = "https://www.goschchevy.com/inventory/"
+        display_car_info_with_link(car_info_list, link_url, size=(50, 50))
         
         # Display images in Streamlit
-        for car_image in car_images:
-            st.image(car_image["image"], caption=f"{car_image['year']} {car_image['make']} {car_image['model']}")
-            st.write(f"VIN: {car_image['vin']}")
-            st.write(f"Link: {car_image['link']}")
+        for car_info in car_info_list:
+            st.image(car_info["image"], caption=f"{car_info['year']} {car_info['make']} {car_info['model']}")
+            st.write(f"VIN: {car_info['vin']}")
+            st.write(f"Link: {car_info['link']}")
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
