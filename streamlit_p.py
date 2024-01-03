@@ -119,7 +119,11 @@ class JSONFileRetrieverTool:
         result = self.data.get(query, "No information found.")
         return result
 
-json_tool = JSONFileRetrieverTool("csvjson.json")
+json_tool = {
+    "tool": JSONFileRetrieverTool("csvjson.json"),
+    "name": "vehicle_image",
+    "description": "Use to search for vehicle information and images based on make and model."
+}
 
 
 tool1 = create_retriever_tool(
