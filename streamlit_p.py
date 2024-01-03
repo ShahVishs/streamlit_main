@@ -476,7 +476,7 @@ with container:
   
 
         # Assuming the response from conversational_chat contains car information
-        car_images = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+        car_images = display_car_info_with_link(car_info_list, link_url, size=(50, 50))
         
         # Display images in Streamlit
         for car_image in car_images:
