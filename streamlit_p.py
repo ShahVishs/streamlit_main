@@ -454,14 +454,19 @@ def run_conversation(user_input):
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-    result = agent_executor({"input": input_with_username})
-    output = result["output"]
+    output = run_conversation(input_with_username)
     st.session_state.chat_history.append((user_input, output))
+    
+    return output
+    # input_with_username = f"{user_name}: {user_input}"
+    # result = agent_executor({"input": input_with_username})
+    # output = result["output"]
+    # st.session_state.chat_history.append((user_input, output))
 
-    # Use run_conversation to get the response
-    run_conversation_output = run_conversation(user_input)
+    # # Use run_conversation to get the response
+    # run_conversation_output = run_conversation(user_input)
 
-    return run_conversation_output
+    # return run_conversation_output
 
 output = ""
 with container:
