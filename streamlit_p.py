@@ -139,7 +139,7 @@ tool3 = create_retriever_tool(
 )
 
 tool4 = create_retriever_tool(
-    retriever_4, 
+    retriever_3, 
      "image_details",
      "Use to search for vehicle information and images based on make and model."
 )
