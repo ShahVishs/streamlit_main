@@ -436,35 +436,55 @@ def run_conversation(user_input):
 
         return second_response
 
+def generate_images(car_info_list, link_url, size=(300, 300)):
+    images = []
+    try:
+        for car_info in car_info_list:
+            image_links = car_info.get("website Link for images")
+            vin_number = car_info.get("Vin")  
+            year = car_info.get("Year")
+            make = car_info.get("Make")
+            model = car_info.get("Model")
+
+            for image_link in re.findall(r'https://[^ ,]+', image_links):
+                response = requests.get(image_link)
+                response.raise_for_status()
+                image_data = Image.open(BytesIO(response.content))
+                resized_image = image_data.resize(size)
+
+                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
+                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
+                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+
+                image_html = f'<div style="text-align:center;">' \
+                             f'<a href="{link_with_vin}" target="_blank">' \
+                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>' \
+                             f'<p>{year} {make} {model}</p>' \
+                             f'<p>VIN: {vin_number_from_info}</p></div>'
+
+                images.append(image_html)
+    except Exception as e:
+        print(f"Error generating images: {e}")
+
+    return images
+
+def combine_output_with_images(output, images):
+    combined_output = f"{output}\n\n" + "\n".join(images)
+    return combined_output
+
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
-
-    # Extract the tool calls from the result
-    tool_calls = result.get("tool_calls", [])
-
-    for tool_call in tool_calls:
-        function_name = tool_call.get("name")
-        content = tool_call.get("content")
-
-        if function_name == "get_car_information":
-            # Parse the content and call the image generation function
-            car_info_list = json.loads(content)
-            link_url = "https://www.goschchevy.com/inventory/"
-            display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-
-        # Add logic for handling image generation here
-        if function_name == "generate_car_images":
-            # Assuming content contains image data
-            display_generated_image(content)
-
     st.session_state.chat_history.append((user_input, output))
-    return output
-def display_generated_image(image_data):
-    # Display the generated image using Streamlit
-    image = Image.open(BytesIO(base64.b64decode(image_data)))
-    st.image(image, caption='Generated Image', use_column_width=True)
+
+    car_info_list = json.loads(result.get("car_info", "[]"))
+    link_url = "https://www.example.com/inventory/"  # Replace with your actual inventory URL
+
+    images = generate_images(car_info_list, link_url)
+    combined_output = combine_output_with_images(output, images)
+    
+    return combined_output
 output = ""
 with container:
     if st.session_state.user_name is None:
