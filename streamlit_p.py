@@ -436,7 +436,7 @@ def conversational_chat(user_input, user_name):
     text_response, image_response = run_conversation(user_input)
 
     # Display the resized images
-    if image_response:
+    if image_response and isinstance(image_response, str):
         st.image(image_response, caption="Resized Image", use_column_width=True)
 
     # Call agent_executor for the conversation chat response
