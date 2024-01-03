@@ -334,11 +334,11 @@ def get_car_information(make, model):
     else:
         return json.dumps({"error": "Car not found"})
 
-def display_car_info_with_link(car_info_list, link_url, size=(150, 150)):
+def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
     try:
         for car_info in car_info_list:
             image_links = car_info.get("website Link for images")
-            vin_number = car_info.get("Vin")
+            vin_number = car_info.get("Vin")  
             year = car_info.get("Year")
             make = car_info.get("Make")
             model = car_info.get("Model")
@@ -354,8 +354,7 @@ def display_car_info_with_link(car_info_list, link_url, size=(150, 150)):
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
                 st.image(resized_image, caption=f'{year} {make} {model}\nVIN: {vin_number_from_info}', use_column_width=True)
-                st.write(link_with_vin)
-
+                st.markdown(f'[Click here to view more details]({link_with_vin})')
     except Exception as e:
         print(f"Error displaying car information: {e}")
 
@@ -431,23 +430,20 @@ def run_conversation(user_input):
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-    
-    # Call run_conversation function to get the response
-    text_response, image_response = run_conversation(user_input)
-
-    # Display the resized images
-    if image_response and isinstance(image_response, str):
-        st.image(image_response, caption="Resized Image", use_column_width=True)
-
-    # Call agent_executor for the conversation chat response
-    result = agent_executor({"input": input_with_username, "image_response": image_response})
+    result = agent_executor({"input": input_with_username})
     output = result["output"]
-
-    # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
 
-    # Append image-related output to the chat history
-    st.session_state.chat_history.append(("Image Client", image_response))
+    tool_responses = result.get("tools")
+    if tool_responses:
+        for tool_response in tool_responses:
+            tool_name = tool_response["name"]
+            tool_content = tool_response["content"]
+
+            if tool_name == "get_car_information":
+                car_info_list = json.loads(tool_content)
+                link_url = "https://www.goschchevy.com/inventory/"
+                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
     return output
 output = ""
