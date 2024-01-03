@@ -1,7 +1,5 @@
-
-streamlit==1.0.0
-langchain==2.0.0
-
+streamlit
+langchain
 tiktoken
 pandas
 tabulate
