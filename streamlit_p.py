@@ -338,7 +338,7 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
     try:
         for car_info in car_info_list:
             image_links = car_info.get("website Link for images")
-            vin_number = car_info.get("Vin")  
+            vin_number = car_info.get("Vin")
             year = car_info.get("Year")
             make = car_info.get("Make")
             model = car_info.get("Model")
@@ -354,7 +354,8 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
                 st.image(resized_image, caption=f'{year} {make} {model}\nVIN: {vin_number_from_info}', use_column_width=True)
-                st.markdown(f'[Click here to view more details]({link_with_vin})')
+                st.write(link_with_vin)
+
     except Exception as e:
         print(f"Error displaying car information: {e}")
 
@@ -392,60 +393,41 @@ def run_conversation(user_input):
 
     response_message = response.choices[0].message
     tool_calls = response_message.tool_calls
-
-    text_response = response_message.content if response_message.content else None
-    image_response = response_message.content if response_message.content else None
+    image_responses = []
 
     if tool_calls:
-        available_functions = {
-            "get_car_information": get_car_information,
-        }
-
-        messages.append(response_message)  
-
         for tool_call in tool_calls:
             function_name = tool_call.function.name
-            function_to_call = available_functions[function_name]
             function_args = json.loads(tool_call.function.arguments)
-            function_response = function_to_call(
-                make=function_args.get("make"),
-                model=function_args.get("model"),
-            )
+            if function_name == "get_car_information":
+                make = function_args.get("make")
+                model = function_args.get("model")
+                image_responses.append({"make": make, "model": model})
 
-            messages.append(
-                {
-                    "tool_call_id": tool_call.id,
-                    "role": "tool",
-                    "name": function_name,
-                    "content": function_response,
-                }
-            )  
+                # Extract car information and display it with a link
+                function_response = get_car_information(make=make, model=model)
+                car_info_list = json.loads(function_response)
+                if car_info_list:
+                    link_url = "https://www.goschchevy.com/inventory/"
+                    display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
-            car_info_list = json.loads(function_response)
-            if car_info_list:
-                link_url = "https://www.goschchevy.com/inventory/"
-                image_response = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-
-    return text_response, image_response
+    return image_responses
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
+
+    # Call run_conversation function
+    image_responses = run_conversation(user_input)
+
+    # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
 
-    tool_responses = result.get("tools")
-    if tool_responses:
-        for tool_response in tool_responses:
-            tool_name = tool_response["name"]
-            tool_content = tool_response["content"]
+    # Append image-related output to the chat history
+    st.session_state.chat_history.append(("Image Client", image_responses))
 
-            if tool_name == "get_car_information":
-                car_info_list = json.loads(tool_content)
-                link_url = "https://www.goschchevy.com/inventory/"
-                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-
-    return output
+    return output, image_responses
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -481,4 +463,23 @@ with container:
             except Exception as e:
                 st.error(f"An error occurred: {e}")
 
-       
+        if st.session_state.user_name:
+        try:
+            output, image_responses = conversational_chat(user_input, st.session_state.user_name)
+
+            # Display text-based response
+            st.markdown(f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True)
+
+            # Display images
+            for image_response in image_responses:
+                make = image_response.get("make")
+                model = image_response.get("model")
+                link_url = f"https://www.goschchevy.com/inventory/{make.lower()}_{model.lower()}/"
+                st.image(f"{link_url}/image.jpg", caption=f"{make} {model}", use_column_width=True)
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
