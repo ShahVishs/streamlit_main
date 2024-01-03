@@ -369,8 +369,7 @@ def image_to_base64(image):
     image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-def run_conversation():
-    # user_input = input("Please enter your car-related question: ")
+def run_conversation(user_input):
     messages = [{"role": "user", "content": user_input}]
     
     tools = [
@@ -444,7 +443,7 @@ def conversational_chat(user_input, user_name):
     output = result["output"]
     
     # Call run_conversation function with user_input
-    image_response = run_conversation(user_input)
+    image_response = run_conversation()
     
     # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
