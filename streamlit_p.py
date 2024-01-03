@@ -475,6 +475,18 @@ def conversational_chat(user_input, user_name):
 
     # Use agent_executor for text-based responses
     text_response = agent_executor({"input": input_with_username})
+
+    # Handle image display in the text response
+    try:
+        response_json = json.loads(text_response)
+        image_url = response_json.get("image_url")
+
+        if image_url:
+            st.image(image_url, caption="Image Caption")
+    except json.JSONDecodeError:
+        # Handle non-JSON responses
+        st.markdown(text_response)
+
     st.session_state.chat_history.append((user_input, text_response))
 
     return text_response
