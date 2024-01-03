@@ -448,18 +448,22 @@ def run_conversation():
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-    result = agent_executor({"input": input_with_username})
-    output = result["output"]
+    
+    # Check if the user input includes a request for car details or image details
+    if "details_of_car" in user_input.lower():
+        # Handle the "details_of_car" tool
+        result = agent_executor({"input": input_with_username})
+        output = result["output"]
+    else:
+        # For other queries, try to include image details
+        result_image = agent_executor({"input": "image_details"})
+        image_link = result_image["output"]
+        output = f"Here is an image of a car:"
+        st.image(image_link, caption="Car Image", use_column_width=True)
+    
     st.session_state.chat_history.append((user_input, output))
     
     return output
-
-    # Check if the response includes a tool call for car information
-    if "get_car_information" in result.get("tool_calls", []):
-        car_info_list = json.loads(result["tool_calls"]["get_car_information"]["content"])
-        if car_info_list:
-            link_url = "https://www.example.com/inventory/"  # Replace with your actual inventory URL
-            display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
 # output = ""
 # with container:
