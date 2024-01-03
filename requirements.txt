@@ -12,5 +12,5 @@ airtable-python-wrapper
 pydantic
 langchain-experimental
 IPython
-openai --upgrade
+openai 
 jq
