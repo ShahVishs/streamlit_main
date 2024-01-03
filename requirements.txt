@@ -1,5 +1,8 @@
 streamlit
-langchain
+langchain==0.0.349
+langchain-community==0.0.1
+langchain-core==0.0.13
+langsmith==0.0.77
 tiktoken
 pandas
 tabulate
