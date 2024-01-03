@@ -36,6 +36,14 @@ from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
 import json
 from langchain.document_loaders import JSONLoader
+from IPython.display import display, HTML
+from PIL import Image
+import requests
+from io import BytesIO
+import json
+from openai import OpenAI
+import base64
+import re
 
 hide_share_button_style = """
     <style>
