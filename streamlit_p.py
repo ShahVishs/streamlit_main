@@ -345,7 +345,6 @@ def get_car_information(make, model):
         return json.dumps({"error": "Car not found"})
 
 def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
-    image_data_list = []
     try:
         for car_info in car_info_list:
             image_links = car_info.get("website Link for images")
@@ -364,18 +363,14 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-                image_data_list.append({
-                    "image": image_to_base64(resized_image),
-                    "year": year,
-                    "make": make,
-                    "model": model,
-                    "vin": vin_number_from_info,
-                    "link": link_with_vin
-                })
+                # Print or log image details for debugging
+                print(f"Image Details - VIN: {vin_number_from_info}, Link: {link_with_vin}")
+
+                # Display image in Streamlit
+                st.image(resized_image, caption=f"{year} {make} {model}")
+
     except Exception as e:
         print(f"Error displaying car information: {e}")
-
-    return image_data_list
 
 
 def image_to_base64(image):
