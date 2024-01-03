@@ -245,7 +245,7 @@ After scheduling an appointment, initiate the conversation to get tradein car an
 
 **Vehicle Image:**
 
-If you want to see an image of a specific vehicle, provide the make and model, and I'll fetch the corresponding image for you.
+Show image of a specific vehicle that user ask, provide the make and model, and I'll fetch the corresponding image for you.
 Use the "image_details" tool for this purpose.
 
 Encourage Dealership Visit: Our goal is to encourage customers to visit the dealership for test drives or
@@ -342,12 +342,11 @@ def get_car_information(make, model):
     else:
         return json.dumps({"error": "Car not found"})
 
-# Function to display car information with an image
-def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
+def display_car_info_with_link(car_info_list, size=(300, 300)):
     try:
         for car_info in car_info_list:
             image_links = car_info.get("website Link for images")
-            vin_number = car_info.get("Vin")  
+            vin_number = car_info.get("Vin")
             year = car_info.get("Year")
             make = car_info.get("Make")
             model = car_info.get("Model")
@@ -358,20 +357,12 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 image_data = Image.open(BytesIO(response.content))
                 resized_image = image_data.resize(size)
 
-              
-                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
-                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
-                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
-
-                
                 display(HTML(f'<div style="text-align:center;">'
-                             f'<a href="{link_with_vin}" target="_blank">'
-                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>'
+                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}">'
                              f'<p>{year} {make} {model}</p>'
-                             f'<p>VIN: {vin_number_from_info}</p></div>'))
+                             f'<p>VIN: {vin_number}</p></div>'))
     except Exception as e:
         print(f"Error displaying car information: {e}")
-
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
@@ -388,30 +379,6 @@ def conversational_chat(user_input, user_name):
             link_url = "https://www.example.com/inventory/"  # Replace with your actual inventory URL
             display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
-
-
-
-# def conversational_chat(user_input, user_name):
-#     input_with_username = f"{user_name}: {user_input}"
-#     result = agent_executor({"input": input_with_username})
-#     output = result["output"]
-#     st.session_state.chat_history.append((user_input, output))
-    
-#     # Show image and answer text if the response contains image information
-#     if "image_url" in output:
-#         st.image(output["image_url"], caption="Vehicle Image", use_column_width=True)
-
-#     # Show answer text
-#     st.markdown(
-#         f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-#         f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-#         f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-#         f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output["text"]}</span>'
-#         f'</div>',
-#         unsafe_allow_html=True
-#     )
-
-#     return output
 output = ""
 with container:
     if st.session_state.user_name is None:
