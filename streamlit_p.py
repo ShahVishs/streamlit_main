@@ -477,7 +477,7 @@ with container:
         
         # Display images in Streamlit
         for car_info in car_info_list:
-            st.image(car_info["image"], caption=f"{car_info['year']} {car_info['make']} {car_info['model']}")
+            st.image(car_info["website Link for images"], caption=f"{car_info['year']} {car_info['make']} {car_info['model']}")
             st.write(f"VIN: {car_info['vin']}")
             st.write(f"Link: {car_info['link']}")
     with response_container:
