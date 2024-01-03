@@ -444,9 +444,23 @@ def run_conversation(user_input):
         # If no tool calls match, return an empty list
         return []
         
+# def conversational_chat(user_input, user_name):
+#     input_with_username = f"{user_name}: {user_input}"
+#     result = agent_executor({"input": input_with_username})
+#     output = result["output"]
+#     st.session_state.chat_history.append((user_input, output))
+    
+#     return output
+
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-    result = agent_executor({"input": input_with_username})
+    
+    # Call run_conversation and get the car_info_list
+    car_info_list = run_conversation(user_input)
+    
+    # Include car_info_list in the agent_executor call
+    result = agent_executor({"input": input_with_username, "car_info_list": car_info_list})
+    
     output = result["output"]
     st.session_state.chat_history.append((user_input, output))
     
