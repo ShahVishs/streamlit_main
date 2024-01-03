@@ -378,8 +378,7 @@ def image_to_base64(image):
     image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-def run_conversation():
-    user_input = input("Please enter your car-related question: ")
+def run_conversation(user_input):
     messages = [{"role": "user", "content": user_input}]
     
     tools = [
