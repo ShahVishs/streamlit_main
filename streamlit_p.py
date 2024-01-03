@@ -359,9 +359,48 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-    result = agent_executor({"input": input_with_username})
+
+    # Include both tool calls in the same message
+    messages = [
+        {"role": "user", "content": input_with_username},
+        # Use the existing tools for car information retrieval
+        {
+            "type": "function",
+            "function": {
+                "name": "get_car_information",
+                "description": "Retrieve car information using car_data.json",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string", "description": "The user's query"}
+                    },
+                    "required": ["query"]
+                }
+            }
+        },
+        # Include another tool call for displaying the image
+        {
+            "type": "function",
+            "function": {
+                "name": "display_car_image",
+                "description": "Display car image based on make and model",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "make": {"type": "string", "description": "The car make"},
+                        "model": {"type": "string", "description": "The car model"}
+                    },
+                    "required": ["make", "model"]
+                }
+            }
+        }
+    ]
+
+    # Execute the conversation
+    result = agent_executor(messages)
+
     output = result["output"]
-    st.session_state.chat_history.append((user_input, output))
+    st.session_state.chat_history.append((input_with_username, output))
 
     # Check if the response includes a tool call for car information
     if "get_car_information" in result.get("tool_calls", []):
@@ -369,8 +408,6 @@ def conversational_chat(user_input, user_name):
         if car_info_list:
             link_url = "https://www.example.com/inventory/"  # Replace with your actual inventory URL
             display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-
-    return output
 
 # ... (existing code)
 
