@@ -459,6 +459,10 @@ def conversational_chat(user_input, user_name):
     st.session_state.chat_history.append((user_input, output))
     
     return output
+    
+# Define car_info_list before calling conversational_chat
+car_info_list = run_conversation(user_input)
+
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -472,6 +476,7 @@ with container:
 
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
+        # output = conversational_chat(user_input, st.session_state.user_name, car_info_list)
         car_info_list = run_conversation(user_input)
     
         # Assuming the response from run_conversation contains car information
