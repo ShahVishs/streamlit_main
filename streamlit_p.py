@@ -470,7 +470,11 @@ with container:
 
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
-    
+        car_info_list = ...  # Extract car information from 'output' or any other relevant source
+        link_url = "https://www.goschchevy.com/inventory/"  # Set your link URL
+
+  
+
         # Assuming the response from conversational_chat contains car information
         car_images = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
         
