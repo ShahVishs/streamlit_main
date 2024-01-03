@@ -470,22 +470,19 @@ def conversational_chat(user_input, user_name):
     car_info_list = json.loads(image_retrieval_response)
 
     if car_info_list:
-        link_url = "https://www.goschchevy.com/inventory/"
-        display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+        for car_info in car_info_list:
+            image_links = car_info.get("website Link for images")
+            for image_link in re.findall(r'https://[^ ,]+', image_links):
+                response = requests.get(image_link)
+                response.raise_for_status()
+                image_data = Image.open(BytesIO(response.content))
+                st.image(image_data, caption="Car Image")
 
     # Use agent_executor for text-based responses
     text_response = agent_executor({"input": input_with_username})
 
-    # Handle image display in the text response
-    try:
-        response_json = json.loads(text_response)
-        image_url = response_json.get("image_url")
-
-        if image_url:
-            st.image(image_url, caption="Image Caption")
-    except json.JSONDecodeError:
-        # Handle non-JSON responses
-        st.markdown(text_response)
+    # Display text response
+    st.markdown(text_response)
 
     st.session_state.chat_history.append((user_input, text_response))
 
