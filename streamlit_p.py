@@ -345,6 +345,7 @@ def get_car_information(make, model):
         return json.dumps({"error": "Car not found"})
 
 def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
+    image_data_list = []
     try:
         for car_info in car_info_list:
             image_links = car_info.get("website Link for images")
@@ -359,19 +360,22 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 image_data = Image.open(BytesIO(response.content))
                 resized_image = image_data.resize(size)
 
-              
                 vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
                 vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-                
-                display(HTML(f'<div style="text-align:center;">'
-                             f'<a href="{link_with_vin}" target="_blank">'
-                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>'
-                             f'<p>{year} {make} {model}</p>'
-                             f'<p>VIN: {vin_number_from_info}</p></div>'))
+                image_data_list.append({
+                    "image": resized_image,
+                    "year": year,
+                    "make": make,
+                    "model": model,
+                    "vin": vin_number_from_info,
+                    "link": link_with_vin
+                })
     except Exception as e:
         print(f"Error displaying car information: {e}")
+
+    return image_data_list
 
 
 def image_to_base64(image):
@@ -466,6 +470,15 @@ with container:
 
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
+    
+        # Assuming the response from conversational_chat contains car information
+        car_images = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+        
+        # Display images in Streamlit
+        for car_image in car_images:
+            st.image(car_image["image"], caption=f"{car_image['year']} {car_image['make']} {car_image['model']}")
+            st.write(f"VIN: {car_image['vin']}")
+            st.write(f"Link: {car_image['link']}")
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
