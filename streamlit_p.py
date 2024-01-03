@@ -34,7 +34,9 @@ from langchain.prompts import MessagesPlaceholder
 from langchain.agents import AgentExecutor
 from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
-
+import json
+from langchain.document_loaders import JSONLoader
+from langchain_core.tracers.langchain_v1 import LangChainTracerV1
 hide_share_button_style = """
     <style>
     .st-emotion-cache-zq5wmm.ezrtsby0 .stActionButton:nth-child(1) {
@@ -95,7 +97,7 @@ business_details_text = [
 ]
 retriever_3 = FAISS.from_texts(business_details_text, OpenAIEmbeddings()).as_retriever()
 
-file_1 = r'car_desription_new.csv'
+file_1 = r'inventory_goush_cleaned_new.csv'
 
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
@@ -110,6 +112,13 @@ num_ret=len(docs_2)
 vectordb_2 = FAISS.from_documents(docs_2, embeddings)
 retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
 
+file_3 = r'csvjson.json'
+# loader_3 = JSONLoader(file_path=file_3,jq_schema='.messages[].content',text_content=False)
+# data_3 = loader_3.load()
+loader_3 = JSONLoader(file_path=file_3, jq_schema='.', text_content=False)
+data_3 = loader_3.load()
+vectordb_3 = FAISS.from_documents(data_3, embeddings)
+retriever_3 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
 tool1 = create_retriever_tool(
     retriever_1, 
@@ -129,6 +138,11 @@ tool3 = create_retriever_tool(
      "Searches and returns documents related to business working days and hours, location and address details."
 )
 
+tool4 = create_retriever_tool(
+    retriever_3, 
+     "image_details",
+     "Use to search for vehicle information and images based on make and model."
+)
 
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
@@ -229,6 +243,10 @@ After scheduling an appointment, initiate the conversation to get tradein car an
     - Contact Number:
     - Email Address:
 
+**Vehicle Image:**
+
+Show image of a specific vehicle that user ask, provide the make and model, and I'll fetch the corresponding image for you.
+Use the "image_details" tool for this purpose.
 
 Encourage Dealership Visit: Our goal is to encourage customers to visit the dealership for test drives or
 receive product briefings from our team. After providing essential information on the car's make, model,
@@ -241,6 +259,7 @@ and contact details use search_business_details tool to get information.
 Keep responses concise, not exceeding two sentences and answers should be interactive.
 Respond in a polite US english.
 answer only from the provided content dont makeup answers.
+
 """
 details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
 
@@ -268,7 +287,7 @@ prompt = OpenAIFunctionsAgent.create_prompt(
 repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
         description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
 
-tools = [tool1, repl, tool2, tool3]
+tools = [tool1, repl, tool2, tool3, tool4]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
@@ -306,6 +325,126 @@ def save_chat_to_airtable(user_name, user_input, output):
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
 
+client = OpenAI()
+
+def load_car_data(file_path):
+    with open(file_path, 'r') as file:
+        car_data = json.load(file)
+    return car_data
+
+car_data = load_car_data(r"csvjson.json")
+
+def get_car_information(make, model):
+    """Get information about a car based on make and model."""
+    matching_cars = [car for car in car_data if car["Make"].lower() == make.lower() and car["Model"].lower() == model.lower()]
+
+    if matching_cars:
+        return json.dumps(matching_cars)
+    else:
+        return json.dumps({"error": "Car not found"})
+
+def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
+    try:
+        for car_info in car_info_list:
+            image_links = car_info.get("website Link for images")
+            vin_number = car_info.get("Vin")  
+            year = car_info.get("Year")
+            make = car_info.get("Make")
+            model = car_info.get("Model")
+
+            for image_link in re.findall(r'https://[^ ,]+', image_links):
+                response = requests.get(image_link)
+                response.raise_for_status()
+                image_data = Image.open(BytesIO(response.content))
+                resized_image = image_data.resize(size)
+
+              
+                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
+                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
+                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+
+                
+                display(HTML(f'<div style="text-align:center;">'
+                             f'<a href="{link_with_vin}" target="_blank">'
+                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>'
+                             f'<p>{year} {make} {model}</p>'
+                             f'<p>VIN: {vin_number_from_info}</p></div>'))
+    except Exception as e:
+        print(f"Error displaying car information: {e}")
+
+
+def image_to_base64(image):
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+def run_conversation():
+    user_input = input("Please enter your car-related question: ")
+    messages = [{"role": "user", "content": user_input}]
+    
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "get_car_information",
+                "description": "Get information about a car",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "make": {"type": "string", "description": "The car make"},
+                        "model": {"type": "string", "description": "The car model"}
+                    },
+                    "required": ["make", "model"]
+                }
+            }
+        }
+    ]
+
+    response = client.chat.completions.create(
+        model="gpt-4-1106-preview",
+        messages=messages,
+        tools=tools,
+    )
+
+    response_message = response.choices[0].message
+    tool_calls = response_message.tool_calls
+
+    if tool_calls:
+        available_functions = {
+            "get_car_information": get_car_information,
+        }
+
+        messages.append(response_message)  
+
+        for tool_call in tool_calls:
+            function_name = tool_call.function.name
+            function_to_call = available_functions[function_name]
+            function_args = json.loads(tool_call.function.arguments)
+            function_response = function_to_call(
+                make=function_args.get("make"),
+                model=function_args.get("model"),
+            )
+
+            messages.append(
+                {
+                    "tool_call_id": tool_call.id,
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response,
+                }
+            )  
+
+            car_info_list = json.loads(function_response)
+            if car_info_list:
+                link_url = "https://www.goschchevy.com/inventory/"
+                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+
+        second_response = client.chat.completions.create(
+            model="gpt-4-1106-preview",  
+            messages=messages,
+        ) 
+
+        return second_response
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
@@ -314,6 +453,48 @@ def conversational_chat(user_input, user_name):
     st.session_state.chat_history.append((user_input, output))
     
     return output
+
+    # Check if the response includes a tool call for car information
+    if "get_car_information" in result.get("tool_calls", []):
+        car_info_list = json.loads(result["tool_calls"]["get_car_information"]["content"])
+        if car_info_list:
+            link_url = "https://www.example.com/inventory/"  # Replace with your actual inventory URL
+            display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+
+# output = ""
+# with container:
+#     if st.session_state.user_name is None:
+#         user_name = st.text_input("Your name:")
+#         if user_name:
+#             st.session_state.user_name = user_name
+
+#     with st.form(key='my_form', clear_on_submit=True):
+#         user_input = st.text_input("Query:", placeholder="Type your question here (:")
+#         submit_button = st.form_submit_button(label='Send')
+
+#     if submit_button and user_input:
+#         output = conversational_chat(user_input, st.session_state.user_name)
+#     with response_container:
+#         for i, (query, answer) in enumerate(st.session_state.chat_history):
+#             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
+#             col1, col2 = st.columns([0.7, 10]) 
+#             with col1:
+#                 st.image("icon-1024.png", width=50)
+#             with col2:
+#                 st.markdown(
+#                 f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+#                 f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+#                 f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+#                 f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+#                 f'</div>',
+#                 unsafe_allow_html=True
+#             )
+
+#         if st.session_state.user_name:
+#             try:
+#                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
+#             except Exception as e:
+#                 st.error(f"An error occurred: {e}")
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -326,7 +507,10 @@ with container:
         submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
-        output = conversational_chat(user_input, st.session_state.user_name)
+        # Call the run_conversation function instead of agent_executor
+        response = run_conversation()
+        output = response.choices[0].message.content
+
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
@@ -335,13 +519,13 @@ with container:
                 st.image("icon-1024.png", width=50)
             with col2:
                 st.markdown(
-                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
 
         # if st.session_state.user_name:
         #     try:
