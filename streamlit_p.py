@@ -115,22 +115,11 @@ class JSONFileRetrieverTool:
         with open(json_file_path, 'r') as json_file:
             self.data = json.load(json_file)
 
-    def get_relevant_documents(self, query):
-        # Implement the logic to retrieve relevant documents based on the query
-        # For simplicity, this example assumes that the query matches the 'Model' field
-        relevant_documents = [
-            doc for doc in self.data if doc.get('Model', '').lower() == query.lower()
-        ]
-        return relevant_documents
-
     def search(self, query):
-        # Search for information in the JSON file based on the query (make and model)
-        # Return relevant information, including image URLs
-        return self.get_relevant_documents(query)
+        result = self.data.get(query, "No information found.")
+        return result
 
-# Integration of the New Tool into the Agent
 json_tool = JSONFileRetrieverTool("csvjson.json")
-tool4 = create_retriever_tool(json_tool, "website Link for images", "Search for vehicle information and image.")
 
 
 tool1 = create_retriever_tool(
@@ -263,6 +252,11 @@ and contact details use search_business_details tool to get information.
 Keep responses concise, not exceeding two sentences and answers should be interactive.
 Respond in a polite US english.
 answer only from the provided content dont makeup answers.
+
+**Vehicle Image:**
+
+If you want to see an image of a specific vehicle, provide the make and model, and I'll fetch the corresponding image for you.
+Use the "vehicle_image" tool for this purpose.
 """
 details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
 
@@ -290,7 +284,7 @@ prompt = OpenAIFunctionsAgent.create_prompt(
 repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
         description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
 
-tools = [tool1, repl, tool2, tool3, tool4]
+tools = [tool1, repl, tool2, tool3, json_tool]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
