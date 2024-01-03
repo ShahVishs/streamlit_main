@@ -126,7 +126,7 @@ file_3 = r'csvjson.json'
 loader_3 = JSONLoader(file_path=file_3, jq_schema='.', text_content=False)
 data_3 = loader_3.load()
 vectordb_3 = FAISS.from_documents(data_3, embeddings)
-retriever_3 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+retriever_4 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
 tool1 = create_retriever_tool(
     retriever_1, 
@@ -147,7 +147,7 @@ tool3 = create_retriever_tool(
 )
 
 tool4 = create_retriever_tool(
-    retriever_3, 
+    retriever_4, 
      "image_details",
      "Use to search for vehicle information and images based on make and model."
 )
