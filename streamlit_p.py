@@ -394,6 +394,9 @@ def run_conversation(user_input):
     response_message = response.choices[0].message
     tool_calls = response_message.tool_calls
 
+    text_response = response_message.content if response_message.content else None
+    image_response = response_message.content if response_message.content else None
+
     if tool_calls:
         available_functions = {
             "get_car_information": get_car_information,
@@ -422,42 +425,29 @@ def run_conversation(user_input):
             car_info_list = json.loads(function_response)
             if car_info_list:
                 link_url = "https://www.goschchevy.com/inventory/"
-                for car_info in car_info_list:
-                    image_links = car_info.get("website Link for images")
-                    for image_link in re.findall(r'https://[^ ,]+', image_links):
-                        response = requests.get(image_link)
-                        response.raise_for_status()
-                        image_data = Image.open(BytesIO(response.content))
-                        resized_image = image_data.resize((150, 150))
-                        
-                        vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
-                        vin_number_from_info = car_info.get("Vin") or (vin_number_from_url.group(1) if vin_number_from_url else None)
-                        link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+                image_response = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
-                        st.image(resized_image, caption=f'{car_info.get("Year")} {car_info.get("Make")} {car_info.get("Model")}\nVIN: {vin_number_from_info}', use_column_width=True)
-                        st.write(link_with_vin)
-
-        second_response = client.chat.completions.create(
-            model="gpt-4-1106-preview",  
-            messages=messages,
-        ) 
-
-        return second_response
+    return text_response, image_response
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
+    
+    # Call run_conversation function to get the response
+    text_response, image_response = run_conversation(user_input)
+
+    # Display the resized images
+    if image_response:
+        st.image(image_response, caption="Resized Image", use_column_width=True)
+
+    # Call agent_executor for the conversation chat response
     result = agent_executor({"input": input_with_username})
     output = result["output"]
-    
-    # Call run_conversation function
-    response = run_conversation(user_input)
 
     # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
 
-    # Display the images within the conversation chat response
-    if response and response.choices[0].message.content:
-        st.image(response.choices[0].message.content, caption="Resized Image", use_column_width=True)
+    # Append image-related output to the chat history
+    st.session_state.chat_history.append(("Image Client", image_response))
 
     return output
 output = ""
