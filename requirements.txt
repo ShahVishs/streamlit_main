@@ -13,3 +13,4 @@ airtable-python-wrapper
 pydantic
 langchain-experimental
 IPython
+openai
