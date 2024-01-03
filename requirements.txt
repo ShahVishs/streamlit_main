@@ -1,4 +1,4 @@
-langchain
+langchain-core
 streamlit
 tiktoken
 pandas
