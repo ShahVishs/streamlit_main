@@ -35,6 +35,7 @@ from langchain.agents import AgentExecutor
 from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
 import json
+from openai import OpenAI
 from langchain.document_loaders import JSONLoader
 from langchain_core.tracers.langchain_v1 import LangChainTracerV1
 hide_share_button_style = """
