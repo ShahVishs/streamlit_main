@@ -452,49 +452,8 @@ def conversational_chat(user_input, user_name):
     output = result["output"]
     st.session_state.chat_history.append((user_input, output))
     
-    return output
+    return run_conversation().choices[0].message.content  # Return the output of run_conversation()
 
-    # Check if the response includes a tool call for car information
-    if "get_car_information" in result.get("tool_calls", []):
-        car_info_list = json.loads(result["tool_calls"]["get_car_information"]["content"])
-        if car_info_list:
-            link_url = "https://www.example.com/inventory/"  # Replace with your actual inventory URL
-            display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-
-# output = ""
-# with container:
-#     if st.session_state.user_name is None:
-#         user_name = st.text_input("Your name:")
-#         if user_name:
-#             st.session_state.user_name = user_name
-
-#     with st.form(key='my_form', clear_on_submit=True):
-#         user_input = st.text_input("Query:", placeholder="Type your question here (:")
-#         submit_button = st.form_submit_button(label='Send')
-
-#     if submit_button and user_input:
-#         output = conversational_chat(user_input, st.session_state.user_name)
-#     with response_container:
-#         for i, (query, answer) in enumerate(st.session_state.chat_history):
-#             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-#             col1, col2 = st.columns([0.7, 10]) 
-#             with col1:
-#                 st.image("icon-1024.png", width=50)
-#             with col2:
-#                 st.markdown(
-#                 f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-#                 f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-#                 f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-#                 f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-#                 f'</div>',
-#                 unsafe_allow_html=True
-#             )
-
-#         if st.session_state.user_name:
-#             try:
-#                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
-#             except Exception as e:
-#                 st.error(f"An error occurred: {e}")
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -507,9 +466,8 @@ with container:
         submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
-        # Call the run_conversation function instead of agent_executor
-        response = run_conversation()
-        output = response.choices[0].message.content
+        # Call the conversational_chat function
+        output = conversational_chat(user_input, st.session_state.user_name)
 
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
