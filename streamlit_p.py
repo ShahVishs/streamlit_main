@@ -454,8 +454,17 @@ def conversational_chat(user_input, user_name):
             link_url = "https://www.goschchevy.com/inventory/"
             display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
+        # Add logic for handling image generation here
+        if function_name == "generate_car_images":
+            # Assuming content contains image data
+            display_generated_image(content)
+
     st.session_state.chat_history.append((user_input, output))
     return output
+def display_generated_image(image_data):
+    # Display the generated image using Streamlit
+    image = Image.open(BytesIO(base64.b64decode(image_data)))
+    st.image(image, caption='Generated Image', use_column_width=True)
 output = ""
 with container:
     if st.session_state.user_name is None:
