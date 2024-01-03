@@ -464,32 +464,21 @@ def run_conversation(user_input):
 #     return output
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-
-    # Use retriever_4 for fetching image details
-    image_retrieval_response = retriever_4.get_results(user_input, k=3)  # Adjust k as needed
-    car_info_list = json.loads(image_retrieval_response)
-
-    if car_info_list:
-        for car_info in car_info_list:
-            # Attempt to fetch image links from the retrieved data
-            image_links = car_info.get("website Link for images")
-            
-            if image_links:
-                for image_link in re.findall(r'https://[^ ,]+', image_links):
-                    response = requests.get(image_link)
-                    response.raise_for_status()
-                    image_data = Image.open(BytesIO(response.content))
-                    st.image(image_data, caption="Car Image")
-
-    # Use agent_executor for text-based responses
-    text_response = agent_executor({"input": input_with_username})
-
-    # Display text response
-    st.markdown(text_response)
-
-    st.session_state.chat_history.append((user_input, text_response))
-
-    return text_response
+    
+    # Check if the user input includes a request for car details or image details
+    if "details_of_car" in user_input.lower():
+        # Handle the "details_of_car" tool
+        result = agent_executor({"input": input_with_username})
+        output = result["output"]
+    else:
+        # For other queries, try to include image details
+        result_image = agent_executor({"input": "image_details"})
+        image_link = result_image["output"]
+        output = f"Here is an image of a car: {image_link}"
+    
+    st.session_state.chat_history.append((user_input, output))
+    
+    return output
 
 output = ""
 with container:
