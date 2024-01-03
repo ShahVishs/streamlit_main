@@ -111,22 +111,6 @@ num_ret=len(docs_2)
 vectordb_2 = FAISS.from_documents(docs_2, embeddings)
 retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
 
-class JSONFileRetrieverTool(BaseTool):  # Inherit from BaseTool
-    def __init__(self, json_file_path):
-        with open(json_file_path, 'r') as json_file:
-            self.data = json.load(json_file)
-
-    def _run(self, input_text):
-        query = input_text.strip()
-        result = self.data.get(query, "No information found.")
-        return result
-
-json_tool = {
-    "tool": JSONFileRetrieverTool("csvjson.json"),
-    "name": "vehicle_image",
-    "description": "Use to search for vehicle information and images based on make and model."
-}
-
 
 tool1 = create_retriever_tool(
     retriever_1, 
@@ -259,10 +243,6 @@ Keep responses concise, not exceeding two sentences and answers should be intera
 Respond in a polite US english.
 answer only from the provided content dont makeup answers.
 
-**Vehicle Image:**
-
-If you want to see an image of a specific vehicle, provide the make and model, and I'll fetch the corresponding image for you.
-Use the "vehicle_image" tool for this purpose.
 """
 details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
 
@@ -290,7 +270,7 @@ prompt = OpenAIFunctionsAgent.create_prompt(
 repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
         description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
 
-tools = [tool1, repl, tool2, tool3, json_tool]
+tools = [tool1, repl, tool2, tool3]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
@@ -328,28 +308,94 @@ def save_chat_to_airtable(user_name, user_input, output):
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
 
+# Load car data from the JSON file
+def load_car_data(file_path):
+    with open(file_path, 'r') as file:
+        car_data = json.load(file)
+    return car_data
+
+car_data = load_car_data("csvjson.json")  # Replace with your actual file path
+
+# Function to get car information from the loaded JSON data
+def get_car_information(make, model):
+    matching_cars = [car for car in car_data if car["Make"].lower() == make.lower() and car["Model"].lower() == model.lower()]
+
+    if matching_cars:
+        return json.dumps(matching_cars)
+    else:
+        return json.dumps({"error": "Car not found"})
+
+# Function to display car information with an image
+def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
+    try:
+        for car_info in car_info_list:
+            image_links = car_info.get("website Link for images")
+            vin_number = car_info.get("Vin")  
+            year = car_info.get("Year")
+            make = car_info.get("Make")
+            model = car_info.get("Model")
+
+            for image_link in re.findall(r'https://[^ ,]+', image_links):
+                response = requests.get(image_link)
+                response.raise_for_status()
+                image_data = Image.open(BytesIO(response.content))
+                resized_image = image_data.resize(size)
+
+              
+                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
+                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
+                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+
+                
+                display(HTML(f'<div style="text-align:center;">'
+                             f'<a href="{link_with_vin}" target="_blank">'
+                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>'
+                             f'<p>{year} {make} {model}</p>'
+                             f'<p>VIN: {vin_number_from_info}</p></div>'))
+    except Exception as e:
+        print(f"Error displaying car information: {e}")
+
+# ... (existing code)
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
     st.session_state.chat_history.append((user_input, output))
-    
-    # Show image and answer text if the response contains image information
-    if "image_url" in output:
-        st.image(output["image_url"], caption="Vehicle Image", use_column_width=True)
 
-    # Show answer text
-    st.markdown(
-        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output["text"]}</span>'
-        f'</div>',
-        unsafe_allow_html=True
-    )
+    # Check if the response includes a tool call for car information
+    if "get_car_information" in result.get("tool_calls", []):
+        car_info_list = json.loads(result["tool_calls"]["get_car_information"]["content"])
+        if car_info_list:
+            link_url = "https://www.example.com/inventory/"  # Replace with your actual inventory URL
+            display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
     return output
+
+# ... (existing code)
+
+
+# def conversational_chat(user_input, user_name):
+#     input_with_username = f"{user_name}: {user_input}"
+#     result = agent_executor({"input": input_with_username})
+#     output = result["output"]
+#     st.session_state.chat_history.append((user_input, output))
+    
+#     # Show image and answer text if the response contains image information
+#     if "image_url" in output:
+#         st.image(output["image_url"], caption="Vehicle Image", use_column_width=True)
+
+#     # Show answer text
+#     st.markdown(
+#         f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+#         f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+#         f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+#         f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output["text"]}</span>'
+#         f'</div>',
+#         unsafe_allow_html=True
+#     )
+
+#     return output
 output = ""
 with container:
     if st.session_state.user_name is None:
