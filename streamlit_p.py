@@ -332,7 +332,7 @@ def load_car_data(file_path):
         car_data = json.load(file)
     return car_data
 
-car_data = load_car_data(r"C:\Users\shahs\Downloads\csvjson.json")
+car_data = load_car_data(r"csvjson.json")
 
 def get_car_information(make, model):
     """Get information about a car based on make and model."""
