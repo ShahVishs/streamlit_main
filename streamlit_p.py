@@ -414,6 +414,21 @@ def run_conversation(user_input):
                     display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
     return text_output
+def conversational_chat(user_input, user_name):
+    input_with_username = f"{user_name}: {user_input}"
+    result = agent_executor({"input": input_with_username})
+    output = result["output"]
+
+    # Call run_conversation function
+    text_output, image_responses = run_conversation(user_input)
+
+    # Append conversation chat output to the chat history
+    st.session_state.chat_history.append((user_input, text_output))
+
+    # Append image-related output to the chat history
+    st.session_state.chat_history.append(("Image Client", image_responses))
+
+    return output, text_output, image_responses
 output = ""
 text_output = ""
 image_responses = []
@@ -452,6 +467,7 @@ with container:
                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
             except Exception as e:
                 st.error(f"An error occurred: {e}")
+
         #         # Display images
         #         for image_response in image_responses:
         #             make = image_response.get("make")
