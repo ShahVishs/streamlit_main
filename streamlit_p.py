@@ -474,7 +474,8 @@ def conversational_chat(user_input, user_name):
         # For other queries, try to include image details
         result_image = agent_executor({"input": "image_details"})
         image_link = result_image["output"]
-        output = f"Here is an image of a car: {image_link}"
+        output = f"Here is an image of a car:"
+        st.image(image_link, caption="Car Image", use_column_width=True)
     
     st.session_state.chat_history.append((user_input, output))
     
