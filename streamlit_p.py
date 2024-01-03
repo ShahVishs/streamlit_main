@@ -42,6 +42,8 @@ import json
 from openai import OpenAI
 import base64
 import re
+import os
+from openai import OpenAI
 
 hide_share_button_style = """
     <style>
@@ -313,6 +315,12 @@ def save_chat_to_airtable(user_name, user_input, output):
         )
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
+
+
+os.environ["OPENAI_API_KEY"] = "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"
+client = OpenAI(
+  organization='org-IEocHZvC0kwypNhPedNmLueo',
+)
 client = OpenAI()
 
 def load_car_data(file_path):
@@ -320,7 +328,7 @@ def load_car_data(file_path):
         car_data = json.load(file)
     return car_data
 
-car_data = load_car_data(r"C:\Users\shahs\Downloads\csvjson.json")
+car_data = load_car_data(r"csvjson.json")
 
 def get_car_information(make, model):
     """Get information about a car based on make and model."""
