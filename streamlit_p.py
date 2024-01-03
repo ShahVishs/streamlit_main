@@ -365,7 +365,7 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
                 image_data_list.append({
-                    "image": resized_image,
+                    "image": image_to_base64(resized_image),
                     "year": year,
                     "make": make,
                     "model": model,
