@@ -400,20 +400,21 @@ def run_conversation(user_input):
     tool_calls = response_message.tool_calls
     image_responses = []
 
-    for tool_call in tool_calls:
-        function_name = tool_call.function.name
-        function_args = json.loads(tool_call.function.arguments)
-        if function_name == "get_car_information":
-            make = function_args.get("make")
-            model = function_args.get("model")
-            image_responses.append({"make": make, "model": model})
+    if tool_calls:
+        for tool_call in tool_calls:
+            function_name = tool_call.function.name
+            function_args = json.loads(tool_call.function.arguments)
+            if function_name == "get_car_information":
+                make = function_args.get("make")
+                model = function_args.get("model")
+                image_responses.append({"make": make, "model": model})
 
-            # Extract car information and display it with a link
-            function_response = get_car_information(make=make, model=model)
-            car_info_list = json.loads(function_response)
-            if car_info_list:
-                link_url = "https://www.goschchevy.com/inventory/"
-                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+                # Extract car information and display it with a link
+                function_response = get_car_information(make=make, model=model)
+                car_info_list = json.loads(function_response)
+                if car_info_list:
+                    link_url = "https://www.goschchevy.com/inventory/"
+                    display_car_info_with_link(car_info_list, link_url, size=(150, 150))
 
     return image_responses
 
