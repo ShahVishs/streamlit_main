@@ -366,19 +366,14 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
                 image_data = Image.open(BytesIO(response.content))
                 resized_image = image_data.resize(size)
 
-              
                 vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
                 vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
                 link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-                
-                display(HTML(f'<div style="text-align:center;">'
-                             f'<a href="{link_with_vin}" target="_blank">'
-                             f'<img src="data:image/png;base64,{image_to_base64(resized_image)}"></a>'
-                             f'<p>{year} {make} {model}</p>'
-                             f'<p>VIN: {vin_number_from_info}</p></div>'))
+                st.image(resized_image, caption=f'{year} {make} {model}', use_column_width=True)
+                st.write(f'VIN: {vin_number_from_info}')
     except Exception as e:
-        print(f"Error displaying car information: {e}")
+        st.error(f"Error displaying car information: {e}")
 
 
 def image_to_base64(image):
