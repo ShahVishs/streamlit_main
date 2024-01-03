@@ -466,7 +466,7 @@ def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
 
     # Use retriever_4 for fetching image details
-    image_retrieval_response = retriever_4.get_results(user_input)
+    image_retrieval_response = retriever_4.query(user_input, k=3)  # Adjust k as needed
     car_info_list = json.loads(image_retrieval_response)
 
     if car_info_list:
