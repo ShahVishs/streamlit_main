@@ -419,16 +419,19 @@ def conversational_chat(user_input, user_name):
     output = result["output"]
 
     # Call run_conversation function
-    image_responses = run_conversation(user_input)
+    text_output, image_responses = run_conversation(user_input)
 
     # Append conversation chat output to the chat history
-    st.session_state.chat_history.append((user_input, output))
+    st.session_state.chat_history.append((user_input, text_output))
 
     # Append image-related output to the chat history
     st.session_state.chat_history.append(("Image Client", image_responses))
 
-    return output, image_responses
+    return output, text_output, image_responses
 output = ""
+text_output = ""
+image_responses = []
+
 with container:
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
@@ -440,7 +443,8 @@ with container:
         submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
-        output = conversational_chat(user_input, st.session_state.user_name)
+        output, text_output, image_responses = conversational_chat(user_input, st.session_state.user_name)
+
     with response_container:
         # Display conversation chat history
         for i, (query, answer) in enumerate(st.session_state.chat_history):
@@ -456,17 +460,17 @@ with container:
                             f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output}</span>'
                             f'</div>',
                             unsafe_allow_html=True)
-            
+
                 # Display images
                 for image_response in image_responses:
                     make = image_response.get("make")
                     model = image_response.get("model")
                     link_url = f"https://www.goschchevy.com/inventory/{make.lower()}_{model.lower()}/"
                     st.image(f"{link_url}/image.jpg", caption=f"{make} {model}", use_column_width=True)
+
         if st.session_state.user_name:
             try:
-                save_chat_to_airtable(st.session_state.user_name, user_input, output)
+                save_chat_to_airtable(st.session_state.user_name, user_input, text_output)
             except Exception as e:
                 st.error(f"An error occurred: {e}")
-
   
