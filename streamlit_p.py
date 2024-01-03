@@ -393,41 +393,69 @@ def run_conversation(user_input):
 
     response_message = response.choices[0].message
     tool_calls = response_message.tool_calls
-    image_responses = []
 
     if tool_calls:
+        available_functions = {
+            "get_car_information": get_car_information,
+        }
+
+        messages.append(response_message)  
+
         for tool_call in tool_calls:
             function_name = tool_call.function.name
+            function_to_call = available_functions[function_name]
             function_args = json.loads(tool_call.function.arguments)
-            if function_name == "get_car_information":
-                make = function_args.get("make")
-                model = function_args.get("model")
-                image_responses.append({"make": make, "model": model})
+            function_response = function_to_call(
+                make=function_args.get("make"),
+                model=function_args.get("model"),
+            )
 
-                # Extract car information and display it with a link
-                function_response = get_car_information(make=make, model=model)
-                car_info_list = json.loads(function_response)
-                if car_info_list:
-                    link_url = "https://www.goschchevy.com/inventory/"
-                    display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+            messages.append(
+                {
+                    "tool_call_id": tool_call.id,
+                    "role": "tool",
+                    "name": function_name,
+                    "content": function_response,
+                }
+            )  
 
-    return image_responses
+            car_info_list = json.loads(function_response)
+            if car_info_list:
+                link_url = "https://www.goschchevy.com/inventory/"
+                for car_info in car_info_list:
+                    image_links = car_info.get("website Link for images")
+                    for image_link in re.findall(r'https://[^ ,]+', image_links):
+                        response = requests.get(image_link)
+                        response.raise_for_status()
+                        image_data = Image.open(BytesIO(response.content))
+                        resized_image = image_data.resize((150, 150))
+                        
+                        vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
+                        vin_number_from_info = car_info.get("Vin") or (vin_number_from_url.group(1) if vin_number_from_url else None)
+                        link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+
+                        st.image(resized_image, caption=f'{car_info.get("Year")} {car_info.get("Make")} {car_info.get("Model")}\nVIN: {vin_number_from_info}', use_column_width=True)
+                        st.write(link_with_vin)
+
+        second_response = client.chat.completions.create(
+            model="gpt-4-1106-preview",  
+            messages=messages,
+        ) 
+
+        return second_response
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
-
+    
     # Call run_conversation function
-    image_responses = run_conversation(user_input)
-
+    run_conversation(user_input)
+    
     # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
-
-    # Append image-related output to the chat history
-    st.session_state.chat_history.append(("Image Client", image_responses))
-
-    return output, image_responses
+    
+    return output
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -463,23 +491,4 @@ with container:
             except Exception as e:
                 st.error(f"An error occurred: {e}")
 
-        if st.session_state.user_name:
-            try:
-                output, image_responses = conversational_chat(user_input, st.session_state.user_name)
-    
-                # Display text-based response
-                st.markdown(f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                            f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                            f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                            f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{output}</span>'
-                            f'</div>',
-                            unsafe_allow_html=True)
-    
-                # Display images
-                for image_response in image_responses:
-                    make = image_response.get("make")
-                    model = image_response.get("model")
-                    link_url = f"https://www.goschchevy.com/inventory/{make.lower()}_{model.lower()}/"
-                    st.image(f"{link_url}/image.jpg", caption=f"{make} {model}", use_column_width=True)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+       
