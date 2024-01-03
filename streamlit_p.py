@@ -335,29 +335,27 @@ def get_car_information(make, model):
         return json.dumps({"error": "Car not found"})
 
 def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
-    try:
-        for car_info in car_info_list:
-            image_links = car_info.get("website Link for images")
-            vin_number = car_info.get("Vin")  
-            year = car_info.get("Year")
-            make = car_info.get("Make")
-            model = car_info.get("Model")
+    images_with_links = []
+    for car_info in car_info_list:
+        image_links = car_info.get("website Link for images")
+        vin_number = car_info.get("Vin")  
+        year = car_info.get("Year")
+        make = car_info.get("Make")
+        model = car_info.get("Model")
 
-            for image_link in re.findall(r'https://[^ ,]+', image_links):
-                response = requests.get(image_link)
-                response.raise_for_status()
-                image_data = Image.open(BytesIO(response.content))
-                resized_image = image_data.resize(size)
+        for image_link in re.findall(r'https://[^ ,]+', image_links):
+            response = requests.get(image_link)
+            response.raise_for_status()
+            image_data = Image.open(BytesIO(response.content))
+            resized_image = image_data.resize(size)
 
-                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
-                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
-                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
+            vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
+            vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
+            link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
 
-                st.image(resized_image, caption=f'{year} {make} {model}\nVIN: {vin_number_from_info}', use_column_width=True)
-                st.markdown(f'[Click here to view more details]({link_with_vin})')
-    except Exception as e:
-        print(f"Error displaying car information: {e}")
+            images_with_links.append((resized_image, link_with_vin))
 
+    return images_with_links
 def image_to_base64(image):
     buffered = BytesIO()
     image.save(buffered, format="PNG")
@@ -443,9 +441,11 @@ def conversational_chat(user_input, user_name):
             if tool_name == "get_car_information":
                 car_info_list = json.loads(tool_content)
                 link_url = "https://www.goschchevy.com/inventory/"
-                image_response = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-                if image_response:
-                    st.image(image_response, caption=f'{user_input}', use_column_width=True)
+                images_with_links = display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+                
+                for image, link in images_with_links:
+                    st.image(image, caption=f'{user_input}', use_column_width=True)
+                    st.markdown(f'[Click here to view more details]({link})')
 
     return output
 output = ""
