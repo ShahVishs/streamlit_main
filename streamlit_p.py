@@ -370,7 +370,7 @@ def image_to_base64(image):
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
 def run_conversation():
-    user_input = input("Please enter your car-related question: ")
+    # user_input = input("Please enter your car-related question: ")
     messages = [{"role": "user", "content": user_input}]
     
     tools = [
@@ -435,15 +435,16 @@ def run_conversation():
             messages=messages,
         ) 
 
-        return second_response
+        # return second_response
+        return response
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
     
-    # Call run_conversation function
-    image_response = run_conversation()
+    # Call run_conversation function with user_input
+    image_response = run_conversation(user_input)
     
     # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
