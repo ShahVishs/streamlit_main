@@ -12,3 +12,4 @@ pytz
 airtable-python-wrapper
 pydantic
 langchain-experimental
+IPython
