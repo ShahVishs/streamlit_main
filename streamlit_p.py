@@ -443,7 +443,7 @@ def conversational_chat(user_input, user_name):
     output = result["output"]
     
     # Call run_conversation function with user_input
-    image_response = run_conversation()
+    image_response = run_conversation(user_input)
     
     # Append conversation chat output to the chat history
     st.session_state.chat_history.append((user_input, output))
