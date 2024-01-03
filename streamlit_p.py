@@ -451,7 +451,7 @@ def run_conversation(user_input):
 #     st.session_state.chat_history.append((user_input, output))
     
 #     return output
-
+user_input = ""
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"combined_input": f"{input_with_username} {car_info_list}"})
