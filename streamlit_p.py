@@ -372,12 +372,14 @@ def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
 
                 button_label = f'{year} {make} {model} - VIN: {vin_number_from_info}'
                 unique_key = f"{vin_number_from_info}_button_{index}"
+            
                 if st.button(button_label, key=unique_key):
                     st.image(resized_image, caption=button_label)
+    
+        except Exception as e:
+            st.error(f"Error displaying car information: {e}")
 
-    except Exception as e:
-        st.error(f"Error displaying car information: {e}")
-
+  
 def image_to_base64(image):
     buffered = BytesIO()
     image.save(buffered, format="PNG")
