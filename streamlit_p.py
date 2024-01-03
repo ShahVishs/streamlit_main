@@ -35,6 +35,7 @@ from langchain.agents import AgentExecutor
 from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
 import json
+from langchain.agents.base import BaseTool
 hide_share_button_style = """
     <style>
     .st-emotion-cache-zq5wmm.ezrtsby0 .stActionButton:nth-child(1) {
@@ -110,12 +111,13 @@ num_ret=len(docs_2)
 vectordb_2 = FAISS.from_documents(docs_2, embeddings)
 retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
 
-class JSONFileRetrieverTool:
+class JSONFileRetrieverTool(BaseTool):  # Inherit from BaseTool
     def __init__(self, json_file_path):
         with open(json_file_path, 'r') as json_file:
             self.data = json.load(json_file)
 
-    def search(self, query):
+    def _run(self, input_text):
+        query = input_text.strip()
         result = self.data.get(query, "No information found.")
         return result
 
