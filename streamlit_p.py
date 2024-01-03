@@ -378,8 +378,9 @@ def image_to_base64(image):
     image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-def run_conversation():
-    user_input = input("Please enter your car-related question: ")
+def run_conversation(user_input):
+    print(f"DEBUG: User Input to run_conversation: {user_input}")
+
     messages = [{"role": "user", "content": user_input}]
     
     tools = [
@@ -414,7 +415,7 @@ def run_conversation():
             "get_car_information": get_car_information,
         }
 
-        messages.append(response_message)  
+        messages.append(response_message)
 
         for tool_call in tool_calls:
             function_name = tool_call.function.name
@@ -432,27 +433,27 @@ def run_conversation():
                     "name": function_name,
                     "content": function_response,
                 }
-            )  
-
-            car_info_list = json.loads(function_response)
-            if car_info_list:
-                link_url = "https://www.goschchevy.com/inventory/"
-                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
+            )
 
         second_response = client.chat.completions.create(
-            model="gpt-4-1106-preview",  
+            model="gpt-4-1106-preview",
             messages=messages,
-        ) 
+        )
 
-        return second_response
+        print(f"DEBUG: run_conversation Output: {second_response.choices[0].message.content}")
+
+        return second_response.choices[0].message.content
 
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
     st.session_state.chat_history.append((user_input, output))
-    
-    return run_conversation().choices[0].message.content  # Return the output of run_conversation()
+
+    # Use run_conversation to get the response
+    run_conversation_output = run_conversation(user_input)
+
+    return run_conversation_output
 
 output = ""
 with container:
