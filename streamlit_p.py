@@ -420,15 +420,15 @@ def conversational_chat(user_input, user_name):
     output = result["output"]
 
     # Call run_conversation function
-    text_output, image_responses = run_conversation(user_input)
+    text_output = run_conversation(user_input)
 
     # Append conversation chat output to the chat history
-    st.session_state.chat_history.append((user_input, text_output))
+    st.session_state.chat_history.append((user_input, output))
 
     # Append image-related output to the chat history
-    st.session_state.chat_history.append(("Image Client", image_responses))
+    st.session_state.chat_history.append(("Image Client", text_output))
 
-    return output, text_output, image_responses
+    return output, text_output
 output = ""
 text_output = ""
 image_responses = []
