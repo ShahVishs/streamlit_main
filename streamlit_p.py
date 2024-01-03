@@ -414,6 +414,7 @@ def run_conversation(user_input):
         }
 
         messages.append(response_message)  
+        car_info_list = []
 
         for tool_call in tool_calls:
             function_name = tool_call.function.name
@@ -433,16 +434,14 @@ def run_conversation(user_input):
                 }
             )  
 
-            car_info_list = json.loads(function_response)
-            if car_info_list:
-                link_url = "https://www.goschchevy.com/inventory/"
-                display_car_info_with_link(car_info_list, link_url, size=(150, 150))
-                
-                # Extract information for the first response and return
-                return car_info_list
+            current_car_info_list = json.loads(function_response)
+            if current_car_info_list:
+                car_info_list.extend(current_car_info_list)
 
         # If no tool calls match, return an empty list
-        return []
+        return car_info_list
+
+    return []
         
 # def conversational_chat(user_input, user_name):
 #     input_with_username = f"{user_name}: {user_input}"
