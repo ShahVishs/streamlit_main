@@ -483,9 +483,12 @@ with container:
         
         # Display images in Streamlit
         for car_info in car_info_list:
-            st.image(car_info["website Link for images"], caption=f"{car_info['Year']} {car_info['Make']} {car_info['Model']}")
+            image_urls = car_info["website Link for images"].split(', ')
+            
+            for image_url in image_urls:
+                st.image(image_url, caption=f"{car_info['Year']} {car_info['Make']} {car_info['Model']}")
+            
             st.write(f"VIN: {car_info['Vin']}")
-            # st.write(f"Link: {car_info['Link']}")
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
