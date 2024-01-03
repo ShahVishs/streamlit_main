@@ -115,13 +115,19 @@ class JSONFileRetrieverTool:
         with open(json_file_path, 'r') as json_file:
             self.data = json.load(json_file)
 
+    def get_relevant_documents(self, query):
+        # Implement the logic to retrieve relevant documents based on the query
+        # For simplicity, this example assumes that the query matches the 'Model' field
+        relevant_documents = [
+            doc for doc in self.data if doc.get('Model', '').lower() == query.lower()
+        ]
+        return relevant_documents
+
     def search(self, query):
         # Search for information in the JSON file based on the query (make and model)
         # Return relevant information, including image URLs
-        # You can customize this based on your JSON file structure
-        result = self.data.get(query, {"make": "Unknown", "model": "Unknown", "image_url": "https://example.com/default_image.png"})
-        return result
-
+        return self.get_relevant_documents(query)
+        
 # Integration of the New Tool into the Agent
 json_tool = JSONFileRetrieverTool("csvjson.json")
 tool4 = create_retriever_tool(json_tool, "website Link for images", "Search for vehicle information and image.")
