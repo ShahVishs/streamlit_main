@@ -348,42 +348,10 @@ def conversational_chat(user_input, user_name):
     output = result["output"]
     st.session_state.chat_history.append((user_input, output))
     return output
+
 # output = ""
-# with container:
-#     if st.session_state.user_name is None:
-#         user_name = st.text_input("Your name:")
-#         if user_name:
-#             st.session_state.user_name = user_name
+# vin_number = None  
 
-#     with st.form(key='my_form', clear_on_submit=True):
-#         user_input = st.text_input("Query:", placeholder="Type your question here (:")
-#         submit_button = st.form_submit_button(label='Send')
-
-#     if submit_button and user_input:
-#         output = conversational_chat(user_input, st.session_state.user_name)
-#         print("output of conversational chat",output)
-#     with response_container:
-#         for i, (query, answer) in enumerate(st.session_state.chat_history):
-#             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-#             col1, col2 = st.columns([0.7, 10]) 
-#             with col1:
-#                 st.image("icon-1024.png", width=50)
-#             with col2:
-#                 st.markdown(
-#                 f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-#                 f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-#                 f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-#                 f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-#                 f'</div>',
-#                 unsafe_allow_html=True
-#             )
-
-#         if st.session_state.user_name:
-#             try:
-#                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
-#             except Exception as e:
-#                 st.error(f"An error occurred: {e}")
-# output = ""
 # with container:
 #     if st.session_state.user_name is None:
 #         user_name = st.text_input("Your name:")
@@ -397,209 +365,23 @@ def conversational_chat(user_input, user_name):
 #         output = conversational_chat(user_input, st.session_state.user_name)
 #         print("output of conversational chat", output)
 
-#     with response_container:
-#         for i, (query, answer) in enumerate(st.session_state.chat_history):
-#             # Display user message
-#             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-            # # Display AI response
-            # col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
-            # with col1:
-            #     st.image("icon-1024.png", width=50)
-            # with col2:
-            #     if any(keyword in user_input.lower().split() for keyword in ["new", "used"]):
-            #         image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-            #         print("Image Links:", image_links)
-            #         # Resize and display images
-            #         for image_link in image_links:
-            #             try:
-            #                 image_response = requests.get(image_link)
-            #                 image = Image.open(BytesIO(image_response.content))
-                            
-            #                 # Resize the image to a smaller size
-            #                 width = 175
-            #                 height = 135
-            #                 resized_image = image.resize((width, height))
-                            
-            #                 # Display the resized image
-            #                 resized_image = image.resize((width, height), Image.LANCZOS)
-            #                 st.image(resized_image, caption='Image', use_column_width=True)
-                            
-            #             except Exception as e:
-            #                 st.warning(f"Error displaying image: {e}")
-                
-            #             # Display the text response
-            #             st.markdown(
-            #                 f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
-            #                 f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-            #                 f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-            #                 f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-            #                 f'</div>',
-            #                 unsafe_allow_html=True
-            #             )
-                # else:
-                #     # Display the text response without images
-                #     st.markdown(
-                #         f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
-                #         f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                #         f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                #         f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                #         f'</div>',
-                #         unsafe_allow_html=True
-                #     )
-            # # Display AI response
-            # col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
-            # with col1:
-            #     st.image("icon-1024.png", width=50)
-            # with col2:
-            #     # Use regex to find image links in the answer
-            #     image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-                
-            #     # Resize and display images
-            #     for image_link in image_links:
-            #         try:
-            #             image_response = requests.get(image_link)
-            #             image = Image.open(BytesIO(image_response.content))
-                        
-            #             # Resize the image to a smaller size
-            #             width = 175
-            #             height = 135
-            #             resized_image = image.resize((width, height))
-                        
-            #             # Display the resized image
-            #             resized_image = image.resize((width, height), Image.LANCZOS)
-            #             st.image(resized_image, caption='Image', use_column_width=True)
-                        
-            #         except Exception as e:
-            #             st.warning(f"Error displaying image: {e}")
-    
-            #         # Display the text response
-            #         st.markdown(
-            #             f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-            #             f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-            #             f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-            #             f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-            #             f'</div>',
-            #             unsafe_allow_html=True
-            #         )
-
-# def search_details_in_csv(vin_number):
-#     # Load CSV file and search for details
-#     file_1 = r'inventory_goush_cleaned_new.csv'
-#     df = pd.read_csv(file_1)
-
-#     # Check if VIN is in the CSV file
-#     matching_row = df[df['Vin'] == vin_number]  # Assuming 'Vin' is the correct column name
-#     if not matching_row.empty:
-#         year = matching_row['Year'].values[0]
-#         make = matching_row['Make'].values[0]
-#         model = matching_row['Model'].values[0]
-#         trim = matching_row['Trim'].values[0]
-#         # You can include other details as needed
-#         return model, year, make, trim
-#     else:
-#         return None
-        
-# output = ""
-# with container:
-#     if st.session_state.user_name is None:
-#         user_name = st.text_input("Your name:")
-#         if user_name:
-#             st.session_state.user_name = user_name
-#     with st.form(key='my_form', clear_on_submit=True):
-#         user_input = st.text_input("Query:", placeholder="Type your question here (:")
-#         submit_button = st.form_submit_button(label='Send')
-
-#     if submit_button and user_input:
-#         output = conversational_chat(user_input, st.session_state.user_name)
-#         print("output of conversational chat", output)
+#         # Extract VIN number from the current response
+#         vin_matches = re.findall(r'Vin: ([^\n]+)', output)
+#         if vin_matches:
+#             vin_number = vin_matches[0]
 
 #     with response_container:
 #         for i, (query, answer) in enumerate(st.session_state.chat_history):
 #             # Display user message
 #             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
 
-#             # Display AI response
+#             # Display AI response images with the external link
 #             col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
 #             with col1:
 #                 st.image("icon-1024.png", width=50)
 #             with col2:
-#                 # Use regex to find image links in the answer
-#                 image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-
-#                 # Resize and display images
-#                 for image_link in image_links:
-#                     try:
-#                         image_response = requests.get(image_link)
-#                         image = Image.open(BytesIO(image_response.content))
-
-#                         # Extract VIN from the image link
-#                         vin_match = re.search(r'/(\w+)\.jpg', image_link)
-#                         if vin_match:
-#                             vin_number = vin_match.group(1)
-
-#                             # # Search for details in the CSV file
-#                             # details = search_details_in_csv(vin_number)
-#                             # if details:
-#                             #     model, year, make = details
-#                             #     # Display the details below the image
-#                             #     st.write(f"Model: {model}, Year: {year}, Make: {make}, VIN: {vin_number}")
-
-#                         # Resize the image to a smaller size
-#                         width = 175
-#                         height = 135
-#                         resized_image = image.resize((width, height))
-
-#                         # Display the resized image
-#                         resized_image = image.resize((width, height), Image.LANCZOS)
-#                         st.image(resized_image, caption='Image', use_column_width=True)
-
-#                     except Exception as e:
-#                         st.warning(f"Error displaying image: {e}")
-
-#                     # Display the text response
-#                     st.markdown(
-#                         f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-#                         f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-#                         f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-#                         f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-#                         f'</div>',
-#                         unsafe_allow_html=True
-#                     )
-# output = ""
-# with container:
-#     if st.session_state.user_name is None:
-#         user_name = st.text_input("Your name:")
-#         if user_name:
-#             st.session_state.user_name = user_name
-#     with st.form(key='my_form', clear_on_submit=True):
-#         user_input = st.text_input("Query:", placeholder="Type your question here (:")
-#         submit_button = st.form_submit_button(label='Send')
-
-#     if submit_button and user_input:
-#         output = conversational_chat(user_input, st.session_state.user_name)
-#         print("output of conversational chat", output)
-
-#     with response_container:
-#         for i, (query, answer) in enumerate(st.session_state.chat_history):
-#             # Display user message
-#             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-
-#             # Display AI response text only once
-#             # st.markdown(
-#             #     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-#             #     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-#             #     f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-#             #     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-#             #     f'</div>',
-#             #     unsafe_allow_html=True
-#             # )
-
-#             # Display AI response images
-#             col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
-#             with col1:
-#                 st.image("icon-1024.png", width=50)
-#             with col2:
-#                  # Display AI response text only once
+                
+#                 # Display AI response text only once
 #                 st.markdown(
 #                     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
 #                     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
@@ -608,51 +390,33 @@ def conversational_chat(user_input, user_name):
 #                     f'</div>',
 #                     unsafe_allow_html=True
 #                 )
-                # # Use regex to find image links in the answer
-                # image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-                
-                # # Resize and display images
-                # for image_link in image_links:
-                #     try:
-                #         image_response = requests.get(image_link)
-                #         image = Image.open(BytesIO(image_response.content))
+
+#                 # Use regex to find image links in the answer
+#                 image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
+
+#                 # Iterate through image links
+#                 for image_link in image_links:
+#                     try:
+#                         image_response = requests.get(image_link)
+#                         image = Image.open(BytesIO(image_response.content))
                         
-                #         # Resize the image to a smaller size
-                #         width = 175
-                #         height = 135
-                #         resized_image = image.resize((width, height))
+#                         # Resize the image to a smaller size
+#                         width = 175
+#                         height = 135
+#                         resized_image = image.resize((width, height))
                         
-                #         # Display the resized image
-                #         resized_image = image.resize((width, height), Image.LANCZOS)
-                #         st.image(resized_image, caption='Image', use_column_width=True)
+#                         # Display the resized image with a hyperlink to the external link
+#                         if vin_number:
+#                             st.markdown(
+#                                 f'<a href="https://www.goschchevy.com/inventory/{vin_number}" target="_blank">'
+#                                 f'<img src="{image_link}" width="175" height="135" caption="Image"></a>',
+#                                 unsafe_allow_html=True
+#                             )
+#                         else:
+#                             st.image(resized_image, caption='2023 Chevrolet Silverado 1500', use_column_width=False)
                         
-                #     except Exception as e:
-                #         st.warning(f"Error displaying image: {e}")
-                # Use regex to find image links and VIN number in the answer
-                # image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-                # vin_numbers = re.findall(r'Vin: (\S+)', answer)
-                
-                # # Resize and display images
-                # for image_link, vin_number in zip(image_links, vin_numbers):
-                #     try:
-                #         image_response = requests.get(image_link)
-                #         image = Image.open(BytesIO(image_response.content))
-                
-                #         # Resize the image to a smaller size
-                #         width = 175
-                #         height = 135
-                #         resized_image = image.resize((width, height))
-                
-                #         # Display the resized image
-                #         resized_image = image.resize((width, height), Image.LANCZOS)
-                #         st.image(resized_image, caption='Image', use_column_width=True)
-                
-                #         # Display clickable link with VIN number
-                #         link_url = f"https://www.goschchevy.com/inventory/{vin_number}"
-                #         st.markdown(f"[Go to Inventory]({link_url})", unsafe_allow_html=True)
-                
-                #     except Exception as e:
-                #         st.warning(f"Error displaying image: {e}")
+#                     except Exception as e:
+#                         st.warning(f"Error displaying image: {e}")
 
 output = ""
 vin_number = None  
@@ -670,13 +434,13 @@ with container:
         output = conversational_chat(user_input, st.session_state.user_name)
         print("output of conversational chat", output)
 
-        # Extract VIN number from the current response
-        vin_matches = re.findall(r'Vin: ([^\n]+)', output)
-        if vin_matches:
-            vin_number = vin_matches[0]
-
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
+            # Update vin_number based on the latest answer
+            vin_matches = re.findall(r'Vin: ([^\n]+)', answer)
+            if vin_matches:
+                vin_number = vin_matches[0]
+
             # Display user message
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
 
@@ -685,7 +449,6 @@ with container:
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
-                
                 # Display AI response text only once
                 st.markdown(
                     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
@@ -695,8 +458,7 @@ with container:
                     f'</div>',
                     unsafe_allow_html=True
                 )
-
-                # Use regex to find image links in the answer
+                # Use regex to find image links
                 image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
 
                 # Iterate through image links
@@ -711,15 +473,13 @@ with container:
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image with a hyperlink to the external link
-                        if vin_number:
-                            st.markdown(
-                                f'<a href="https://www.goschchevy.com/inventory/{vin_number}" target="_blank">'
-                                f'<img src="{image_link}" width="175" height="135" caption="Image"></a>',
-                                unsafe_allow_html=True
-                            )
-                        else:
-                            st.image(resized_image, caption='2023 Chevrolet Silverado 1500', use_column_width=False)
+                        st.markdown(
+                            f'<a href="https://www.goschchevy.com/inventory/{vin_number}" target="_blank">'
+                            f'<img src="{image_link}" width="175" height="135" caption="Image"></a>',
+                            unsafe_allow_html=True
+                        )
                         
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
 
+              
