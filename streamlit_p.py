@@ -444,20 +444,9 @@ def run_conversation(user_input):
 
     return []
         
-# def conversational_chat(user_input, user_name):
-#     input_with_username = f"{user_name}: {user_input}"
-#     result = agent_executor({"input": input_with_username})
-#     output = result["output"]
-#     st.session_state.chat_history.append((user_input, output))
-    
-#     return output
-user_input = ""
-car_info_list = run_conversation(user_input)
-
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
-    combined_input = f"{input_with_username} {car_info_list}"
-    result = agent_executor({"input": combined_input})
+    result = agent_executor({"input": input_with_username})
     output = result["output"]
     st.session_state.chat_history.append((user_input, output))
     
@@ -475,21 +464,6 @@ with container:
 
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
-        # output = conversational_chat(user_input, st.session_state.user_name, car_info_list)
-        car_info_list = run_conversation(user_input)
-    
-        # Assuming the response from run_conversation contains car information
-        link_url = "https://www.goschchevy.com/inventory/"
-        display_car_info_with_link(car_info_list, link_url, size=(50, 50))
-        
-        # Display images in Streamlit
-        for car_info in car_info_list:
-            image_urls = car_info["website Link for images"].split(', ')
-            
-            for image_url in image_urls:
-                st.image(image_url, caption=f"{car_info['Year']} {car_info['Make']} {car_info['Model']}")
-            
-            st.write(f"VIN: {car_info['Vin']}")
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
@@ -505,6 +479,66 @@ with container:
                 f'</div>',
                 unsafe_allow_html=True
             )
+
+        if st.session_state.user_name:
+            try:
+                save_chat_to_airtable(st.session_state.user_name, user_input, output)
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+# user_input = ""
+# car_info_list = run_conversation(user_input)
+
+# def conversational_chat(user_input, user_name):
+#     input_with_username = f"{user_name}: {user_input}"
+#     combined_input = f"{input_with_username} {car_info_list}"
+#     result = agent_executor({"input": combined_input})
+#     output = result["output"]
+#     st.session_state.chat_history.append((user_input, output))
+    
+#     return output
+# output = ""
+# with container:
+#     if st.session_state.user_name is None:
+#         user_name = st.text_input("Your name:")
+#         if user_name:
+#             st.session_state.user_name = user_name
+
+#     with st.form(key='my_form', clear_on_submit=True):
+#         user_input = st.text_input("Query:", placeholder="Type your question here (:")
+#         submit_button = st.form_submit_button(label='Send')
+
+#     if submit_button and user_input:
+#         output = conversational_chat(user_input, st.session_state.user_name)
+#         # output = conversational_chat(user_input, st.session_state.user_name, car_info_list)
+#         car_info_list = run_conversation(user_input)
+    
+#         # Assuming the response from run_conversation contains car information
+#         link_url = "https://www.goschchevy.com/inventory/"
+#         display_car_info_with_link(car_info_list, link_url, size=(50, 50))
+        
+#         # Display images in Streamlit
+#         for car_info in car_info_list:
+#             image_urls = car_info["website Link for images"].split(', ')
+            
+#             for image_url in image_urls:
+#                 st.image(image_url, caption=f"{car_info['Year']} {car_info['Make']} {car_info['Model']}")
+            
+#             st.write(f"VIN: {car_info['Vin']}")
+#     with response_container:
+#         for i, (query, answer) in enumerate(st.session_state.chat_history):
+#             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
+#             col1, col2 = st.columns([0.7, 10]) 
+#             with col1:
+#                 st.image("icon-1024.png", width=50)
+#             with col2:
+#                 st.markdown(
+#                 f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+#                 f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+#                 f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+#                 f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+#                 f'</div>',
+#                 unsafe_allow_html=True
+#             )
 
 
         # if st.session_state.user_name:
