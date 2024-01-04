@@ -629,27 +629,96 @@ with container:
                 #     except Exception as e:
                 #         st.warning(f"Error displaying image: {e}")
                 # Use regex to find image links and VIN number in the answer
-                image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-                vin_numbers = re.findall(r'Vin: (\S+)', answer)
+                # image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
+                # vin_numbers = re.findall(r'Vin: (\S+)', answer)
                 
-                # Resize and display images
-                for image_link, vin_number in zip(image_links, vin_numbers):
+                # # Resize and display images
+                # for image_link, vin_number in zip(image_links, vin_numbers):
+                #     try:
+                #         image_response = requests.get(image_link)
+                #         image = Image.open(BytesIO(image_response.content))
+                
+                #         # Resize the image to a smaller size
+                #         width = 175
+                #         height = 135
+                #         resized_image = image.resize((width, height))
+                
+                #         # Display the resized image
+                #         resized_image = image.resize((width, height), Image.LANCZOS)
+                #         st.image(resized_image, caption='Image', use_column_width=True)
+                
+                #         # Display clickable link with VIN number
+                #         link_url = f"https://www.goschchevy.com/inventory/{vin_number}"
+                #         st.markdown(f"[Go to Inventory]({link_url})", unsafe_allow_html=True)
+                
+                #     except Exception as e:
+                #         st.warning(f"Error displaying image: {e}")
+
+output = ""
+vin_number = None  
+
+with container:
+    if st.session_state.user_name is None:
+        user_name = st.text_input("Your name:")
+        if user_name:
+            st.session_state.user_name = user_name
+    with st.form(key='my_form', clear_on_submit=True):
+        user_input = st.text_input("Query:", placeholder="Type your question here (:")
+        submit_button = st.form_submit_button(label='Send')
+
+    if submit_button and user_input:
+        output = conversational_chat(user_input, st.session_state.user_name)
+        print("output of conversational chat", output)
+
+        # Extract VIN number from the current response
+        vin_matches = re.findall(r'Vin: ([^\n]+)', output)
+        if vin_matches:
+            vin_number = vin_matches[0]
+
+    with response_container:
+        for i, (query, answer) in enumerate(st.session_state.chat_history):
+            # Display user message
+            message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
+
+            # Display AI response text only once
+            st.markdown(
+                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
+            # Display AI response images with the external link
+            col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
+            with col1:
+                st.image("icon-1024.png", width=50)
+            with col2:
+                # Use regex to find image links in the answer
+                image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
+
+                # Iterate through image links
+                for image_link in image_links:
                     try:
                         image_response = requests.get(image_link)
                         image = Image.open(BytesIO(image_response.content))
-                
+                        
                         # Resize the image to a smaller size
                         width = 175
                         height = 135
                         resized_image = image.resize((width, height))
-                
-                        # Display the resized image
-                        resized_image = image.resize((width, height), Image.LANCZOS)
-                        st.image(resized_image, caption='Image', use_column_width=True)
-                
-                        # Display clickable link with VIN number
-                        link_url = f"https://www.goschchevy.com/inventory/{vin_number}"
-                        st.markdown(f"[Go to Inventory]({link_url})", unsafe_allow_html=True)
-                
+                        
+                        # Display the resized image with a hyperlink to the external link
+                        if vin_number:
+                            st.markdown(
+                                f'<a href="https://www.goschchevy.com/inventory/{vin_number}" target="_blank">'
+                                f'<img src="{image_link}" width="175" height="135" caption="Image"></a>',
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            st.image(resized_image, caption='Image', use_column_width=True)
+                        
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
+
