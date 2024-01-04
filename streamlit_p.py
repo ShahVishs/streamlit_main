@@ -544,7 +544,7 @@ with container:
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
     
             # Display AI response
-            col1, col2 = st.beta_columns([1, 3])  # Adjust the ratio based on your preference
+            col1, col2 = st.columns([1, 3])  # Adjust the ratio based on your preference
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
