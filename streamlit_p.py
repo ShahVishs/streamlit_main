@@ -483,7 +483,7 @@ def conversational_chat(user_input, user_name):
 #                         st.warning(f"Error displaying image: {e}")
 
 output = ""
-vin_number = None  
+vin_numbers = []  # List to store VINs for each car option
 is_new_or_used_query = False  # Flag to identify if the user queried about new or used cars
 
 with container:
@@ -503,10 +503,10 @@ with container:
         if any(keyword in user_input.lower() for keyword in ["new", "used"]):
             is_new_or_used_query = True
 
-        # Extract VIN number from the current response
-        vin_matches = re.findall(r'Vin: ([^\n]+)', output)
+        # Extract VIN numbers from the current response
+        vin_matches = re.findall(r'VIN: ([^\n]+)', output)
         if vin_matches:
-            vin_number = vin_matches[0]
+            vin_numbers = vin_matches
 
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
@@ -530,8 +530,8 @@ with container:
 
                 # Use regex to find image links
                 image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-                # Iterate through image links
-                for image_link in image_links:
+                # Iterate through image links and VIN numbers
+                for vin_number, image_link in zip(vin_numbers, image_links):
                     try:
                         image_response = requests.get(image_link)
                         image = Image.open(BytesIO(image_response.content))
@@ -542,7 +542,7 @@ with container:
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image with a hyperlink to the external link
-                        if vin_number and is_new_or_used_query:
+                        if is_new_or_used_query:
                             st.markdown(
                                 f'<a href="https://www.goschchevy.com/inventory/{vin_number}" target="_blank">'
                                 f'<img src="{image_link}" width="175" height="135" caption="Image"></a>',
@@ -553,4 +553,3 @@ with container:
                         
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
-
