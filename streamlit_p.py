@@ -42,7 +42,8 @@ import re
 from PIL import Image
 import requests
 from io import BytesIO
-
+from PIL import Image as pil
+import PIL
 hide_share_button_style = """
     <style>
     .st-emotion-cache-zq5wmm.ezrtsby0 .stActionButton:nth-child(1) {
