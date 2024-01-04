@@ -17,3 +17,4 @@ langchain-experimental
 IPython
 openai 
 jq
+Pillow==9.5.0
