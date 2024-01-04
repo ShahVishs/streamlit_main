@@ -524,22 +524,25 @@ def conversational_chat(user_input, user_name):
 #             except Exception as e:
 #                 st.error(f"An error occurred: {e}")
 output = ""
-with container:
+with st.form(key='my_form', clear_on_submit=True):
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
         if user_name:
             st.session_state.user_name = user_name
 
-    with st.form(key='my_form', clear_on_submit=True):
-        user_input = st.text_input("Query:", placeholder="Type your question here (:")
-        submit_button = st.form_submit_button(label='Send')
+    user_input = st.text_input("Query:", placeholder="Type your question here (:")
+    submit_button = st.form_submit_button(label='Send')
 
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
         print("output of conversational chat", output)
+
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
+            # Display user message
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
+    
+            # Display AI response
             col1, col2 = st.beta_columns([1, 3])  # Adjust the ratio based on your preference
             with col1:
                 st.image("icon-1024.png", width=50)
@@ -563,7 +566,7 @@ with container:
                         
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
-
+    
                 # Display the text response
                 st.markdown(
                     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
