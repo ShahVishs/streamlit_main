@@ -602,8 +602,8 @@ with container:
                         image = Image.open(BytesIO(image_response.content))
                         
                         # Resize the image to a smaller size
-                        width = 175
-                        height = 135
+                        width = 150
+                        height = 100
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image
@@ -615,7 +615,7 @@ with container:
     
                     # Display the text response
                     st.markdown(
-                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 70%;'
                         f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
                         f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
                         f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
