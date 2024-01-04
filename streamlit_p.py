@@ -460,7 +460,7 @@ def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
-    
+    st.session_state.chat_history.append((user_input, output))
     # # Use regex to find image links in the answer
     # image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', output)
     
