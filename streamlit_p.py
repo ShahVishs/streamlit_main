@@ -541,9 +541,10 @@ with container:
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image with a hyperlink to the external link
-                        if vin_number and is_new_or_used_query:  # Check both conditions for the correct image display
+                        if vin_number and is_new_or_used_query:
+                            inventory_link = f"https://www.goschchevy.com/inventory/{vin_number}"  # Separate VIN number
                             st.markdown(
-                                f'<a href="https://www.goschchevy.com/inventory/{vin_number}" target="_blank">'
+                                f'<a href="{inventory_link}" target="_blank">'
                                 f'<img src="{image_link}" width="175" height="135" caption="Image"></a>',
                                 unsafe_allow_html=True
                             )
