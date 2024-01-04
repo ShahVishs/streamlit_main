@@ -623,22 +623,22 @@ def conversational_chat(user_input, user_name):
             #             unsafe_allow_html=True
             #         )
 
-def search_details_in_csv(vin_number):
-    # Load CSV file and search for details
-    file_1 = r'inventory_goush_cleaned_new.csv'
-    df = pd.read_csv(file_1)
+# def search_details_in_csv(vin_number):
+#     # Load CSV file and search for details
+#     file_1 = r'inventory_goush_cleaned_new.csv'
+#     df = pd.read_csv(file_1)
 
-    # Check if VIN is in the CSV file
-    matching_row = df[df['Vin'] == vin_number]  # Assuming 'Vin' is the correct column name
-    if not matching_row.empty:
-        year = matching_row['Year'].values[0]
-        make = matching_row['Make'].values[0]
-        model = matching_row['Model'].values[0]
-        trim = matching_row['Trim'].values[0]
-        # You can include other details as needed
-        return model, year, make, trim
-    else:
-        return None
+#     # Check if VIN is in the CSV file
+#     matching_row = df[df['Vin'] == vin_number]  # Assuming 'Vin' is the correct column name
+#     if not matching_row.empty:
+#         year = matching_row['Year'].values[0]
+#         make = matching_row['Make'].values[0]
+#         model = matching_row['Model'].values[0]
+#         trim = matching_row['Trim'].values[0]
+#         # You can include other details as needed
+#         return model, year, make, trim
+#     else:
+#         return None
         
 output = ""
 with container:
@@ -678,12 +678,12 @@ with container:
                         if vin_match:
                             vin_number = vin_match.group(1)
 
-                            # Search for details in the CSV file
-                            details = search_details_in_csv(vin_number)
-                            if details:
-                                model, year, make = details
-                                # Display the details below the image
-                                st.write(f"Model: {model}, Year: {year}, Make: {make}, VIN: {vin_number}")
+                            # # Search for details in the CSV file
+                            # details = search_details_in_csv(vin_number)
+                            # if details:
+                            #     model, year, make = details
+                            #     # Display the details below the image
+                            #     st.write(f"Model: {model}, Year: {year}, Make: {make}, VIN: {vin_number}")
 
                         # Resize the image to a smaller size
                         width = 175
