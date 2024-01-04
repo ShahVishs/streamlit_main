@@ -564,7 +564,7 @@ with container:
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image
-                        resized_image = image.resize((width, height), Image.ANTIALIAS)
+                        resized_image = image.resize((width, height), Image.LANCZOS)
                         st.image(resized_image, caption='Image', use_column_width=True)
                         
                     except Exception as e:
