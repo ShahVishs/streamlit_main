@@ -500,8 +500,7 @@ with container:
         print("output of conversational chat", output)
 
         # Check if the user's query is related to new or used cars
-        if any(keyword in user_input.lower() for keyword in ["new", "used"]):
-            is_new_or_used_query = True
+        is_new_or_used_query = any(keyword in user_input.lower() for keyword in ["new", "used"])
 
         # Extract VIN numbers from the current response
         vin_matches = re.findall(r'VIN: ([^\n]+)', output)
@@ -542,7 +541,7 @@ with container:
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image with a hyperlink to the external link
-                        if is_new_or_used_query:
+                        if vin_number and is_new_or_used_query:  # Check both conditions for the correct image display
                             st.markdown(
                                 f'<a href="https://www.goschchevy.com/inventory/{vin_number}" target="_blank">'
                                 f'<img src="{image_link}" width="175" height="135" caption="Image"></a>',
