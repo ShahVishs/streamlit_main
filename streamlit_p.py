@@ -608,7 +608,7 @@ with container:
                         
                         # Display the resized image
                         resized_image = image.resize((width, height), Image.LANCZOS)
-                        st.image(resized_image, caption='Image', use_column_width=True)
+                        # st.image(resized_image, caption='Image', use_column_width=True)
                         
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
