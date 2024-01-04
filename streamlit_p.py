@@ -524,15 +524,16 @@ def conversational_chat(user_input, user_name):
 #             except Exception as e:
 #                 st.error(f"An error occurred: {e}")
 output = ""
-with st.form(key='my_form', clear_on_submit=True):
+with container:
+#     with st.form(key='my_form', clear_on_submit=True):
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
         if user_name:
             st.session_state.user_name = user_name
-
-    user_input = st.text_input("Query:", placeholder="Type your question here (:")
-    submit_button = st.form_submit_button(label='Send')
-
+    with st.form(key='my_form', clear_on_submit=True):
+        user_input = st.text_input("Query:", placeholder="Type your question here (:")
+        submit_button = st.form_submit_button(label='Send')
+    
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
         print("output of conversational chat", output)
@@ -567,15 +568,15 @@ with st.form(key='my_form', clear_on_submit=True):
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
     
-                # Display the text response
-                st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
-                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
+                    # Display the text response
+                    st.markdown(
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
 # user_input = ""
 # car_info_list = run_conversation(user_input)
 
