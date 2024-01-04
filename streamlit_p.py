@@ -680,21 +680,22 @@ with container:
             # Display user message
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
 
-            # Display AI response text only once
-            st.markdown(
-                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-
             # Display AI response images with the external link
             col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
+                
+                # Display AI response text only once
+                st.markdown(
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
                 # Use regex to find image links in the answer
                 image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
 
