@@ -166,7 +166,7 @@ if 'user_name' not in st.session_state:
 
 llm = ChatOpenAI(model="gpt-4-1106-preview", temperature = 0)
 
-langchain.debug=True
+# langchain.debug=True
 
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
