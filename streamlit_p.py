@@ -470,9 +470,9 @@ def conversational_chat(user_input, user_name):
             image_response = requests.get(image_link)
             image = Image.open(BytesIO(image_response.content))
             
-            # Resize the image
-            width = 50
-            height = 20
+            # Resize the image to a smaller size
+            width = 150
+            height = 100
             resized_image = image.resize((width, height))
             
             # Display the resized image
