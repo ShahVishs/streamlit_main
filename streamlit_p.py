@@ -718,7 +718,7 @@ with container:
                                 unsafe_allow_html=True
                             )
                         else:
-                            st.image(resized_image, caption='Image', use_column_width=True)
+                            st.image(resized_image, caption='2023 Chevrolet Silverado 1500', use_column_width=False)
                         
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
