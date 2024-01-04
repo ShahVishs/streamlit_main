@@ -38,6 +38,7 @@ import json
 from openai import OpenAI
 from langchain.document_loaders import JSONLoader
 from langchain_core.tracers.langchain_v1 import LangChainTracerV1
+import re
 hide_share_button_style = """
     <style>
     .st-emotion-cache-zq5wmm.ezrtsby0 .stActionButton:nth-child(1) {
