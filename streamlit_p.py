@@ -526,7 +526,6 @@ def conversational_chat(user_input, user_name):
 #                 st.error(f"An error occurred: {e}")
 output = ""
 with container:
-#     with st.form(key='my_form', clear_on_submit=True):
     if st.session_state.user_name is None:
         user_name = st.text_input("Your name:")
         if user_name:
@@ -534,7 +533,7 @@ with container:
     with st.form(key='my_form', clear_on_submit=True):
         user_input = st.text_input("Query:", placeholder="Type your question here (:")
         submit_button = st.form_submit_button(label='Send')
-    
+
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
         print("output of conversational chat", output)
@@ -550,36 +549,36 @@ with container:
             with col2:
                 # Use regex to find image links in the answer
                 image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-                
+
                 # Check if the user's query is related to new or used vehicles
-                if "new" in user_input.lower() or "used" in user_input.lower():
+                if any(keyword in user_input.lower() for keyword in ["new", "used"]):
                     # Display images along with the text response
                     if image_links:
                         for image_link in image_links:
                             try:
                                 image_response = requests.get(image_link)
                                 image = Image.open(BytesIO(image_response.content))
-                                
+
                                 # Resize the image to a smaller size
                                 width = 175
                                 height = 135
                                 resized_image = image.resize((width, height), Image.LANCZOS)
-                                
+
                                 # Display the resized image
                                 st.image(resized_image, caption='Image', use_column_width=True)
-                                
+
                             except Exception as e:
                                 st.warning(f"Error displaying image: {e}")
-            
-                        # Display the text response
-                        st.markdown(
-                            f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
-                            f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                            f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                            f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                            f'</div>',
-                            unsafe_allow_html=True
-                        )
+
+                    # Display the text response
+                    st.markdown(
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
                 else:
                     # Display the text response without images
                     st.markdown(
