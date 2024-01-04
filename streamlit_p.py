@@ -481,11 +481,11 @@ def conversational_chat(user_input, user_name):
         except Exception as e:
             st.warning(f"Error displaying image: {e}")
     
-    # Display the text response
-    st.markdown(output)
+    # # Display the text response
+    # st.markdown(output)
     
-    # Save chat to Airtable
-    save_chat_to_airtable(user_name, user_input, output)
+    # # Save chat to Airtable
+    # save_chat_to_airtable(user_name, user_input, output)
     
     return output
 # output = ""
