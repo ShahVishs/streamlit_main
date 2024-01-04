@@ -444,11 +444,42 @@ def run_conversation(user_input):
 
     return []
         
+# def conversational_chat(user_input, user_name):
+#     input_with_username = f"{user_name}: {user_input}"
+#     result = agent_executor({"input": input_with_username})
+#     output = result["output"]
+#     st.session_state.chat_history.append((user_input, output))
+    
+#     return output
+
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
     result = agent_executor({"input": input_with_username})
     output = result["output"]
-    st.session_state.chat_history.append((user_input, output))
+    
+    # Use regex to find image links in the answer
+    image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', output)
+    
+    # Resize and display images
+    for image_link in image_links:
+        try:
+            image_response = requests.get(image_link)
+            image = Image.open(BytesIO(image_response.content))
+            
+            # Resize the image if needed
+            # resized_image = image.resize((width, height))
+            
+            # Display the image
+            st.image(image, caption='Image', use_column_width=True)
+            
+        except Exception as e:
+            st.warning(f"Error displaying image: {e}")
+    
+    # Display the text response
+    st.markdown(output)
+    
+    # Save chat to Airtable
+    save_chat_to_airtable(user_name, user_input, output)
     
     return output
 output = ""
