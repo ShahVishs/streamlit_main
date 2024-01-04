@@ -249,12 +249,7 @@ After scheduling an appointment, initiate the conversation to get tradein car an
     - Name:
     - Contact Number:
     - Email Address:
-
-**Vehicle Image:**
-
-Show image of a specific vehicle that user ask, provide the make and model, and I'll fetch the corresponding image for you.
-Use the "image_details" tool for this purpose.
-
+    
 Encourage Dealership Visit: Our goal is to encourage customers to visit the dealership for test drives or
 receive product briefings from our team. After providing essential information on the car's make, model,
 color, and basic features, kindly invite the customer to schedule an appointment for a test drive or visit us
@@ -294,7 +289,7 @@ prompt = OpenAIFunctionsAgent.create_prompt(
 repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
         description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
 
-tools = [tool1, repl, tool2, tool3, tool4]
+tools = [tool1, repl, tool2, tool3]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
