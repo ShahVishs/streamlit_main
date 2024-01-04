@@ -544,7 +544,7 @@ with container:
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
     
             # Display AI response
-            col1, col2 = st.columns([1, 3])  # Adjust the ratio based on your preference
+            col1, col2 = st.columns([1, 2])  # Adjust the ratio based on your preference
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
@@ -558,8 +558,8 @@ with container:
                         image = Image.open(BytesIO(image_response.content))
                         
                         # Resize the image to a smaller size
-                        width = 150
-                        height = 100
+                        width = 100
+                        height = 50
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image
