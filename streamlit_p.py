@@ -558,8 +558,8 @@ with container:
                         image = Image.open(BytesIO(image_response.content))
                         
                         # Resize the image to a smaller size
-                        width = 100
-                        height = 150
+                        width = 50
+                        height = 30
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image
