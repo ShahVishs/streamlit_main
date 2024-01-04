@@ -608,23 +608,48 @@ with container:
                     f'</div>',
                     unsafe_allow_html=True
                 )
-                # Use regex to find image links in the answer
+                # # Use regex to find image links in the answer
+                # image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
+                
+                # # Resize and display images
+                # for image_link in image_links:
+                #     try:
+                #         image_response = requests.get(image_link)
+                #         image = Image.open(BytesIO(image_response.content))
+                        
+                #         # Resize the image to a smaller size
+                #         width = 175
+                #         height = 135
+                #         resized_image = image.resize((width, height))
+                        
+                #         # Display the resized image
+                #         resized_image = image.resize((width, height), Image.LANCZOS)
+                #         st.image(resized_image, caption='Image', use_column_width=True)
+                        
+                #     except Exception as e:
+                #         st.warning(f"Error displaying image: {e}")
+                # Use regex to find image links and VIN number in the answer
                 image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
+                vin_numbers = re.findall(r'Vin: (\S+)', answer)
                 
                 # Resize and display images
-                for image_link in image_links:
+                for image_link, vin_number in zip(image_links, vin_numbers):
                     try:
                         image_response = requests.get(image_link)
                         image = Image.open(BytesIO(image_response.content))
-                        
+                
                         # Resize the image to a smaller size
                         width = 175
                         height = 135
                         resized_image = image.resize((width, height))
-                        
+                
                         # Display the resized image
                         resized_image = image.resize((width, height), Image.LANCZOS)
                         st.image(resized_image, caption='Image', use_column_width=True)
-                        
+                
+                        # Display clickable link with VIN number
+                        link_url = f"https://www.goschchevy.com/inventory/{vin_number}"
+                        st.markdown(f"[Go to Inventory]({link_url})", unsafe_allow_html=True)
+                
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
