@@ -199,7 +199,7 @@ disclose selling price only when the customer explicitly requests it use "detail
 Here's a suggested response format while providing car details:
 "We have several models available. Here are a few options:"
 If the customer's query matches a car model, respond with a list of car without square brackets, 
-including the make, year, model, and trim, and provide their respective links in the answer.
+including the make, year, model, and trim, vin, website Link for images and provide their respective links in the answer.
 
 checking Appointments Avaliability: If inquiry lacks specific details like day, date or time kindly engage by 
 asking for these specifics.
@@ -327,122 +327,7 @@ def save_chat_to_airtable(user_name, user_input, output):
     except Exception as e:
         st.error(f"An error occurred while saving data to Airtable: {e}")
 
-client = OpenAI()
 
-def load_car_data(file_path):
-    with open(file_path, 'r') as file:
-        car_data = json.load(file)
-    return car_data
-
-car_data = load_car_data(r"csvjson.json")
-
-def get_car_information(make, model):
-    """Get information about a car based on make and model."""
-    matching_cars = [car for car in car_data if car["Make"].lower() == make.lower() and car["Model"].lower() == model.lower()]
-
-    if matching_cars:
-        return json.dumps(matching_cars)
-    else:
-        return json.dumps({"error": "Car not found"})
-
-def display_car_info_with_link(car_info_list, link_url, size=(300, 300)):
-    try:
-        for car_info in car_info_list:
-            image_links = car_info.get("website Link for images")
-            vin_number = car_info.get("Vin")  
-            year = car_info.get("Year")
-            make = car_info.get("Make")
-            model = car_info.get("Model")
-
-            for image_link in re.findall(r'https://[^ ,]+', image_links):
-                response = requests.get(image_link)
-                response.raise_for_status()
-                image_data = Image.open(BytesIO(response.content))
-                resized_image = image_data.resize(size)
-
-                vin_number_from_url = re.search(r'/inventory/([^/]+)/', image_link)
-                vin_number_from_info = vin_number or (vin_number_from_url.group(1) if vin_number_from_url else None)
-                link_with_vin = f'{link_url}/{vin_number_from_info}/' if vin_number_from_info else link_url
-
-                # Print or log image details for debugging
-                print(f"Image Details - VIN: {vin_number_from_info}, Link: {link_with_vin}")
-
-                # Display image in Streamlit
-                st.image(resized_image, caption=f"{year} {make} {model}")
-
-    except Exception as e:
-        print(f"Error displaying car information: {e}")
-
-
-def image_to_base64(image):
-    buffered = BytesIO()
-    image.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-def run_conversation(user_input):
-    messages = [{"role": "user", "content": user_input}]
-    
-    tools = [
-        {
-            "type": "function",
-            "function": {
-                "name": "get_car_information",
-                "description": "Get information about a car",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "make": {"type": "string", "description": "The car make"},
-                        "model": {"type": "string", "description": "The car model"}
-                    },
-                    "required": ["make", "model"]
-                }
-            }
-        }
-    ]
-
-    response = client.chat.completions.create(
-        model="gpt-4-1106-preview",
-        messages=messages,
-        tools=tools,
-    )
-
-    response_message = response.choices[0].message
-    tool_calls = response_message.tool_calls
-
-    if tool_calls:
-        available_functions = {
-            "get_car_information": get_car_information,
-        }
-
-        messages.append(response_message)  
-        car_info_list = []
-
-        for tool_call in tool_calls:
-            function_name = tool_call.function.name
-            function_to_call = available_functions[function_name]
-            function_args = json.loads(tool_call.function.arguments)
-            function_response = function_to_call(
-                make=function_args.get("make"),
-                model=function_args.get("model"),
-            )
-
-            messages.append(
-                {
-                    "tool_call_id": tool_call.id,
-                    "role": "tool",
-                    "name": function_name,
-                    "content": function_response,
-                }
-            )  
-
-            current_car_info_list = json.loads(function_response)
-            if current_car_info_list:
-                car_info_list.extend(current_car_info_list)
-
-        # If no tool calls match, return an empty list
-        return car_info_list
-
-    return []
         
 # def conversational_chat(user_input, user_name):
 #     input_with_username = f"{user_name}: {user_input}"
