@@ -549,6 +549,7 @@ with container:
             with col2:
                 # Use regex to find image links in the answer
                 image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
+                print("Image Links:", image_links)
 
                 # Check if the user's query is related to new or used vehicles
                 if any(keyword in user_input.lower() for keyword in ["new", "used"]):
