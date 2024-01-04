@@ -347,32 +347,6 @@ def conversational_chat(user_input, user_name):
     result = agent_executor({"input": input_with_username})
     output = result["output"]
     st.session_state.chat_history.append((user_input, output))
-    # # Use regex to find image links in the answer
-    # image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', output)
-    
-    # # Resize and display images
-    # for image_link in image_links:
-    #     try:
-    #         image_response = requests.get(image_link)
-    #         image = Image.open(BytesIO(image_response.content))
-            
-    #         # Resize the image to a smaller size
-    #         width = 150
-    #         height = 100
-    #         resized_image = image.resize((width, height))
-            
-    #         # Display the resized image
-    #         st.image(resized_image, caption='Resized Image', use_column_width=True)
-            
-    #     except Exception as e:
-    #         st.warning(f"Error displaying image: {e}")
-    
-    # # Display the text response
-    # st.markdown(output)
-    
-    # # Save chat to Airtable
-    # save_chat_to_airtable(user_name, user_input, output)
-    
     return output
 # output = ""
 # with container:
@@ -427,41 +401,41 @@ with container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             # Display user message
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-            # Display AI response
-            col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
-            with col1:
-                st.image("icon-1024.png", width=50)
-            with col2:
-                if any(keyword in user_input.lower().split() for keyword in ["new", "used"]):
-                    image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
-                    print("Image Links:", image_links)
-                    # Resize and display images
-                    for image_link in image_links:
-                        try:
-                            image_response = requests.get(image_link)
-                            image = Image.open(BytesIO(image_response.content))
+            # # Display AI response
+            # col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
+            # with col1:
+            #     st.image("icon-1024.png", width=50)
+            # with col2:
+            #     if any(keyword in user_input.lower().split() for keyword in ["new", "used"]):
+            #         image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
+            #         print("Image Links:", image_links)
+            #         # Resize and display images
+            #         for image_link in image_links:
+            #             try:
+            #                 image_response = requests.get(image_link)
+            #                 image = Image.open(BytesIO(image_response.content))
                             
-                            # Resize the image to a smaller size
-                            width = 175
-                            height = 135
-                            resized_image = image.resize((width, height))
+            #                 # Resize the image to a smaller size
+            #                 width = 175
+            #                 height = 135
+            #                 resized_image = image.resize((width, height))
                             
-                            # Display the resized image
-                            resized_image = image.resize((width, height), Image.LANCZOS)
-                            st.image(resized_image, caption='Image', use_column_width=True)
+            #                 # Display the resized image
+            #                 resized_image = image.resize((width, height), Image.LANCZOS)
+            #                 st.image(resized_image, caption='Image', use_column_width=True)
                             
-                        except Exception as e:
-                            st.warning(f"Error displaying image: {e}")
+            #             except Exception as e:
+            #                 st.warning(f"Error displaying image: {e}")
                 
-                        # Display the text response
-                        st.markdown(
-                            f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
-                            f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                            f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                            f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                            f'</div>',
-                            unsafe_allow_html=True
-                        )
+            #             # Display the text response
+            #             st.markdown(
+            #                 f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 100%;'
+            #                 f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+            #                 f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+            #                 f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+            #                 f'</div>',
+            #                 unsafe_allow_html=True
+            #             )
                 # else:
                 #     # Display the text response without images
                 #     st.markdown(
@@ -472,41 +446,41 @@ with container:
                 #         f'</div>',
                 #         unsafe_allow_html=True
                 #     )
-            # # Display AI response
-            # col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
-            # with col1:
-            #     st.image("icon-1024.png", width=50)
-            # with col2:
-            #     # Use regex to find image links in the answer
-            #     image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
+            # Display AI response
+            col1, col2 = st.columns([0.7, 10])  # Adjust the ratio based on your preference
+            with col1:
+                st.image("icon-1024.png", width=50)
+            with col2:
+                # Use regex to find image links in the answer
+                image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', answer)
                 
-            #     # Resize and display images
-            #     for image_link in image_links:
-            #         try:
-            #             image_response = requests.get(image_link)
-            #             image = Image.open(BytesIO(image_response.content))
+                # Resize and display images
+                for image_link in image_links:
+                    try:
+                        image_response = requests.get(image_link)
+                        image = Image.open(BytesIO(image_response.content))
                         
-            #             # Resize the image to a smaller size
-            #             width = 175
-            #             height = 135
-            #             resized_image = image.resize((width, height))
+                        # Resize the image to a smaller size
+                        width = 175
+                        height = 135
+                        resized_image = image.resize((width, height))
                         
-            #             # Display the resized image
-            #             resized_image = image.resize((width, height), Image.LANCZOS)
-            #             st.image(resized_image, caption='Image', use_column_width=True)
+                        # Display the resized image
+                        resized_image = image.resize((width, height), Image.LANCZOS)
+                        st.image(resized_image, caption='Image', use_column_width=True)
                         
-            #         except Exception as e:
-            #             st.warning(f"Error displaying image: {e}")
+                    except Exception as e:
+                        st.warning(f"Error displaying image: {e}")
     
-            #         # Display the text response
-            #         st.markdown(
-            #             f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-            #             f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-            #             f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-            #             f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-            #             f'</div>',
-            #             unsafe_allow_html=True
-            #         )
+                    # Display the text response
+                    st.markdown(
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
 
 # def search_details_in_csv(vin_number):
 #     # Load CSV file and search for details
