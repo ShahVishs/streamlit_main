@@ -470,11 +470,13 @@ def conversational_chat(user_input, user_name):
             image_response = requests.get(image_link)
             image = Image.open(BytesIO(image_response.content))
             
-            # Resize the image if needed
-            # resized_image = image.resize((width, height))
+            # Resize the image
+            width = 200
+            height = 100
+            resized_image = image.resize((width, height))
             
-            # Display the image
-            st.image(image, caption='Image', use_column_width=True)
+            # Display the resized image
+            st.image(resized_image, caption='Resized Image', use_column_width=True)
             
         except Exception as e:
             st.warning(f"Error displaying image: {e}")
