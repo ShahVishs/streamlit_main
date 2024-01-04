@@ -461,25 +461,25 @@ def conversational_chat(user_input, user_name):
     result = agent_executor({"input": input_with_username})
     output = result["output"]
     
-    # Use regex to find image links in the answer
-    image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', output)
+    # # Use regex to find image links in the answer
+    # image_links = re.findall(r'(https?://\S+\.(?:png|jpg|jpeg|gif))', output)
     
-    # Resize and display images
-    for image_link in image_links:
-        try:
-            image_response = requests.get(image_link)
-            image = Image.open(BytesIO(image_response.content))
+    # # Resize and display images
+    # for image_link in image_links:
+    #     try:
+    #         image_response = requests.get(image_link)
+    #         image = Image.open(BytesIO(image_response.content))
             
-            # Resize the image to a smaller size
-            width = 150
-            height = 100
-            resized_image = image.resize((width, height))
+    #         # Resize the image to a smaller size
+    #         width = 150
+    #         height = 100
+    #         resized_image = image.resize((width, height))
             
-            # Display the resized image
-            st.image(resized_image, caption='Resized Image', use_column_width=True)
+    #         # Display the resized image
+    #         st.image(resized_image, caption='Resized Image', use_column_width=True)
             
-        except Exception as e:
-            st.warning(f"Error displaying image: {e}")
+    #     except Exception as e:
+    #         st.warning(f"Error displaying image: {e}")
     
     # # Display the text response
     # st.markdown(output)
@@ -563,7 +563,7 @@ with container:
                         resized_image = image.resize((width, height))
                         
                         # Display the resized image
-                        st.image(resized_image, caption='Resized Image', use_column_width=True)
+                        st.image(resized_image, caption='Image', use_column_width=True)
                         
                     except Exception as e:
                         st.warning(f"Error displaying image: {e}")
