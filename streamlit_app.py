@@ -15,7 +15,8 @@ from langchain_experimental.agents.agent_toolkits import create_python_agent
 # from langchain.agents.agent_toolkits import create_python_agent
 from langchain.agents import load_tools, initialize_agent
 from langchain.agents import AgentType
-from langchain.tools.python.tool import PythonREPLTool
+from langchain_experimental.tools.python.tool import PythonREPLTool
+# from langchain.tools.python.tool import PythonREPLTool
 from langchain.python import PythonREPL
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import tool
