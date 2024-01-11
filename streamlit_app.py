@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+# from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 import os 
 from langchain import OpenAI
 from langchain.chat_models import ChatOpenAI
