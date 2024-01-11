@@ -12,7 +12,7 @@ faiss-cpu
 gspread
 pytz 
 airtable-python-wrapper
-pydantic
+pydantic==1.10.10
 langchain-experimental
 IPython
 openai 
