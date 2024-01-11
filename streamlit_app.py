@@ -1,7 +1,26 @@
 from pydantic import BaseModel, Field
+import os 
+from langchain import OpenAI
+from langchain.chat_models import ChatOpenAI
+from langchain.agents import initialize_agent, Tool
+from langchain.chains.conversation.memory import ConversationBufferMemory
+from langchain import PromptTemplate, LLMChain
+import streamlit as st
+from dateutil import parser
+import datetime
+import calendar
+import random
+import json
+from langchain.agents.agent_toolkits import create_python_agent
+from langchain.agents import load_tools, initialize_agent
+from langchain.agents import AgentType
+from langchain.tools.python.tool import PythonREPLTool
+from langchain.python import PythonREPL
+from langchain.chat_models import ChatOpenAI
+from langchain.agents import tool
+from langchain import PromptTemplate
 from langchain_experimental.tools import PythonAstREPLTool
 import os
-import streamlit as st
 from airtable import Airtable
 from langchain.chains.router import MultiRetrievalQAChain
 from langchain.llms import OpenAI
@@ -22,7 +41,6 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.embeddings import OpenAIEmbeddings
 from pytz import timezone
-import datetime
 from langchain.agents.agent_toolkits import create_retriever_tool
 from langchain.agents.agent_toolkits import create_conversational_retrieval_agent
 from langchain.chat_models import ChatOpenAI
@@ -34,6 +52,10 @@ from langchain.prompts import MessagesPlaceholder
 from langchain.agents import AgentExecutor
 from langchain.smith import RunEvalConfig, run_on_dataset
 import pandas as pd
+import requests
+from pydantic import BaseModel, Field
+from langchain.tools import tool
+from typing import Dict, Any
 
 hide_share_button_style = """
     <style>
@@ -130,6 +152,163 @@ tool3 = create_retriever_tool(
 )
 
 
+class CarDetails(BaseModel):
+    make: str
+    model: str
+    year: int
+
+class VINDetails(BaseModel):
+    vin: str = Field(..., description="VIN of the car to get the car details")
+
+@tool(args_schema=VINDetails)
+def get_car_details_from_vin(vin):
+    """Fetch car details for the given VPN."""
+    
+    BASE_URL = f"https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/{vin}?format=json"
+#     BASE_URL = "https://fe9b-2405-201-200a-100d-b840-86ed-9ebd-a606.ngrok-free.app/appointment/"
+    # Make the request
+    response = requests.get(BASE_URL)
+#     print(response)
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        result = response.json()
+        print(result)
+        
+        # Check if 'Results' key is present and has at least one item
+        if 'Results' in result and result['Results']:
+            # Extract the first item from 'Results' list
+            first_result = result['Results'][0]
+#             print("These are first_result")
+#             print(first_result)
+            
+            make = first_result.get('Make', '')
+            model = first_result.get('Model', '')
+            
+            try:
+                year = int(first_result.get('ModelYear', ''))
+            except ValueError:
+                year = 0  # Handle the case where the year is not a valid integer
+        
+            # Create CarDetails instance
+            car_details = CarDetails(make=make, model=model, year=year)
+        else:
+            # Handle the case when 'Results' key is not present or is empty
+            car_details = CarDetails(make="", model="", year=0)
+        
+        return car_details
+    else:
+        # Handle the case when the request was not successful
+        return CarDetails(make="", model="", year=0)
+
+class AppointmentDetails(BaseModel):
+    time: str
+    availability: str
+
+class AppointmentInput(BaseModel):
+    date: str = Field(..., description="Date for which to get appointment details")
+
+@tool(args_schema=AppointmentInput)
+def get_appointment_details(date):
+    """Fetch appointment details for the given date and input to this function should be only "mm-dd-yyyy," format\
+    such as "04-12-2024" not "date":"mm-dd-yyyy" format."""
+    
+
+    BASE_URL="https://4730-2405-201-200a-100d-ac7d-3859-60f0-4d3f.ngrok-free.app/test/appointment"
+    # Make the request
+    payload = {
+        "requested_appointment_date": date
+    }
+    response = requests.post(BASE_URL, json=payload)
+#     print("the response is")
+#     print(response.text)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        result = response.json()
+#         print(result)
+        
+        # Check if the date is present in the response
+        if date in result and result[date] is not None:
+            # Extract the appointment details for the given date
+            appointments = result[date]
+
+            
+            return appointments  # Return the value
+        else:
+            # Handle the case when the date is not present in the response or is None
+            appointments ={
+        date: "Not_available"
+    }
+            return appointments
+    else:
+        # Handle the case when the request was not successful
+        return []
+
+
+
+class CustomerDataStore(BaseModel):
+    name: str = Field(..., description="name of the customer")
+    phone: str = Field(..., description="phone number of the customer")
+    email: str = Field(..., description="email of the customer")
+    make: str = Field(..., description="year of the car")
+    model: str = Field(..., description="model of the car")
+    year:int=Field(..., description="year of the vehicle")
+    company_id:int=Field(..., description="id of the company")
+    location_id:int=Field(..., description="location id of the company")
+    start_date:str=Field(..., description="date of appointment")
+    appointment_timezone:str=Field(..., description="time zone")
+    intent:str=Field(..., description="costumer intent")
+    summary:str=Field(..., description="one line about summary of appointment,")
+    description:str=Field(..., description="one line about description about visit,")
+# Uncomment if you want to use the decorator
+@tool(args_schema=CustomerDataStore)
+def store_appointment_data(name: str,phone: str,email: str ,make: str,model: str,year:int,
+                           company_id:int,location_id:int,start_date:str,appointment_timezone:str,
+                           intent:str,summary:str,description:str) -> dict:
+
+
+    """Store appointment data using an API."""
+#     print(data)
+    
+    # Your API endpoint for storing appointment data
+#     api_url = "https://889d-2402-a00-172-22e6-71e5-ba36-c2e7-3c81.ngrok-free.app/test/appointment/create"
+    api_url="https://4730-2405-201-200a-100d-ac7d-3859-60f0-4d3f.ngrok-free.app/test/appointment/create"
+
+    data_dict = {
+    "company_id": 1,
+    "location_id": 28,
+    "lead": {
+        "name": name,
+        "phone": phone,
+        "email": email
+    },
+    "vehicle": {
+        "year": 2023,
+        "make": make,
+        "model": model,
+        "intent": intent
+    },
+    "appointment": {
+        "start_date": start_date,
+        "description": description,
+        "summary":summary,
+        "appointment_timezone": appointment_timezone
+    }
+}
+
+    # Make the request
+    response = requests.post(api_url, json=data_dict)
+   
+    # Check the response status code
+    if response.status_code == 200:
+        print("Data stored successfully!")
+    else:
+        print(f"Failed to store data. Status code: {response.status_code}")
+        print(response.text)  # Print the response content for debugging
+
+
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
 AIRTABLE_BASE_ID = "appN324U6FsVFVmx2"  
@@ -154,49 +333,52 @@ langchain.debug=True
 
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-template = """You are an costumer care support exectutive respond in 
-Personable, Humorous, emotional intelligent, creative, witty and engaging.
+template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
+so follow instructions strictly and respond in Personable, Humorous, emotional intelligent, creative, witty and engaging.
 The name of the costumer is {name} and the dealership name is {dealership_name} and 
-never start with appointment related questions.
+do not start with appointment related questions.
 To ensure a consistent and effective response, please adhere to the following guidelines:
-Use "Availability_check" for checking availability of a specific make or model of the car and 
-also for getting full list of available makes and models in the inventory. 
-Use "car_details" tool that extracts comprehensive information about cars in the inventory.
-This includes details like trim, price, color, and cost. To optimize the search process, 
-ensure the system is aware of the car model and whether the customer is interested in new or used cars.
-In cases where specific details are not included in the initial inquiry, 
-initiate a proactive approach by requesting the missing information. 
+
+Use "car_vailability_check" strictly for checking availability of a specific make or model of the car and 
+also for getting full list of available makes and models in the inventory.
+
+Use "details_of_car" tool that extracts comprehensive information about specific cars in the inventory.
+This includes details like trim, price, color, and cost.
+
+Use "car_vailability_check" for checking car availability and "details_of_car" for car information.
+
+To optimize the search process, ensure the system is aware of the car model and whether the customer
+is interested in new or used cars.
+
+In cases where specific details are not included in the initial inquiry, initiate a proactive approach 
+by requesting the missing information. 
+
 To streamline the process, ask only one question at a time until all necessary details are obtained.
 This ensures a more efficient and accurate retrieval of car information.
+
 If customer inquires about car with features like towing, off-road capability,
-good mileage, or pickup trucks, in this case no need to ask about make and model of the car inquire 
-whether they are interested in a new or used vehicle. After knowing car feature and new or old car preference 
-use the "details_of_car" tool to answer.
-Use "Availability_check" for checking car availability and "car_details" for car information.
+good mileage, or pickup trucks in this case no need to ask about make and model of the car 
+inquire whether they are interested in a new or used vehicle.
+
+After knowing car feature and new or old car preference use the "car_vailability_check" tool to answer.
+
+
 Do not disclose or ask the costumer if he likes to know the selling price of a car,
-disclose selling price only when the customer explicitly requests it use "details_of_car" tool.
-Here's a suggested response format while providing car details:
-"We have several models available. Here are a few options:"
+disclose selling price only when the customer explicitly requests it use "details_of_car" function.
+
+
 If the customer's query matches a car model, respond with a list of car without square brackets, 
 including the make, year, model, and trim, and provide their respective links in the answer.
 
-checking Appointments Avaliability: If inquiry lacks specific details like day, date or time kindly engage by 
-asking for these specifics.
-{details} Use these details and find appointment date from the users input and check for appointment availabity 
-using "appointment_scheduling" tool for that specific day or date and time.
-use pandas dataframe `df` in Python.
-This is the result of running `df.head().to_markdown()`. 
-<df>
-{dhead}
-</df>
-You are not meant to use only these rows to answer questions - they are meant as a way of telling you\nabout the 
-shape and schema of the dataframe.
-you can run intermediate queries to do exporatory data analysis to give you more information as needed. 
+checking Appointments Avaliability: 
+{details} use these details and find appointment date from the users input and check for appointment availabity 
+using "get_appointment_details" tool for that specific day or date and time. 
+strictly input to "get_appointment_details" tool should be "mm-dd-yyyy" format.
 If the requested date and time for the appointment are unavailable,
 suggest alternative times close to the customer's preference.
 
-Additionally, provide this link'[click here](https://app.engagedai.io/engagements/appointment)'it will take them to a URL where they
-can schedule or reschedule their appointment themselves. 
+Additionally, provide this link'[click here](https://app.engagedai.io/engagements/appointment)'it will 
+take them to a URL where they can schedule or reschedule their appointment themselves. 
 Appointment Scheduling:
 
 After scheduling an appointment, initiate the conversation to get tradein car and personal details.
@@ -209,6 +391,8 @@ After scheduling an appointment, initiate the conversation to get tradein car an
 2. If the user responds with "Yes" to trade-in, ask for the VIN (Vehicle Identification Number).
 
     - User: [Response]
+    if the costumer provides the VIN use "get_car_details_from_vin" get the details of the car and 
+    cross check with the costumer. 
 
 3. If the user responds with "No" to the VIN, ask for the make, model, and year of the car.
 
@@ -225,10 +409,8 @@ After scheduling an appointment, initiate the conversation to get tradein car an
 5. Finally, ask for the customer's personal details.
 
     - User: [Response]
-    - Name:
     - Contact Number:
     - Email Address:
-
 
 Encourage Dealership Visit: Our goal is to encourage customers to visit the dealership for test drives or
 receive product briefings from our team. After providing essential information on the car's make, model,
@@ -236,39 +418,29 @@ color, and basic features, kindly invite the customer to schedule an appointment
 for a comprehensive product overview by our experts.
 Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
 and contact details use search_business_details tool to get information.
-
+company details:
+compant id is 24, location id is 07 and timezone is America/New_York
 
 Keep responses concise, not exceeding two sentences and answers should be interactive.
 Respond in a polite US english.
-answer only from the provided content dont makeup answers.
-"""
-details= "Today's current date is "+ todays_date +" today's weekday is "+day_of_the_week+"."
-
+strictly answer only from the provided content dont makeup answers.
+**Storing data:**    
+As a support executive you should collect important information about costumer for future reference.
+If the appointment schedule is fixed and you got costumer details name,Contact Number,Email Address.
+now its time to store data.
+Use this tool "store_appointment_data" to store the data.
+If any of the above details missing you can enquire about that."""
+details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week day is "+day_of_the_week+"."
 name = st.session_state.user_name
-dealership_name="Pine belt cars"
-
-
-class PythonInputs(BaseModel):
-    query: str = Field(description="code snippet to run")
-df = pd.read_csv("appointment_new.csv")
-
-class PythonInputs(BaseModel):
-    query: str = Field(description="code snippet to run")
-
-
-input_template = template.format(dhead=df.iloc[:3, :5].to_markdown(),details=details,name=name,dealership_name=dealership_name)
+dealership_name="Gosch Auto Group"
+input_template = template.format(details=details,name=name,dealership_name=dealership_name)
 system_message = SystemMessage(content=input_template)
 
 prompt = OpenAIFunctionsAgent.create_prompt(
     system_message=system_message,
     extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
 )
-
-
-repl = PythonAstREPLTool(locals={"df": df}, name="appointment_scheduling",
-        description="Use to check on available appointment times for a given date and time. The input to this tool should be a string in this format mm/dd/yy.This tool will reply with available times for the specified date in 12 hour time, for example: 15:00 and are the same")
-
-tools = [tool1, repl, tool2, tool3]
+tools = [tool1,tool2,tool3,get_car_details_from_vin,get_appointment_details,store_appointment_data]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
@@ -276,12 +448,10 @@ if 'agent_executor' not in st.session_state:
     st.session_state.agent_executor = agent_executor
 else:
     agent_executor = st.session_state.agent_executor
-
+    
 chat_history=[]
-
 response_container = st.container()
 container = st.container()
-
 airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
 
 
