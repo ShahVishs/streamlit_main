@@ -338,6 +338,7 @@ memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 # Add a radio button for response style selection
 response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
+print("Selected Response Style:", response_style)
 # Use the selected style to generate the appropriate template
 if response_style == "Professional":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
@@ -537,11 +538,12 @@ elif response_style == "Humorous":
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
 
-
+print("Selected Template:", template)
 details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week day is "+day_of_the_week+"."
 name = st.session_state.user_name
 dealership_name="Gosch Auto Group"
 input_template = template.format(details=details,name=name,dealership_name=dealership_name)
+print("Input Template:", input_template)
 system_message = SystemMessage(content=input_template)
 
 prompt = OpenAIFunctionsAgent.create_prompt(
