@@ -541,25 +541,25 @@ if st.session_state.response_style == "Humorous":
 #     Use this tool "store_appointment_data" to store the data.
 #     If any of the above details missing you can enquire about that."""
     print("Selected Template:", template)
-details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week day is "+day_of_the_week+"."
-name = st.session_state.user_name
-dealership_name="Gosch Auto Group"
-input_template = template.format(details=details,name=name,dealership_name=dealership_name)
-print("Input Template:", input_template)
-system_message = SystemMessage(content=input_template)
-
-prompt = OpenAIFunctionsAgent.create_prompt(
-    system_message=system_message,
-    extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
-)
-tools = [tool1,tool2,tool3,get_car_details_from_vin,get_appointment_details,store_appointment_data]
-agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
-if 'agent_executor' not in st.session_state:
-    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-        return_generated_question=True)
-    st.session_state.agent_executor = agent_executor
-else:
-    agent_executor = st.session_state.agent_executor
+    details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week day is "+day_of_the_week+"."
+    name = st.session_state.user_name
+    dealership_name="Gosch Auto Group"
+    input_template = template.format(details=details,name=name,dealership_name=dealership_name)
+    print("Input Template:", input_template)
+    system_message = SystemMessage(content=input_template)
+    
+    prompt = OpenAIFunctionsAgent.create_prompt(
+        system_message=system_message,
+        extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
+    )
+    tools = [tool1,tool2,tool3,get_car_details_from_vin,get_appointment_details,store_appointment_data]
+    agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
+    if 'agent_executor' not in st.session_state:
+        agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+            return_generated_question=True)
+        st.session_state.agent_executor = agent_executor
+    else:
+        agent_executor = st.session_state.agent_executor
     
 chat_history=[]
 response_container = st.container()
