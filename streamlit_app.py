@@ -578,11 +578,11 @@ if template is not None:
     airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
 
 
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
-
-if 'user_name' not in st.session_state:
-    st.session_state.user_name = None
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+    
+    if 'user_name' not in st.session_state:
+        st.session_state.user_name = None
 
     
 def save_chat_to_airtable(user_name, user_input, output):
