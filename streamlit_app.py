@@ -339,17 +339,22 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 # Add a radio button for response style selection
 response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
 print("Selected Response Style:", response_style)
-st.session_state.response_style = response_style
+# st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
 if 'response_style' not in st.session_state:
     st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
 
 # Initialize agent_executor and template here
 template = None
-if 'agent_executor' not in st.session_state:
-    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
-                                   return_source_documents=True, return_generated_question=True)
-    st.session_state.agent_executor = agent_executor
+
+# Update chat history based on response style
+response_style = st.session_state.response_style
+
+if response_style not in st.session_state:
+    st.session_state[response_style] = {"chat_history": []}
+
+# Retrieve chat history based on response style
+chat_history = st.session_state[response_style]["chat_history"]
 
 if st.session_state.response_style == "Humorous":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
@@ -565,13 +570,12 @@ if template is not None:
     tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
     agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 
-    # # Initialize agent_executor here
-    # agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
-    #                                return_source_documents=True, return_generated_question=True)
-    # st.session_state.agent_executor = agent_executor
+    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
+                                   return_source_documents=True, return_generated_question=True)
+    st.session_state.agent_executor = agent_executor
     
-chat_history=[]
-# chat_history = st.session_state.chat_history
+# chat_history=[]
+st.session_state[response_style]["chat_history"] = chat_history
 response_container = st.container()
 container = st.container()
 airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
