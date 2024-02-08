@@ -339,9 +339,11 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 # Add a radio button for response style selection
 response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
 print("Selected Response Style:", response_style)
+st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
-
-if response_style == "Humorous":
+if 'response_style' not in st.session_state:
+    st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
+if st.session_state.response_style == "Humorous":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Humorous, emotional intelligent, creative, witty and engaging.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
@@ -440,7 +442,7 @@ if response_style == "Humorous":
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
     
-elif response_style == "Professional":
+elif st.session_state.response_style == "Professional":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Persuvasive, creative, engaging, witty and professional.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
