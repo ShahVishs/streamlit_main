@@ -344,9 +344,11 @@ st.session_state.response_style = response_style
 if 'response_style' not in st.session_state:
     st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
 
-# Initialize agent_executor outside the if-elif block
+# Initialize agent_executor and template here
 if 'agent_executor' not in st.session_state:
-    agent_executor = None
+    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
+                                   return_source_documents=True, return_generated_question=True)
+    st.session_state.agent_executor = agent_executor
 
 # Initialize template outside the if-elif block
 template = None
@@ -571,18 +573,18 @@ if template is not None:
                                    return_source_documents=True, return_generated_question=True)
     st.session_state.agent_executor = agent_executor
     
-    chat_history=[]
-    # chat_history = st.session_state.chat_history
-    response_container = st.container()
-    container = st.container()
-    airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
+chat_history=[]
+# chat_history = st.session_state.chat_history
+response_container = st.container()
+container = st.container()
+airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
 
 
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
-    
-    if 'user_name' not in st.session_state:
-        st.session_state.user_name = None
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
+if 'user_name' not in st.session_state:
+    st.session_state.user_name = None
 
     
 def save_chat_to_airtable(user_name, user_input, output):
