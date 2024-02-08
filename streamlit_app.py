@@ -540,7 +540,7 @@ if st.session_state.response_style == "Humorous":
 #     now its time to store data.
 #     Use this tool "store_appointment_data" to store the data.
 #     If any of the above details missing you can enquire about that."""
-print("Selected Template:", template)
+    print("Selected Template:", template)
 details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week day is "+day_of_the_week+"."
 name = st.session_state.user_name
 dealership_name="Gosch Auto Group"
