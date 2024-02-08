@@ -345,8 +345,8 @@ if 'response_style' not in st.session_state:
     st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
 
 # Initialize agent_executor outside the if-elif block
-if 'agent_executor' not in st.session_state:
-    agent_executor = None
+# if 'agent_executor' not in st.session_state:
+#     agent_executor = None
 
 # Initialize template outside the if-elif block
 template = None
