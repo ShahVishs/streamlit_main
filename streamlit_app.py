@@ -551,7 +551,7 @@ elif st.session_state.response_style == "Professional":
     now its time to store data.
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
-    
+st.session_state.template = template   
 if template is not None:
     print("Selected Template:", template)
     details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
