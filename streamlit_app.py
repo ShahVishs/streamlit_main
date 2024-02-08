@@ -453,8 +453,8 @@ if 'agent_executor' not in st.session_state or st.session_state.response_style =
     now its time to store data.
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
-    
-elif st.session_state.response_style == "Professional":
+elif 'agent_executor' not in st.session_state or st.session_state.response_style == "Professional":    
+# elif st.session_state.response_style == "Professional":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Persuvasive, creative, engaging, witty and professional.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
