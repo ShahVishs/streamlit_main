@@ -319,9 +319,12 @@ AIRTABLE_TABLE_NAME = "gpt4_turbo_test_2"
 
 
 st.info("Introducing **Otto**, your cutting-edge partner in streamlining dealership and customer-related operations. At EngagedAi, we specialize in harnessing the power of automation to revolutionize the way dealerships and customers interact. Our advanced solutions seamlessly handle tasks, from managing inventory and customer inquiries to optimizing sales processes, all while enhancing customer satisfaction. Discover a new era of efficiency and convenience with us as your trusted automation ally. [engagedai.io](https://funnelai.com/). For this demo application, we will use the Inventory Dataset. Please explore it [here](https://github.com/ShahVishs/workflow/blob/main/2013_Inventory.csv) to get a sense for what questions you can ask.")
-
+if 'response_style' not in st.session_state:
+    st.session_state.response_style = "Professional"
+    
 if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
+    st.session_state.chat_history = {}
+
 if 'generated' not in st.session_state:
     st.session_state.generated = []
 if 'past' not in st.session_state:
@@ -341,8 +344,8 @@ response_style = st.radio("Select Response Style:", ["Professional", "Humorous"]
 print("Selected Response Style:", response_style)
 # st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
-if 'response_style' not in st.session_state:
-    st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
+# if 'response_style' not in st.session_state:
+#     st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
 
 # Initialize agent_executor and template here
 template = None
@@ -555,12 +558,10 @@ elif st.session_state.response_style == "Professional":
     If any of the above details missing you can enquire about that."""
     
 if template is not None:
-    print("Selected Template:", template)
     details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
     name = st.session_state.user_name
     dealership_name = "Gosch Auto Group"
     input_template = template.format(details=details, name=name, dealership_name=dealership_name)
-    print("Input Template:", input_template)
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
@@ -574,18 +575,18 @@ if template is not None:
                                    return_source_documents=True, return_generated_question=True)
     st.session_state.agent_executor = agent_executor
     
-    chat_history=[]
-    # st.session_state[response_style]["chat_history"] = chat_history
-    response_container = st.container()
-    container = st.container()
-    airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
-    
-    
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
-    
-    if 'user_name' not in st.session_state:
-        st.session_state.user_name = None
+# chat_history=[]
+chat_history = st.session_state.chat_history.get(st.session_state.response_style, [])
+response_container = st.container()
+container = st.container()
+airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
+
+
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
+if 'user_name' not in st.session_state:
+    st.session_state.user_name = None
 
     
 def save_chat_to_airtable(user_name, user_input, output):
