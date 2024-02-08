@@ -574,7 +574,7 @@ if template is not None:
                                    return_source_documents=True, return_generated_question=True)
     st.session_state.agent_executor = agent_executor
     
-# chat_history=[]
+chat_history=[]
 st.session_state[response_style]["chat_history"] = chat_history
 response_container = st.container()
 container = st.container()
@@ -639,8 +639,8 @@ with container:
                 unsafe_allow_html=True
             )
 
-        if st.session_state.user_name:
-            try:
-                save_chat_to_airtable(st.session_state.user_name, user_input, output)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        # if st.session_state.user_name:
+        #     try:
+        #         save_chat_to_airtable(st.session_state.user_name, user_input, output)
+        #     except Exception as e:
+        #         st.error(f"An error occurred: {e}")
