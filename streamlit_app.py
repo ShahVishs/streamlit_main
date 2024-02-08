@@ -565,13 +565,11 @@ if template is not None:
     tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
     agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
     
-    # Initialize agent_executor here
-    if 'agent_executor' not in st.session_state:
-        agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
-                                       return_source_documents=True, return_generated_question=True)
-        st.session_state.agent_executor = agent_executor
-    else:
-        agent_executor = st.session_state.agent_executor
+
+    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
+                                   return_source_documents=True, return_generated_question=True)
+    st.session_state.agent_executor = agent_executor
+
     
     # Initialize chat history session within this block
     if 'chat_history' not in st.session_state:
@@ -643,8 +641,8 @@ with container:
                 unsafe_allow_html=True
             )
 
-        if st.session_state.user_name:
-            try:
-                save_chat_to_airtable(st.session_state.user_name, user_input, output)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        # if st.session_state.user_name:
+        #     try:
+        #         save_chat_to_airtable(st.session_state.user_name, user_input, output)
+        #     except Exception as e:
+        #         st.error(f"An error occurred: {e}")
