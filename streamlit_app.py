@@ -574,28 +574,28 @@ elif st.session_state.response_style == "Professional":
         st.session_state.user_name = None
     
     
-    def save_chat_to_airtable(user_name, user_input, output):
-        try:
-            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            airtable.insert(
-                {
-                    "username": user_name,
-                    "question": user_input,
-                    "answer": output,
-                    "timestamp": timestamp,
-                }
-            )
-        except Exception as e:
-            st.error(f"An error occurred while saving data to Airtable: {e}")
+def save_chat_to_airtable(user_name, user_input, output):
+    try:
+        timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        airtable.insert(
+            {
+                "username": user_name,
+                "question": user_input,
+                "answer": output,
+                "timestamp": timestamp,
+            }
+        )
+    except Exception as e:
+        st.error(f"An error occurred while saving data to Airtable: {e}")
+
+
+def conversational_chat(user_input, user_name):
+    input_with_username = f"{user_name}: {user_input}"
+    result = agent_executor({"input": input_with_username})
+    output = result["output"]
+    st.session_state.chat_history.append((user_input, output))
     
-    
-    def conversational_chat(user_input, user_name):
-        input_with_username = f"{user_name}: {user_input}"
-        result = agent_executor({"input": input_with_username})
-        output = result["output"]
-        st.session_state.chat_history.append((user_input, output))
-        
-        return output
+    return output
 output = ""
 with container:
     if st.session_state.user_name is None:
