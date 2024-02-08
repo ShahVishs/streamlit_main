@@ -340,24 +340,18 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 # response_style = st.radio("Select Response Style:", ["Professional", "Humorous"], format_func=lambda x: f"**{x}**")
 # response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
 print("Selected Response Style:", response_style)
-# Add custom CSS to style the radio button group horizontally
-st.markdown(
-    """
-    <style>
-    .horizontal-radio > * {
-        display: inline !important;
-        margin-right: 10px !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Add a radio button for response style selection
+col1, col2 = st.columns([1, 1])  # Split the width into two equal columns
+with col1:
+    professional_selected = st.radio("Professional", [""])
+with col2:
+    humorous_selected = st.radio("Humorous", [""])
 
-# Add a horizontal radio button for response style selection
-response_style = st.radio("Select Response Style:", ["Professional", "Humorous"], key="response_style", 
-                          help="Select the response style you prefer.", 
-                          format_func=lambda x: '<div style="display:inline;padding-right:20px;">{}</div>'.format(x), 
-                          default="Professional", class_="horizontal-radio")
+# Store the selected response style in session state
+if professional_selected:
+    st.session_state.response_style = "Professional"
+elif humorous_selected:
+    st.session_state.response_style = "Humorous"
 print("Selected Response Style:", response_style)
 st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
