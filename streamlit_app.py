@@ -341,12 +341,12 @@ response_style = st.radio("Select Response Style:", ["Professional", "Humorous"]
 print("Selected Response Style:", response_style)
 st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
-# if 'response_style' not in st.session_state:
-#     st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
 if 'response_style' not in st.session_state:
-    st.session_state.response_style = "Professional"
-else:
-    st.session_state.response_style = response_style
+    st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
+# if 'response_style' not in st.session_state:
+#     st.session_state.response_style = "Professional"
+# else:
+#     st.session_state.response_style = response_style
 # Initialize agent_executor outside the if-elif block
 # if 'agent_executor' not in st.session_state:
 #     agent_executor = None
