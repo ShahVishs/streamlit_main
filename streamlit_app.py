@@ -350,14 +350,14 @@ print("Selected Response Style:", response_style)
 # Initialize agent_executor and template here
 template = None
 
-# # Update chat history based on response style
-# response_style = st.session_state.response_style
+# Update chat history based on response style
+response_style = st.session_state.response_style
 
-# if response_style not in st.session_state:
-#     st.session_state[response_style] = {"chat_history": []}
+if response_style not in st.session_state.chat_history:
+    st.session_state.chat_history[response_style] = []
 
-# # Retrieve chat history based on response style
-# chat_history = st.session_state[response_style]["chat_history"]
+# Retrieve chat history based on response style
+chat_history = st.session_state.chat_history[response_style]
 
 if st.session_state.response_style == "Humorous":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
@@ -576,7 +576,7 @@ if template is not None:
     st.session_state.agent_executor = agent_executor
     
 # chat_history=[]
-chat_history = st.session_state.chat_history.get(st.session_state.response_style, [])
+# chat_history = st.session_state.chat_history.get(st.session_state.response_style, [])
 response_container = st.container()
 container = st.container()
 airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
