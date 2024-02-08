@@ -336,9 +336,7 @@ langchain.debug=True
 
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-# Add a radio button for response style selection
-response_style = st.radio("Select Response Style:", ["Professional", "Humorous"], format_func=lambda x: f"**{x}**")
-# response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
+response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
 print("Selected Response Style:", response_style)
 st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
@@ -351,6 +349,7 @@ if 'response_style' not in st.session_state:
 # Initialize agent_executor outside the if-elif block
 # if 'agent_executor' not in st.session_state:
 #     agent_executor = None
+
 
 # Initialize template outside the if-elif block
 template = None
