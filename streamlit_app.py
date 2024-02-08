@@ -344,11 +344,8 @@ st.session_state.response_style = response_style
 if 'response_style' not in st.session_state:
     st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
 
-# Initialize agent_executor and template here
-if 'agent_executor' not in st.session_state:
-    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
-                                   return_source_documents=True, return_generated_question=True)
-    st.session_state.agent_executor = agent_executor
+# Initialize agent outside the if-elif block
+agent = None
 
 # Initialize template outside the if-elif block
 template = None
@@ -567,7 +564,7 @@ if template is not None:
     )
     tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
     agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
-    
+
     # Initialize agent_executor here
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True,
                                    return_source_documents=True, return_generated_question=True)
