@@ -354,8 +354,8 @@ if 'response_style' not in st.session_state:
 # Initialize template outside the if-elif block
 template = None
 # Initialize agent_executor and template based on the selected response style
-if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
-# if st.session_state.response_style == "Humorous":
+# if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
+if st.session_state.response_style == "Humorous":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Humorous, emotional intelligent, creative, witty and engaging.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
@@ -453,8 +453,8 @@ if 'agent_executor' not in st.session_state or st.session_state.response_style =
     now its time to store data.
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
-elif 'agent_executor' not in st.session_state or st.session_state.response_style == "Professional":    
-# elif st.session_state.response_style == "Professional":
+# elif 'agent_executor' not in st.session_state or st.session_state.response_style == "Professional":    
+elif st.session_state.response_style == "Professional":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Persuvasive, creative, engaging, witty and professional.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
@@ -552,7 +552,7 @@ elif 'agent_executor' not in st.session_state or st.session_state.response_style
     now its time to store data.
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
-st.session_state.template = template   
+# st.session_state.template = template   
 if template is not None:
     print("Selected Template:", template)
     details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
