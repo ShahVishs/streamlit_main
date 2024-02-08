@@ -339,18 +339,11 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 # Add a radio button for response style selection
 response_style = st.radio("Select Response Style:", ["Professional", "Humorous"], format_func=lambda x: f"**{x}**")
 # response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
-
-# Print the selected response style inside the block where it's defined
-# print("Selected Response Style:", st.session_state.response_style)
+print("Selected Response Style:", response_style)
+st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
 if 'response_style' not in st.session_state:
     st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
-print("Selected Response Style:", response_style)
-# st.session_state.response_style = response_style
-# # Use the selected style to generate the appropriate template
-# if 'response_style' not in st.session_state:
-#     st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
-
 # if 'response_style' not in st.session_state:
 #     st.session_state.response_style = "Professional"
 # else:
