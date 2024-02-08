@@ -561,72 +561,72 @@ elif st.session_state.response_style == "Professional":
     else:
         agent_executor = st.session_state.agent_executor
     
-chat_history=[]
-response_container = st.container()
-container = st.container()
-airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
-
-
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
-
-if 'user_name' not in st.session_state:
-    st.session_state.user_name = None
-
-
-def save_chat_to_airtable(user_name, user_input, output):
-    try:
-        timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        airtable.insert(
-            {
-                "username": user_name,
-                "question": user_input,
-                "answer": output,
-                "timestamp": timestamp,
-            }
-        )
-    except Exception as e:
-        st.error(f"An error occurred while saving data to Airtable: {e}")
-
-
-def conversational_chat(user_input, user_name):
-    input_with_username = f"{user_name}: {user_input}"
-    result = agent_executor({"input": input_with_username})
-    output = result["output"]
-    st.session_state.chat_history.append((user_input, output))
+    chat_history=[]
+    response_container = st.container()
+    container = st.container()
+    airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
     
-    return output
-output = ""
-with container:
-    if st.session_state.user_name is None:
-        user_name = st.text_input("Your name:")
-        if user_name:
-            st.session_state.user_name = user_name
-
-    with st.form(key='my_form', clear_on_submit=True):
-        user_input = st.text_input("Query:", placeholder="Type your question here (:")
-        submit_button = st.form_submit_button(label='Send')
-
-    if submit_button and user_input:
-        output = conversational_chat(user_input, st.session_state.user_name)
-    with response_container:
-        for i, (query, answer) in enumerate(st.session_state.chat_history):
-            message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
-            col1, col2 = st.columns([0.7, 10]) 
-            with col1:
-                st.image("icon-1024.png", width=50)
-            with col2:
-                st.markdown(
-                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                f'</div>',
-                unsafe_allow_html=True
+    
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+    
+    if 'user_name' not in st.session_state:
+        st.session_state.user_name = None
+    
+    
+    def save_chat_to_airtable(user_name, user_input, output):
+        try:
+            timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+            airtable.insert(
+                {
+                    "username": user_name,
+                    "question": user_input,
+                    "answer": output,
+                    "timestamp": timestamp,
+                }
             )
-
-        if st.session_state.user_name:
-            try:
-                save_chat_to_airtable(st.session_state.user_name, user_input, output)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        except Exception as e:
+            st.error(f"An error occurred while saving data to Airtable: {e}")
+    
+    
+    def conversational_chat(user_input, user_name):
+        input_with_username = f"{user_name}: {user_input}"
+        result = agent_executor({"input": input_with_username})
+        output = result["output"]
+        st.session_state.chat_history.append((user_input, output))
+        
+        return output
+    output = ""
+    with container:
+        if st.session_state.user_name is None:
+            user_name = st.text_input("Your name:")
+            if user_name:
+                st.session_state.user_name = user_name
+    
+        with st.form(key='my_form', clear_on_submit=True):
+            user_input = st.text_input("Query:", placeholder="Type your question here (:")
+            submit_button = st.form_submit_button(label='Send')
+    
+        if submit_button and user_input:
+            output = conversational_chat(user_input, st.session_state.user_name)
+        with response_container:
+            for i, (query, answer) in enumerate(st.session_state.chat_history):
+                message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
+                col1, col2 = st.columns([0.7, 10]) 
+                with col1:
+                    st.image("icon-1024.png", width=50)
+                with col2:
+                    st.markdown(
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+    
+            if st.session_state.user_name:
+                try:
+                    save_chat_to_airtable(st.session_state.user_name, user_input, output)
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
