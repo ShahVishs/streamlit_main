@@ -590,8 +590,11 @@ else:
 #     st.session_state.chat_history = []
 
 # chat_history = st.session_state.chat_history
-    
-chat_history=[]
+if 'chat_history' not in st.session_state:
+    chat_history = []
+else:
+    chat_history = st.session_state.chat_history    
+# chat_history=[]
 response_container = st.container()
 container = st.container()
 airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
