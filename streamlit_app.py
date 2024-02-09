@@ -1,5 +1,3 @@
-
-
 from pydantic import BaseModel, Field
 # from pydantic.v1 import BaseModel, Field
 import os 
@@ -338,22 +336,22 @@ langchain.debug=True
 
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
-print("Selected Response Style:", response_style)
-st.session_state.response_style = response_style
+# response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
+# print("Selected Response Style:", response_style)
+# st.session_state.response_style = response_style
 
-# if 'response_style' not in st.session_state:
-#     st.session_state.response_style = "Humorous"  
+# # if 'response_style' not in st.session_state:
+# #     st.session_state.response_style = "Humorous"  
 
-# if 'response_style' not in st.session_state or st.session_state.response_style != response_style:
-#     st.session_state.response_style = response_style
-print("Selected Response Style:", response_style)
-print("Response Style in Block:", st.session_state.response_style)
+# # if 'response_style' not in st.session_state or st.session_state.response_style != response_style:
+# #     st.session_state.response_style = response_style
+# print("Selected Response Style:", response_style)
+# print("Response Style in Block:", st.session_state.response_style)
 
-# if 'response_style' not in st.session_state:
-#     st.session_state.response_style = "Professional"
+# # if 'response_style' not in st.session_state:
+# #     st.session_state.response_style = "Professional"
 
-template = None
+# template = None
 
 def get_template(response_style):
     if response_style == "Humorous":
