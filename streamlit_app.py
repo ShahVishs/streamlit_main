@@ -598,10 +598,10 @@ else:
     # If it exists, retrieve it from session state
     agent_executor = st.session_state.agent_executor
 
-# Check if 'response_style' is in session state
-if 'response_style' not in st.session_state:
-    # If it doesn't exist, set a default response style
-    st.session_state.response_style = "Humorous"  # Or any other default style you prefer
+# # Check if 'response_style' is in session state
+# if 'response_style' not in st.session_state:
+#     # If it doesn't exist, set a default response style
+#     st.session_state.response_style = "Humorous"  # Or any other default style you prefer
 
 # Retrieve the response style from the session state
 response_style = st.session_state.response_style
