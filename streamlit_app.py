@@ -677,13 +677,37 @@ def save_chat_to_airtable(user_name, user_input, output):
         st.error(f"An error occurred while saving data to Airtable: {e}")
 
 
+# def conversational_chat(user_input, user_name):
+#     input_with_username = f"{user_name}: {user_input}"
+#     result = agent_executor({"input": input_with_username})
+#     output = result["output"]
+#     st.session_state.chat_history.append((user_input, output))
+    
+#     return output
+
 def conversational_chat(user_input, user_name):
     input_with_username = f"{user_name}: {user_input}"
+
+    # Check if 'response_style' is in session state
+    if 'response_style' not in st.session_state:
+        # If it doesn't exist, set a default response style
+        st.session_state.response_style = "Professional"  # Or any other default style you prefer
+
+    # Retrieve the response style from the session state
+    response_style = st.session_state.response_style
+
+    # Update the response style in the existing agent_executor if it has changed
+    if agent_executor.response_style != response_style:
+        agent_executor.response_style = response_style
+
+    # Perform the chat with the updated response style
     result = agent_executor({"input": input_with_username})
     output = result["output"]
     st.session_state.chat_history.append((user_input, output))
-    
+
     return output
+
+
 output = ""
 with container:
     if st.session_state.user_name is None:
