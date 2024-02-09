@@ -349,15 +349,15 @@ print("Response Style in Block:", st.session_state.response_style)
 # else:
 #     st.session_state.response_style = response_style
 # Initialize agent_executor outside the if-elif block
-if 'agent_executor' not in st.session_state:
-    agent_executor = None
+# if 'agent_executor' not in st.session_state:
+#     agent_executor = None
 
 
 # Initialize template outside the if-elif block
 template = None
 # Initialize agent_executor and template based on the selected response style
-# if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
-if st.session_state.response_style == "Humorous":
+if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
+# if st.session_state.response_style == "Humorous":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Humorous, emotional intelligent, creative, witty and engaging.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
@@ -577,8 +577,8 @@ if template is not None:
         agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
             return_generated_question=True)
         st.session_state.agent_executor = agent_executor
-    else:
-        agent_executor = st.session_state.agent_executor
+    # else:
+    #     agent_executor = st.session_state.agent_executor
 
     
     # Initialize chat history session within this block
