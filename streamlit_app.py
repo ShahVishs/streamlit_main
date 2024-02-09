@@ -352,7 +352,7 @@ print("Response Style in Block:", st.session_state.response_style)
 # if 'agent_executor' not in st.session_state:
 #     agent_executor = None
 
-
+agent_executor = None
 # Initialize template outside the if-elif block
 template = None
 # Initialize agent_executor and template based on the selected response style
