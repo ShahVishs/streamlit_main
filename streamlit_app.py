@@ -553,7 +553,7 @@ def get_template(response_style):
 
 # Check if response_style is in session state, if not set a default
 if 'response_style' not in st.session_state:
-    st.session_state.response_style = "Humorous"  # Set a default response style
+    st.session_state.response_style = "Professional"  # Set a default response style
 
 # Retrieve the response style from the session state
 response_style = st.session_state.response_style
@@ -599,9 +599,9 @@ else:
     agent_executor = st.session_state.agent_executor
 
 # # Check if 'response_style' is in session state
-# if 'response_style' not in st.session_state:
-#     # If it doesn't exist, set a default response style
-#     st.session_state.response_style = "Humorous"  # Or any other default style you prefer
+if 'response_style' not in st.session_state:
+    # If it doesn't exist, set a default response style
+    st.session_state.response_style = "Humorous"  # Or any other default style you prefer
 
 # Retrieve the response style from the session state
 response_style = st.session_state.response_style
