@@ -559,7 +559,7 @@ if 'response_style' not in st.session_state:
 response_style = st.session_state.response_style
 
 # User selects a different response style
-response_style = st.radio("Select Response Style", ["Humorous", "Professional"], index=0)  # Set the default index
+response_style = st.radio("Select Response Style", ["Humorous", "Professional"])  # Set the default index
 
 # Save the updated response style in session state
 st.session_state.response_style = response_style
@@ -595,12 +595,12 @@ if 'agent_executor' not in st.session_state:
 else:
     agent_executor = st.session_state.agent_executor
 
-# Initialize chat history session within this block
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
+# # Initialize chat history session within this block
+# if 'chat_history' not in st.session_state:
+#     st.session_state.chat_history = []
 
-chat_history = st.session_state.chat_history
-
+# chat_history = st.session_state.chat_history
+chat_history=[]
 response_container = st.container()
 container = st.container()
 airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
