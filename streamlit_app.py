@@ -1,3 +1,5 @@
+
+
 from pydantic import BaseModel, Field
 # from pydantic.v1 import BaseModel, Field
 import os 
@@ -352,10 +354,10 @@ print("Response Style in Block:", st.session_state.response_style)
 #     st.session_state.response_style = "Professional"
 
 template = None
-# Initialize agent_executor and template based on the selected response style
-if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
-# if st.session_state.response_style == "Humorous":
-    template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
+
+def get_template(response_style):
+    if response_style == "Humorous":
+        return """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Humorous, emotional intelligent, creative, witty and engaging.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
     do not start with appointment related questions.
@@ -452,10 +454,8 @@ if 'agent_executor' not in st.session_state or st.session_state.response_style =
     now its time to store data.
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
-    
-# elif 'agent_executor' not in st.session_state or st.session_state.response_style == "Professional":    
-elif st.session_state.response_style == "Professional":
-    template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
+    elif response_style == "Professional":
+        return """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Persuvasive, creative, engaging, witty and professional.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
     do not start with appointment related questions.
@@ -553,44 +553,56 @@ elif st.session_state.response_style == "Professional":
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
 
-# st.session_state.template = template   
+# Check if response_style is in session state, if not set a default
+if 'response_style' not in st.session_state:
+    st.session_state.response_style = "Humorous"  # Set a default response style
+
+# Retrieve the response style from the session state
+response_style = st.session_state.response_style
+
+# User selects a different response style
+response_style = st.radio("Select Response Style", ["Humorous", "Professional"], index=0)  # Set the default index
+
+# Save the updated response style in session state
 st.session_state.response_style = response_style
 
-if template is not None:
-    print("Selected Template:", template)
-    details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
-    name = st.session_state.user_name
-    dealership_name = "Gosch Auto Group"
-    input_template = template.format(details=details, name=name, dealership_name=dealership_name)
-    print("Input Template:", input_template)
-  
-    system_message = SystemMessage(content=input_template)
+# Get the template based on the response style
+template = get_template(response_style)
 
-    prompt = OpenAIFunctionsAgent.create_prompt(
-        system_message=system_message,
-        extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
-    )
-    tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
-    agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
-    # agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-    #         return_generated_question=True)
-    # st.session_state.agent_executor = agent_executor
+# Print for debugging
+print("Selected Response Style:", response_style)
+print("Selected Template:", template)
 
-    if 'agent_executor' not in st.session_state:
-        agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-            return_generated_question=True)
-        st.session_state.agent_executor = agent_executor
-    else:
-        agent_executor = st.session_state.agent_executor
+# Assuming you have the necessary tools, llm, and other components
+details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
+name = st.session_state.user_name
+dealership_name = "Gosch Auto Group"
+input_template = template.format(details=details, name=name, dealership_name=dealership_name)
+print("Input Template:", input_template)
 
-    
-    # Initialize chat history session within this block
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
+st.session_state.chat_history.append({"role": "system", "content": input_template})
+system_message = SystemMessage(content=input_template)
 
-    chat_history = st.session_state.chat_history
-        
-# chat_history=[]
+prompt = OpenAIFunctionsAgent.create_prompt(
+    system_message=system_message,
+    extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
+)
+tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
+agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
+
+if 'agent_executor' not in st.session_state:
+    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+        return_generated_question=True)
+    st.session_state.agent_executor = agent_executor
+else:
+    agent_executor = st.session_state.agent_executor
+
+# Initialize chat history session within this block
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
+chat_history = st.session_state.chat_history
+
 response_container = st.container()
 container = st.container()
 airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
