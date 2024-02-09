@@ -585,10 +585,10 @@ agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
             return_generated_question=True)
 st.session_state.agent_executor = agent_executor
-if 'agent_executor' not in st.session_state:
-    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-            return_generated_question=True)
-    st.session_state.agent_executor = agent_executor
+# if 'agent_executor' not in st.session_state:
+#     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+#             return_generated_question=True)
+#     st.session_state.agent_executor = agent_executor
 
 # st.session_state.chat_history = chat_history
 # if 'chat_history' not in st.session_state:
