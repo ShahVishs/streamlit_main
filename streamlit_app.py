@@ -336,6 +336,7 @@ langchain.debug=True
 
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
 response_styles = {
     "professional": "Personable, Humorous, emotional intelligent, creative, witty and engaging.",
     "humorous": "Personable, Persuasive, creative, engaging, witty and professional.",
@@ -344,11 +345,8 @@ response_styles = {
 # Get user-selected response style
 selected_style = st.selectbox("Select Response Style:", list(response_styles.keys()))
 
-# Placeholder in the template for response style
-response_style_placeholder = "{response_style}"
-
-template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
-so follow instructions strictly and {response_style_placeholder}..
+template = """You are a customer care support executive based on your performance, and you will get a bonus and incentives. 
+So follow instructions strictly and {response_styles[selected_style]}.
 The name of the costumer is {name} and the dealership name is {dealership_name} and 
 do not start with appointment related questions.
 To ensure a consistent and effective response, please adhere to the following guidelines:
