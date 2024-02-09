@@ -587,9 +587,34 @@ prompt = OpenAIFunctionsAgent.create_prompt(
 )
 tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
-agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-        return_generated_question=True)
-st.session_state.agent_executor = agent_executor
+# agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+#         return_generated_question=True)
+# st.session_state.agent_executor = agent_executor
+
+# Check if agent_executor is not in session state or if the response_style has changed
+if 'agent_executor' not in st.session_state or st.session_state.agent_executor.response_style != response_style:
+    agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+            return_generated_question=True, response_style=response_style)
+    st.session_state.agent_executor = agent_executor
+else:
+    agent_executor = st.session_state.agent_executor
+
+# Initialize chat history session within this block
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
+chat_history = st.session_state.chat_history
+
+response_container = st.container()
+container = st.container()
+airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
+
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
+if 'user_name' not in st.session_state:
+    st.session_state.user_name = None
 # if 'agent_executor' not in st.session_state:
 #     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
 #         return_generated_question=True)
@@ -601,18 +626,18 @@ st.session_state.agent_executor = agent_executor
 # if 'chat_history' not in st.session_state:
 #     st.session_state.chat_history = []
 
-# chat_history = st.session_state.chat_history
-chat_history=[]
-response_container = st.container()
-container = st.container()
-airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
+# # chat_history = st.session_state.chat_history
+# chat_history=[]
+# response_container = st.container()
+# container = st.container()
+# airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
 
 
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
+# if 'chat_history' not in st.session_state:
+#     st.session_state.chat_history = []
 
-if 'user_name' not in st.session_state:
-    st.session_state.user_name = None
+# if 'user_name' not in st.session_state:
+#     st.session_state.user_name = None
 
     
 def save_chat_to_airtable(user_name, user_input, output):
