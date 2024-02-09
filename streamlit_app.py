@@ -340,8 +340,8 @@ response_style = st.radio("Select Response Style:", ["Professional", "Humorous"]
 print("Selected Response Style:", response_style)
 st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
-# if 'response_style' not in st.session_state:
-#     st.session_state.response_style = "Humorous"  # Default to professional style if not selected yet
+if 'response_style' not in st.session_state:
+    st.session_state.response_style = "Humorous"  
 
 # if 'response_style' not in st.session_state:
 #     st.session_state.response_style = "Humorous"  
