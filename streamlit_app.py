@@ -352,7 +352,7 @@ print("Response Style in Block:", st.session_state.response_style)
 # if 'agent_executor' not in st.session_state:
 #     agent_executor = None
 
-agent_executor = None
+# agent_executor = None
 # Initialize template outside the if-elif block
 template = None
 # Initialize agent_executor and template based on the selected response style
@@ -577,8 +577,8 @@ if template is not None:
         agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
             return_generated_question=True)
         st.session_state.agent_executor = agent_executor
-    # else:
-    #     agent_executor = st.session_state.agent_executor
+    else:
+        agent_executor = st.session_state.agent_executor
 
     
     # Initialize chat history session within this block
