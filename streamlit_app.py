@@ -450,7 +450,7 @@ details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week
 name = st.session_state.user_name
 dealership_name="Gosch Auto Group"
 # input_template = template.format(details=details,name=name,dealership_name=dealership_name)
-input_template = template.format(response_styles=response_style=response_styles[selected_style], details=details, name=name, dealership_name=dealership_name)
+input_template = template.format(response_style=response_styles[selected_style], details=details, name=name, dealership_name=dealership_name)
 # input_template = template.format(response_styles=response_styles, selected_style=selected_style, details=details, name=name, dealership_name=dealership_name)
 system_message = SystemMessage(content=input_template)
 
