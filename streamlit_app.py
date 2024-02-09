@@ -336,22 +336,7 @@ langchain.debug=True
 
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-# response_style = st.radio("Select Response Style:", ["Professional", "Humorous"])
-# print("Selected Response Style:", response_style)
-# st.session_state.response_style = response_style
 
-# # if 'response_style' not in st.session_state:
-# #     st.session_state.response_style = "Humorous"  
-
-# # if 'response_style' not in st.session_state or st.session_state.response_style != response_style:
-# #     st.session_state.response_style = response_style
-# print("Selected Response Style:", response_style)
-# print("Response Style in Block:", st.session_state.response_style)
-
-# # if 'response_style' not in st.session_state:
-# #     st.session_state.response_style = "Professional"
-
-# template = None
 
 def get_template(response_style):
     if response_style == "Humorous":
@@ -452,6 +437,8 @@ def get_template(response_style):
     now its time to store data.
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
+
+
     elif response_style == "Professional":
         return """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Persuvasive, creative, engaging, witty and professional.
@@ -551,6 +538,8 @@ def get_template(response_style):
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
 
+agent_executor = None
+
 # Check if response_style is in session state, if not set a default
 if 'response_style' not in st.session_state:
     st.session_state.response_style = "Professional"  # Set a default response style
@@ -586,50 +575,22 @@ prompt = OpenAIFunctionsAgent.create_prompt(
     extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
 )
 tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
+
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 
-# Check if 'agent_executor' is in session state
 if 'agent_executor' not in st.session_state:
-    # If it doesn't exist, create a new AgentExecutor object and save it to session state
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
             return_generated_question=True)
     st.session_state.agent_executor = agent_executor
 else:
-    # If it exists, retrieve it from session state
     agent_executor = st.session_state.agent_executor
 
-# # # Check if 'response_style' is in session state
-# if 'response_style' not in st.session_state:
-#     # If it doesn't exist, set a default response style
-#     st.session_state.response_style = "Humorous"  # Or any other default style you prefer
 
-# # Retrieve the response style from the session state
-# response_style = st.session_state.response_style
-
-
-# # Get the template based on the response style
-# template = get_template(response_style)
-
-# # Assuming you have the necessary tools, llm, and other components
-# details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
-# name = st.session_state.user_name
-# dealership_name = "Gosch Auto Group"
-# input_template = template.format(details=details, name=name, dealership_name=dealership_name)
-# print("Input Template:", input_template)
-
-# # Create SystemMessage and prompt
-# system_message = SystemMessage(content=input_template)
-# prompt = OpenAIFunctionsAgent.create_prompt(
-#     system_message=system_message,
-#     extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
-# )
-
-
-# # Initialize chat history session within this block
 # if 'chat_history' not in st.session_state:
 #     st.session_state.chat_history = []
 
 # chat_history = st.session_state.chat_history
+    
 chat_history=[]
 response_container = st.container()
 container = st.container()
@@ -637,29 +598,6 @@ airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_
 
 if 'user_name' not in st.session_state:
     st.session_state.user_name = None
-# if 'agent_executor' not in st.session_state:
-#     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-#         return_generated_question=True)
-#     st.session_state.agent_executor = agent_executor
-# else:
-#     agent_executor = st.session_state.agent_executor
-
-# # Initialize chat history session within this block
-# if 'chat_history' not in st.session_state:
-#     st.session_state.chat_history = []
-
-# # chat_history = st.session_state.chat_history
-# chat_history=[]
-# response_container = st.container()
-# container = st.container()
-# airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
-
-
-# if 'chat_history' not in st.session_state:
-#     st.session_state.chat_history = []
-
-# if 'user_name' not in st.session_state:
-#     st.session_state.user_name = None
 
     
 def save_chat_to_airtable(user_name, user_input, output):
