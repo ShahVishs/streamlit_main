@@ -597,9 +597,12 @@ else:
     # If it exists, retrieve it from session state
     agent_executor = st.session_state.agent_executor
 
-# Update the response style in the existing agent_executor if it has changed
-if agent_executor.response_style != response_style:
-    agent_executor.response_style = response_style
+    # Update the response style in the existing agent_executor if it has changed
+    if agent_executor.response_style != response_style:
+        agent_executor.response_style = response_style
+
+# Retrieve the updated response style from the agent_executor
+response_style = agent_executor.response_style
 
 # Retrieve the updated response style from the agent_executor
 response_style = agent_executor.response_style
