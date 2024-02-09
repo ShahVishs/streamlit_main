@@ -338,8 +338,8 @@ memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 response_styles = {
-    "professional": "Personable, Humorous, emotional intelligent, creative, witty and engaging.",
-    "humorous": "Personable, Persuasive, creative, engaging, witty and professional.",
+    "Professional": "Personable, Humorous, emotional intelligent, creative, witty and engaging.",
+    "Humorous": "Personable, Persuasive, creative, engaging, witty and professional.",
 }
 
 # Get user-selected response style
@@ -347,7 +347,7 @@ selected_style = st.selectbox("Select Response Style:", list(response_styles.key
 
 # Set default value if 'selected_style' is not assigned
 if not selected_style:
-    selected_style = "professional"
+    selected_style = "Professional"
     
 template = """You are a customer care support executive based on your performance, and you will get a bonus and incentives. 
 So follow instructions strictly and {response_style}.
