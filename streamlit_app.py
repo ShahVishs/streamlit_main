@@ -588,24 +588,24 @@ prompt = OpenAIFunctionsAgent.create_prompt(
 tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 
+# Check if 'agent_executor' is in session state
 if 'agent_executor' not in st.session_state:
     # If it doesn't exist, create a new AgentExecutor object and save it to session state
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-            return_generated_question=True, response_style=response_style)
+            return_generated_question=True)
     st.session_state.agent_executor = agent_executor
 else:
     # If it exists, retrieve it from session state
     agent_executor = st.session_state.agent_executor
 
-    # Update the response style in the existing agent_executor if it has changed
-    if agent_executor.response_style != response_style:
-        agent_executor.response_style = response_style
+# Check if 'response_style' is in session state
+if 'response_style' not in st.session_state:
+    # If it doesn't exist, set a default response style
+    st.session_state.response_style = "Humorous"  # Or any other default style you prefer
 
-# Retrieve the updated response style from the agent_executor
-response_style = agent_executor.response_style
+# Retrieve the response style from the session state
+response_style = st.session_state.response_style
 
-# Retrieve the updated response style from the agent_executor
-response_style = agent_executor.response_style
 
 # Get the template based on the response style
 template = get_template(response_style)
