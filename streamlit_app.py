@@ -363,8 +363,8 @@ print("Response Style in Block:", st.session_state.response_style)
 # Initialize template outside the if-elif block
 template = None
 # Initialize agent_executor and template based on the selected response style
-if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
-# if st.session_state.response_style == "Humorous":
+# if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
+if st.session_state.response_style == "Humorous":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Humorous, emotional intelligent, creative, witty and engaging.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
