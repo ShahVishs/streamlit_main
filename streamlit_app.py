@@ -340,8 +340,8 @@ response_style = st.radio("Select Response Style:", ["Professional", "Humorous"]
 print("Selected Response Style:", response_style)
 st.session_state.response_style = response_style
 
-if 'response_style' not in st.session_state:
-    st.session_state.response_style = "Humorous"  
+# if 'response_style' not in st.session_state:
+#     st.session_state.response_style = "Humorous"  
 
 # if 'response_style' not in st.session_state or st.session_state.response_style != response_style:
 #     st.session_state.response_style = response_style
@@ -353,8 +353,8 @@ print("Response Style in Block:", st.session_state.response_style)
 
 template = None
 # Initialize agent_executor and template based on the selected response style
-if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
-# if st.session_state.response_style == "Humorous":
+# if 'agent_executor' not in st.session_state or st.session_state.response_style == "Humorous":
+if st.session_state.response_style == "Humorous":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
     so follow instructions strictly and respond in Personable, Humorous, emotional intelligent, creative, witty and engaging.
     The name of the costumer is {name} and the dealership name is {dealership_name} and 
@@ -571,14 +571,16 @@ if template is not None:
     )
     tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
     agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
-    
-
-    if 'agent_executor' not in st.session_state:
-        agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
             return_generated_question=True)
-        st.session_state.agent_executor = agent_executor
-    else:
-        agent_executor = st.session_state.agent_executor
+    st.session_state.agent_executor = agent_executor
+
+    # if 'agent_executor' not in st.session_state:
+    #     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+    #         return_generated_question=True)
+    #     st.session_state.agent_executor = agent_executor
+    # else:
+    #     agent_executor = st.session_state.agent_executor
 
     
     # Initialize chat history session within this block
