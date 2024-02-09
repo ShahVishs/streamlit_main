@@ -344,11 +344,11 @@ st.session_state.response_style = response_style
 #     st.session_state.response_style = "Humorous"  # Default to professional style if not selected yet
 
 if 'response_style' not in st.session_state:
-    st.session_state.response_style = "Humorous"  # Default to professional style if not selected yet
-else:
-    st.session_state.response_style = "Professional" 
+    st.session_state.response_style = "Humorous"  
+# else:
+#     st.session_state.response_style = "Professional" 
 
-
+print("Selected Response Style:", response_style)
 print("Response Style in Block:", st.session_state.response_style)
 
 # if 'response_style' not in st.session_state:
