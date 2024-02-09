@@ -341,15 +341,16 @@ print("Selected Response Style:", response_style)
 st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
 if 'response_style' not in st.session_state:
-    st.session_state.response_style = "Professional"  # Default to professional style if not selected yet
+    st.session_state.response_style = "Humorous"  # Default to professional style if not selected yet
 print("Response Style in Block:", st.session_state.response_style)
+
 # if 'response_style' not in st.session_state:
 #     st.session_state.response_style = "Professional"
 # else:
 #     st.session_state.response_style = response_style
 # Initialize agent_executor outside the if-elif block
-# if 'agent_executor' not in st.session_state:
-#     agent_executor = None
+if 'agent_executor' not in st.session_state:
+    agent_executor = None
 
 
 # Initialize template outside the if-elif block
@@ -454,6 +455,7 @@ if st.session_state.response_style == "Humorous":
     now its time to store data.
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
+    
 # elif 'agent_executor' not in st.session_state or st.session_state.response_style == "Professional":    
 elif st.session_state.response_style == "Professional":
     template = """You are an costumer care support exectutive baesd on your performance you will get bonus and incentives 
