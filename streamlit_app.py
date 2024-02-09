@@ -607,25 +607,23 @@ if 'response_style' not in st.session_state:
 response_style = st.session_state.response_style
 
 
-# Get the template based on the response style
-template = get_template(response_style)
+# # Get the template based on the response style
+# template = get_template(response_style)
 
-# Assuming you have the necessary tools, llm, and other components
-details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
-name = st.session_state.user_name
-dealership_name = "Gosch Auto Group"
-input_template = template.format(details=details, name=name, dealership_name=dealership_name)
-print("Input Template:", input_template)
+# # Assuming you have the necessary tools, llm, and other components
+# details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
+# name = st.session_state.user_name
+# dealership_name = "Gosch Auto Group"
+# input_template = template.format(details=details, name=name, dealership_name=dealership_name)
+# print("Input Template:", input_template)
 
-# Create SystemMessage and prompt
-system_message = SystemMessage(content=input_template)
-prompt = OpenAIFunctionsAgent.create_prompt(
-    system_message=system_message,
-    extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
-)
+# # Create SystemMessage and prompt
+# system_message = SystemMessage(content=input_template)
+# prompt = OpenAIFunctionsAgent.create_prompt(
+#     system_message=system_message,
+#     extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
+# )
 
-# Update the prompt in the existing agent_executor
-agent_executor.prompt = prompt
 
 # Initialize chat history session within this block
 if 'chat_history' not in st.session_state:
@@ -635,6 +633,7 @@ chat_history = st.session_state.chat_history
 
 response_container = st.container()
 container = st.container()
+airtable = Airtable(AIRTABLE_BASE_ID, AIRTABLE_TABLE_NAME, api_key=airtable_api_key)
 
 if 'user_name' not in st.session_state:
     st.session_state.user_name = None
