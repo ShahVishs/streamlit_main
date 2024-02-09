@@ -340,14 +340,15 @@ response_style = st.radio("Select Response Style:", ["Professional", "Humorous"]
 print("Selected Response Style:", response_style)
 st.session_state.response_style = response_style
 # Use the selected style to generate the appropriate template
-if 'response_style' not in st.session_state:
-    st.session_state.response_style = "Humorous"  
+# if 'response_style' not in st.session_state:
+#     st.session_state.response_style = "Humorous"  
 
 # if 'response_style' not in st.session_state:
 #     st.session_state.response_style = "Humorous"  
 # else:
 #     st.session_state.response_style = "Professional" 
-
+if 'response_style' not in st.session_state or st.session_state.response_style != response_style:
+    st.session_state.response_style = response_style
 print("Selected Response Style:", response_style)
 print("Response Style in Block:", st.session_state.response_style)
 
@@ -563,6 +564,8 @@ elif st.session_state.response_style == "Professional":
     Use this tool "store_appointment_data" to store the data.
     If any of the above details missing you can enquire about that."""
 # st.session_state.template = template   
+st.session_state.response_style = response_style
+
 if template is not None:
     print("Selected Template:", template)
     details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
