@@ -343,8 +343,8 @@ response_styles = {
 }
 
 # Get user-selected response style
-selected_style = st.selectbox("Select Response Style:", list(response_styles.keys()))
-
+# selected_style = st.selectbox("Select Response Style:", list(response_styles.keys()))
+selected_style = st.selectbox("Select Response Style:", list(response_styles.keys()), default="professional")
 template = """You are a customer care support executive based on your performance, and you will get a bonus and incentives. 
 So follow instructions strictly and {response_styles[selected_style]}.
 The name of the costumer is {name} and the dealership name is {dealership_name} and 
