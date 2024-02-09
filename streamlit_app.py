@@ -589,11 +589,40 @@ tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details,
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 
 if 'agent_executor' not in st.session_state:
+    # If it doesn't exist, create a new AgentExecutor object and save it to session state
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-            return_generated_question=True)
+            return_generated_question=True, response_style=response_style)
     st.session_state.agent_executor = agent_executor
 else:
+    # If it exists, retrieve it from session state
     agent_executor = st.session_state.agent_executor
+
+# Update the response style in the existing agent_executor if it has changed
+if agent_executor.response_style != response_style:
+    agent_executor.response_style = response_style
+
+# Retrieve the updated response style from the agent_executor
+response_style = agent_executor.response_style
+
+# Get the template based on the response style
+template = get_template(response_style)
+
+# Assuming you have the necessary tools, llm, and other components
+details = "Today's date is " + todays_date + " in mm-dd-yyyy format, and today's weekday is " + day_of_the_week + "."
+name = st.session_state.user_name
+dealership_name = "Gosch Auto Group"
+input_template = template.format(details=details, name=name, dealership_name=dealership_name)
+print("Input Template:", input_template)
+
+# Create SystemMessage and prompt
+system_message = SystemMessage(content=input_template)
+prompt = OpenAIFunctionsAgent.create_prompt(
+    system_message=system_message,
+    extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
+)
+
+# Update the prompt in the existing agent_executor
+agent_executor.prompt = prompt
 
 # Initialize chat history session within this block
 if 'chat_history' not in st.session_state:
@@ -603,9 +632,6 @@ chat_history = st.session_state.chat_history
 
 response_container = st.container()
 container = st.container()
-
-# if 'chat_history' not in st.session_state:
-#     st.session_state.chat_history = []
 
 if 'user_name' not in st.session_state:
     st.session_state.user_name = None
