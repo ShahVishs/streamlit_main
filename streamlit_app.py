@@ -572,16 +572,16 @@ if template is not None:
     )
     tools = [tool1, tool2, tool3, get_car_details_from_vin, get_appointment_details, store_appointment_data]
     agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
-            return_generated_question=True)
-    st.session_state.agent_executor = agent_executor
-
-    # if 'agent_executor' not in st.session_state:
-    #     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+    # agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
     #         return_generated_question=True)
-    #     st.session_state.agent_executor = agent_executor
-    # else:
-    #     agent_executor = st.session_state.agent_executor
+    # st.session_state.agent_executor = agent_executor
+
+    if 'agent_executor' not in st.session_state:
+        agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
+            return_generated_question=True)
+        st.session_state.agent_executor = agent_executor
+    else:
+        agent_executor = st.session_state.agent_executor
 
     
     # Initialize chat history session within this block
