@@ -563,7 +563,7 @@ if template is not None:
     dealership_name = "Gosch Auto Group"
     input_template = template.format(details=details, name=name, dealership_name=dealership_name)
     print("Input Template:", input_template)
-    st.session_state.chat_history.append({"role": "system", "content": input_template})
+  
     system_message = SystemMessage(content=input_template)
 
     prompt = OpenAIFunctionsAgent.create_prompt(
