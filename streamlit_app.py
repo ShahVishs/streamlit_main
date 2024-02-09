@@ -350,7 +350,7 @@ if not selected_style:
     selected_style = "professional"
     
 template = """You are a customer care support executive based on your performance, and you will get a bonus and incentives. 
-So follow instructions strictly and {response_styles}{selected_style}.
+So follow instructions strictly and {response_style}.
 The name of the costumer is {name} and the dealership name is {dealership_name} and 
 do not start with appointment related questions.
 To ensure a consistent and effective response, please adhere to the following guidelines:
@@ -450,8 +450,8 @@ details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week
 name = st.session_state.user_name
 dealership_name="Gosch Auto Group"
 # input_template = template.format(details=details,name=name,dealership_name=dealership_name)
-# input_template = template.format(response_styles=response_styles, details=details, name=name, dealership_name=dealership_name)
-input_template = template.format(response_styles=response_styles, selected_style=selected_style, details=details, name=name, dealership_name=dealership_name)
+input_template = template.format(response_styles=response_style=response_styles[selected_style], details=details, name=name, dealership_name=dealership_name)
+# input_template = template.format(response_styles=response_styles, selected_style=selected_style, details=details, name=name, dealership_name=dealership_name)
 system_message = SystemMessage(content=input_template)
 
 prompt = OpenAIFunctionsAgent.create_prompt(
