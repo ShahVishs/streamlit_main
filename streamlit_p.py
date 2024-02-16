@@ -481,7 +481,20 @@ def conversational_chat(user_input, user_name):
                         
 #                     except Exception as e:
 #                         st.warning(f"Error displaying image: {e}")
+def convert_markdown_links_to_html_images(text):
+    # Regular expression to match markdown image format ![alt text](URL)
+    pattern = r'\[([^\]]+)\]\(([^)]+)\)'
 
+    # Function to replace each match with an HTML img element
+    def replace_with_img(match):
+        alt_text = match.group(1)
+        url = match.group(2)
+        return f'<img src="{url}" alt="{alt_text}">'
+
+    # Replace all occurrences of markdown image links with HTML img tags
+    html_text = re.sub(pattern, replace_with_img, text)
+    return html_text
+    
 output = ""
 vin_numbers = []  # List to store VINs for each car option
 is_new_or_used_query = False  # Flag to identify if the user queried about new or used cars
@@ -522,7 +535,7 @@ with container:
                     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
                     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
                     f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_markdown_links_to_html_images(answer)}</span>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
