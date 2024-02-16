@@ -221,13 +221,44 @@ class AppointmentInput(BaseModel):
     company_id: int = Field(..., description="company ID")
     location_id: int = Field(..., description="location of dealership")
         
+# @tool
+# def get_appointment_details(requested_appointment_date: str, company_id: int, location_id: int) -> dict:
+# # def get_appointment_details(requested_appointment_date: str):
+#     """Fetch appointment details for the given date."""
+    
+#     BASE_URL = "https://webapp-api-green.prod.funnelai.com/test/appointment"
+    
+#     # Make the request
+#     payload = {
+#         "requested_appointment_date": requested_appointment_date,
+#         "company_id": company_id,
+#         "location_id": location_id
+#     }
+
+#     response = requests.get(BASE_URL, json=payload)
+    
+#     # Check if the request was successful
+#     if response.status_code == 200:
+#         # Parse the JSON response
+#         result = response.json()
+        
+#         # Check if the date is present in the response
+#         if requested_appointment_date in result and result[requested_appointment_date] is not None:
+#             # Extract the appointment details for the given date
+#             appointments = result[requested_appointment_date]
+#             return appointments
+#         else:
+#             # Handle the case when the date is not present in the response or is None
+#             return {requested_appointment_date: "Not available"}
+#     else:
+#         # Handle the case when the request was not successful
+#         return {"error": "Failed to retrieve appointment details"}
 @tool
 def get_appointment_details(requested_appointment_date: str, company_id: int, location_id: int) -> dict:
-# def get_appointment_details(requested_appointment_date: str):
     """Fetch appointment details for the given date."""
-    
+
     BASE_URL = "https://webapp-api-green.prod.funnelai.com/test/appointment"
-    
+
     # Make the request
     payload = {
         "requested_appointment_date": requested_appointment_date,
@@ -236,24 +267,24 @@ def get_appointment_details(requested_appointment_date: str, company_id: int, lo
     }
 
     response = requests.get(BASE_URL, json=payload)
-    
+
     # Check if the request was successful
     if response.status_code == 200:
-        # Parse the JSON response
-        result = response.json()
-        
-        # Check if the date is present in the response
-        if requested_appointment_date in result and result[requested_appointment_date] is not None:
-            # Extract the appointment details for the given date
-            appointments = result[requested_appointment_date]
-            return appointments
-        else:
-            # Handle the case when the date is not present in the response or is None
-            return {requested_appointment_date: "Not available"}
+        try:
+            # Try to parse the JSON response
+            result = response.json()
+
+            # Check if the response is empty or not in the expected format
+            if isinstance(result, dict) and requested_appointment_date in result:
+                appointments = result[requested_appointment_date]
+                return appointments
+            else:
+                return {"error": "Invalid response format"}
+        except requests.exceptions.JSONDecodeError:
+            return {"error": "Failed to decode JSON response"}
     else:
         # Handle the case when the request was not successful
-        return {"error": "Failed to retrieve appointment details"}
-
+        return {"error": f"Failed to retrieve appointment details. Status code: {response.status_code}"}
 
 
 
