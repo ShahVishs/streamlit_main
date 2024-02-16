@@ -316,11 +316,13 @@ def create_appointment_link(name: str,phone: str,email: str ,make: str,model: st
 
     # Make the request
     response = requests.post(api_url, json=data_dict)
-    print(response.status_code)
-    print("___json___")
-    print(response.json)
-    print("___text___")
-    print(response.text)
+    print("Response status code:", response.status_code)
+    print("Response content:", response.content)
+    # print(response.status_code)
+    # print("___json___")
+    # print(response.json)
+    # print("___text___")
+    # print(response.text)
 #      response = requests.patch(api_url, json=data_dict)
    
     # Check the response status code
