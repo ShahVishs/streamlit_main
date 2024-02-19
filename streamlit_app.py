@@ -624,11 +624,11 @@ def convert_links(text):
             if match_url:
                 dynamic_url = match_url.group()
                 return f'<a href="{dynamic_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        #     else:
-        #         # If no dynamic URL pattern found, use the image URL
-        #         return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        # else:
-        #     return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+            else:
+                # If no dynamic URL pattern found, use the image URL
+                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+        else:
+            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
