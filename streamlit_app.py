@@ -762,7 +762,7 @@ with container:
                 #     f'</div>',
                 #     unsafe_allow_html=True
                 # )
-                st.markdown( convert_links(answer))
+                st.markdown( answer)
                    
         if st.session_state.user_name:
             try:
