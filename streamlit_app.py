@@ -131,12 +131,6 @@ embeddings = OpenAIEmbeddings()
 vectorstore_1 = FAISS.from_documents(docs_1, embeddings)
 retriever_1 = vectorstore_1.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.5,"k": 8})
 
-# file_2 = r'short_car_details.csv'
-# loader_2 = CSVLoader(file_path=file_2)
-# docs_2 = loader_2.load()
-# num_ret=len(docs_2)
-# vectordb_2 = FAISS.from_documents(docs_2, embeddings)
-# retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
 
 file_3 = r'csvjson.json'
 loader_3 = JSONLoader(file_path=file_3, jq_schema='.', text_content=False)
@@ -152,22 +146,12 @@ tool1 = create_retriever_tool(
      or car features and new or used car as a single argument for example new toeing car or new jeep cherokee  and also use for getting images based on make and model "
 ) 
 
-# tool2 = create_retriever_tool(
-#     retriever_2, 
-#      "Availability_check",
-#      "use to check availabilty of car, Input is car make or model or both"
-# )
+
 tool3 = create_retriever_tool(
     retriever_3, 
      "business_details",
      "Searches and returns documents related to business working days and hours, location and address details."
 )
-
-# tool4 = create_retriever_tool(
-#     retriever_4, 
-#      "image_details",
-#      "Use to search for vehicle information and images based on make and model."
-# )
 
 
 
@@ -411,11 +395,6 @@ def confirm_appointment(name: str,phone: str,email: str ,make: str,model: str,ye
         print(response.text)  # Print the response content for debugging
 
 
-
-
-
-
-
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
 AIRTABLE_BASE_ID = "appN324U6FsVFVmx2"  
@@ -557,45 +536,7 @@ Respond in a polite US english.
 
 **strictly answer only from the  content provided to you dont makeup answers.**"""
 
-# {details} use these details and find appointment date and check for appointment availabity 
-# using "get_appointment_details" tool for that specific day or date and time that costumer has requested for.
-# strictly input to "get_appointment_details" tool should be "mm-dd-yyyy" format.
-# Step 5: Appointment Timing Uncertain for Customer 
-# In case where the customer is uncertain about his preferred date and time for scheduling an appointment, automatically Use 
-# "create_appointment_link" tool, it will Generate a link and we provide it to the customer, allowing them the 
-# flexibility to schedule at their convenience whenever they are ready. Never ask permission from costumer to create a link. 
 
-# Ater providing car details ask costumer to book appointment for test drive.
-
-# If cosstumer is ready to book an appointment follow below steps.
-
-# step-1 Verify If we know Customer Phone Number. If not, inquire about the customer's phone number.
-
-# step-2 Ask for Appointment date:
-
-# Once you have the customer's phone number, ask for the desired appointment date and time.
-
-# Step 3: Verify Appointment Availability and book appointment:
-
-# {details} use this details and Utilize the "get_appointment_details" tool to assess the availability of the appointment time. 
-# If the requested time is available, proceed to confirm the appointment using the "confirm_appointment" tool. 
-# In the event that the preferred date and time are not available, recommend alternative time slots that align closely
-# with the customer's preferences.
-
-# Step 5:
-# Flexible Appointment Scheduling for Uncertain Dates
-
-# If the customer is uncertain about the date and time for an appointment, "create_appointment_link" 
-# tool without explicitly confirming with the customer. 
-# Provide them with a clickable link to book an appointment: [book now](Appointment Link).
-
-# {details} use these details and find appointment date and check for appointment availabity 
-# using "get_appointment_details" tool for that specific day or date and time that costumer has requested for.
-# strictly input to "get_appointment_details" tool should be "mm-dd-yyyy" format.
-# Step 5: Appointment Timing Uncertain for Customer 
-# In case where the customer is uncertain about his preferred date and time for scheduling an appointment, automatically Use 
-# "create_appointment_link" tool, it will Generate a link and we provide it to the customer, allowing them the 
-# flexibility to schedule at their convenience whenever they are ready. Never ask permission from costumer to create a link. 
 details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week day is "+day_of_the_week+"."
 name = st.session_state.user_name
 dealership_name="Gosch Chevrolet"
@@ -651,188 +592,19 @@ def conversational_chat(user_input, user_name):
     
     return output
 
-# def convert_text_to_html_images(text):
-#     # Pattern to match the specific format
-#     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
-    
-#     # Function to replace each match with an HTML string
-#     def replace_with_html(match):
-#         image_url = match.group(1).strip()
-#         car_details_url = match.group(2).strip()
-#         return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
-    
-#     # Replace all occurrences in the text
-#     html_text = re.sub(pattern, replace_with_html, text)
-#     return html_text
-
-# def convert_text_to_html_images(text):
-#     # Pattern to match the specific format
-#     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
-    
-#     # Function to replace each match with an HTML string
-#     def replace_with_html(match):
-#         image_url = match.group(1).strip()
-#         car_details_url = match.group(2).strip()
-        
-#         # Extract car_details_link from the "explore" link
-#         explore_link_match = re.search(r'explore ([^\s]+)', text)
-#         if explore_link_match:
-#             explore_link = explore_link_match.group(1).strip()
-#         else:
-#             explore_link = "#"  # If "explore" link is not found, set a default link
-        
-#         # Make the image clickable with a link to the explore_link
-#         return f'<a href="{explore_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
-    
-#     # Replace all occurrences in the text
-#     html_text = re.sub(pattern, replace_with_html, text)
-#     return html_text
-
-# def convert_text_to_html_images(text):
-#     # Pattern to match the specific format
-#     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
-    
-#     # Function to replace each match with an HTML string
-#     def replace_with_html(match):
-#         image_url = match.group(1).strip()
-#         car_details_url = match.group(2).strip()
-        
-#         # Extract car_details_link from the "explore" link
-#         explore_link_match = re.search(r'explore ([^\s]+) - Image List', text)
-#         if explore_link_match:
-#             explore_link = explore_link_match.group(1).strip()
-#         else:
-#             explore_link = "#"  # If "explore" link is not found, set a default link
-        
-#         # Make the image clickable with a link to the explore_link
-#         return f'<a href="{explore_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
-    
-#     # Replace all occurrences in the text
-#     html_text = re.sub(pattern, replace_with_html, text)
-#     return html_text
-
-
-# def convert_links(text):
-    
-#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-#     # Function to replace each match
-#     def replace_with_tag(match):
-#         prefix = match.group(0)[0]  # Check if it's an image or a link
-#         alt_or_text = match.group(1)
-#         url = match.group(2)
-#         # Check for common image file extensions
-#         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-#             return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-
-#         else:
-#             return f'<a href="{url}">{alt_or_text}</a>'
-
-#     # Replace all occurrences
-#     html_text = re.sub(pattern, replace_with_tag, text)
-
-#     return html_text    
-# def convert_text_to_html_images(text):
-#     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
-    
-#     def replace_with_html(match):
-#         image_url = match.group(1).strip()
-#         car_details_url = match.group(2).strip()
-#         return f'<a href="{car_details_url}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
-
-#     html_text = re.sub(pattern, replace_with_html, text)
-#     return html_text
-
-
-# def convert_links(text):
-    
-#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-#     # Function to replace each match
-#     def replace_with_tag(match):
-#         prefix = match.group(0)[0]  # Check if it's an image or a link
-#         alt_or_text = match.group(1)
-#         url = match.group(2)
-#         # Check for common image file extensions
-#         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-#             return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-
-#         else:
-#             return f'<a href="{url}">{alt_or_text}</a>'
-
-#     # Replace all occurrences
-#     html_text = re.sub(pattern, replace_with_tag, text)
-
-#     return html_text    
-# def convert_links(text):
-#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-#     # Function to replace each match
-#     def replace_with_tag(match):
-#         prefix = match.group(0)[0]  # Check if it's an image or a link
-#         alt_or_text = match.group(1)
-#         url = match.group(2)
-
-#         # Check if the link starts with the specified format
-#         if url.startswith("https://www.goschchevy.com/inventory/"):
-#             vin_url = url
-#             return f'<a href="{vin_url}"><img src="{vin_url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-#         else:
-#             # Check for common image file extensions
-#             if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-#                 return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-#             else:
-#                 return f'<a href="{url}">{alt_or_text}</a>'
-
-#     # Replace all occurrences
-#     html_text = re.sub(pattern, replace_with_tag, text)
-
-#     return html_text
-# def convert_links(text):
-#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-#     # Function to replace each match
-#     def replace_with_tag(match):
-#         prefix = match.group(0)[0]  # Check if it's an image or a link
-#         alt_or_text = match.group(1)
-#         url = match.group(2)
-
-#         # Check for common image file extensions
-#         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-#             # Extract VIN from the URL
-#             vin_match = re.search(r'/inventory/([^/]+)/', url)
-#             if vin_match:
-#                 vin = vin_match.group(1)
-#                 vin_page_url = f'https://www.goschchevy.com/inventory/{vin}/'
-#                 return f'<a href="{vin_page_url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-#             else:
-#                 return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-
-#         else:
-#             return f'<a href="{url}">{alt_or_text}</a>'
-
-#     # Replace all occurrences
-#     html_text = re.sub(pattern, replace_with_tag, text)
-
-#     return html_text
-
 def convert_text_to_html_images(text):
     # Pattern to match the specific format
     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
     
     # Function to replace each match with an HTML string
-    # def replace_with_html(match):
-    #     image_url = match.group(1).strip()
-    #     car_details_url = match.group(2).strip()
-    #     return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     def replace_with_html(match):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
-        return f'<a href="{car_details_url}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+       # Construct the VDP link based on the car identifier
+        vdp_link = f"https://www.goschchevy.com/inventory/{car_details_url}/"
+        
+        return f'<a href="{vdp_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+    
     # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
@@ -857,34 +629,7 @@ def convert_links(text):
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
 
-    return html_text  
-    
-# def convert_links(text):
- 
-#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-#     # Function to replace each match
-#     def replace_with_tag(match):
-#         prefix = match.group(0)[0]  # Check if it's an image or a link
-#         alt_or_text = match.group(1)
-#         url = match.group(2)
-
-#         # Check if the URL matches the desired pattern
-#         if re.match(r'https://www\.goschchevy\.com/inventory/\w{16}/', url):
-#             # Wrap the image with an anchor tag linking to the specific URL
-#             return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-#         else:
-#             # If the URL doesn't match the pattern, handle it as a regular link
-#             if prefix == '!':
-#                 return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-#             else:
-#                 return f'<a href="{url}">{alt_or_text}</a>'
-
-#     # Replace all occurrences
-#     html_text = re.sub(pattern, replace_with_tag, text)
-
-#     return html_text
+    return html_text    
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -906,15 +651,13 @@ with container:
                 st.image("icon-1024.png", width=50)
             with col2:
                 st.markdown(
-                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-                # st.markdown( {convert_links(answer)})
-                   
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
         if st.session_state.user_name:
             try:
                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
