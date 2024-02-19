@@ -745,6 +745,8 @@ def conversational_chat(user_input, user_name):
 #     return html_text
 
 def convert_text_to_html_images(text):
+    import re
+    
     # Pattern to match the specific format
     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
     
@@ -752,12 +754,7 @@ def convert_text_to_html_images(text):
     def replace_with_html(match):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
-        
-        # Check if the car_details_url matches the specific link
-        if car_details_url == "https://www.goschchevy.com/inventory/2GCUDDED2R1175604/":
-            return f'<a href="{car_details_url}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
-        else:
-            return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+        return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     
     # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
