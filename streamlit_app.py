@@ -606,6 +606,16 @@ def convert_text_to_html_images(text):
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
     
+def extract_dynamic_url_from_text(text):
+    # Regular expression pattern to match the dynamic URL
+    dynamic_url_pattern = r'https://www\.goschchevy\.com/inventory/[a-zA-Z0-9]+/'
+    
+    match_url = re.search(dynamic_url_pattern, text)
+    if match_url:
+        return match_url.group()
+    else:
+        return None
+    
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
@@ -618,14 +628,12 @@ def convert_links(text):
         
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extract the dynamic URL pattern from the answer text
-            dynamic_url_pattern = r'https://www\.goschchevy\.com/inventory/[a-zA-Z0-9]+/'
-            match_url = re.search(dynamic_url_pattern, text)
-            if match_url:
-                dynamic_url = match_url.group()
+            # Extract the dynamic URL from the answer text
+            dynamic_url = extract_dynamic_url_from_text(text)
+            if dynamic_url:
                 return f'<a href="{dynamic_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
-                # If no dynamic URL pattern found, use the image URL
+                # If no dynamic URL found, use the image URL
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
