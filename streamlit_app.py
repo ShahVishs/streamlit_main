@@ -698,7 +698,7 @@ def convert_text_to_html_images(text):
         car_details_url = match.group(2).strip()
         
         # Extract car_details_link from the "explore" link
-        explore_link_match = re.search(r'explore ([^\s]+) - Image', text)
+        explore_link_match = re.search(r'explore ([^\s]+) - Image List', text)
         if explore_link_match:
             explore_link = explore_link_match.group(1).strip()
         else:
@@ -754,15 +754,15 @@ with container:
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
-                # st.markdown(
-                #     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-                #     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                #     f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                #     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
-                #     f'</div>',
-                #     unsafe_allow_html=True
-                # )
-                st.markdown( {convert_links(answer)})
+                st.markdown(
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+                # st.markdown( {convert_links(answer)})
                    
         if st.session_state.user_name:
             try:
