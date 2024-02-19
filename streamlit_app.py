@@ -619,7 +619,7 @@ def convert_links(text):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Set the dynamic URL directly
-            dynamic_url = car_details_url
+            dynamic_url = "car_details_url"
             return f'<a href="{dynamic_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}">{alt_or_text}</a>'
