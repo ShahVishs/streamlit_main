@@ -599,10 +599,9 @@ def convert_text_to_html_images(text):
     # Function to replace each match with an HTML string
     def replace_with_html(match):
         image_url = match.group(1).strip()
-        car_details_url = match.group(2).strip()
-       # Construct the VDP link based on the car identifier
-        vdp_link = f"https://www.goschchevy.com/inventory/{car_details_url}/"
-        
+        vin = match.group(2).strip()  # Assuming VIN is the car identifier
+        # Construct the VDP link based on the VIN
+        vdp_link = f"https://www.goschchevy.com/inventory/{vin}/"
         return f'<a href="{vdp_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     
     # Replace all occurrences in the text
