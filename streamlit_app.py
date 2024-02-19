@@ -617,7 +617,7 @@ def convert_links(text):
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+            return f'<img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/>'
         else:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
@@ -650,17 +650,16 @@ with container:
                 
                 # Add redirection links for each URL
                 for url in urls:
-                    answer = answer.replace(url, f'<a href="{url}" target="_blank">{url}</a>')
-
-                # st.markdown(
-                #     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-                #     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                #     f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                #     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
-                #     f'</div>',
-                #     unsafe_allow_html=True
-                # )
-                st.markdown(convert_links(answer))
+                    answer = answer.replace(url, f'{convert_links(url)}')  # Use convert_links to handle the URL
+                    
+                st.markdown(
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
                   
                 
         # if st.session_state.user_name:
