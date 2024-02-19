@@ -594,7 +594,7 @@ def conversational_chat(user_input, user_name):
 
 def convert_text_to_html_images(text):
     # Pattern to match the specific format
-    pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
+    pattern = r"image_url:(.+?), car_details_url:(.+?)(?=\s|$)"
     
     # Function to replace each match with an HTML string
     def replace_with_html(match):
