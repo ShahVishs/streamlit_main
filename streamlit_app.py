@@ -606,7 +606,6 @@ def convert_text_to_html_images(text):
     return html_text
     
 def convert_links(text):
-    
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
@@ -615,17 +614,17 @@ def convert_links(text):
         prefix = match.group(0)[0]  # Check if it's an image or a link
         alt_or_text = match.group(1)
         url = match.group(2)
+
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-
+            return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
-            return f'<a href="{url}">{alt_or_text}</a>'
+            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
     # Replace all occurrences
-    html_text = re.sub(pattern, replace_with_tag, text)
+    html_text = re.sub(pattern, replace_with_tag, text, flags=re.DOTALL)  # Add re.DOTALL to handle newlines in the pattern
 
-    return html_text    
+    return html_text
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -646,14 +645,21 @@ with container:
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
+                # Extract URLs from the answer
+                urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', answer)
+                
+                # Add redirection links for each URL
+                for url in urls:
+                    answer = answer.replace(url, f'<a href="{url}" target="_blank">{url}</a>')
+
                 st.markdown(
-                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
         # if st.session_state.user_name:
         #     try:
         #         save_chat_to_airtable(st.session_state.user_name, user_input, output)
