@@ -607,26 +607,33 @@ def convert_text_to_html_images(text):
     return html_text
     
 def convert_links(text):
-    
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
     # Function to replace each match
     def replace_with_tag(match):
-        prefix = match.group(0)[0]  # Check if it's an image or a link
         alt_or_text = match.group(1)
         url = match.group(2)
-        # Check for common image file extensions
-        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-
-        else:
-            return f'<a href="{url}">{alt_or_text}</a>'
+        return f'<a href="{url}">{alt_or_text}</a>'
 
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
 
-    return html_text    
+    return html_text
+
+def extract_image_and_link(text):
+    # Pattern to match the specific format
+    pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
+
+    # Find the first occurrence
+    match = re.search(pattern, text)
+    if match:
+        image_url = match.group(1).strip()
+        car_details_url = match.group(2).strip()
+        return image_url, car_details_url
+    else:
+        return None, None
+
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -640,6 +647,7 @@ with container:
 
     if submit_button and user_input:
         output = conversational_chat(user_input, st.session_state.user_name)
+        
     with response_container:
         for i, (query, answer) in enumerate(st.session_state.chat_history):
             message(query, is_user=True, key=f"{i}_user", avatar_style="thumbs")
@@ -647,11 +655,22 @@ with container:
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
-                st.markdown(
+                image_url, car_details_url = extract_image_and_link(answer)
+                if image_url:
+                    st.markdown(
                         f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
                         f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
                         f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_text_to_html_images(answer)}</span>'
+                        f'<a href="{car_details_url}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
                         f'</div>',
                         unsafe_allow_html=True
                     )
