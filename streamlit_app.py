@@ -601,13 +601,11 @@ def convert_text_to_html_images(text):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
         
-        # Construct the VDP link based on the car details URL
+        # Construct the VDP link based on the car identifier
         vdp_link = f"https://www.goschchevy.com/inventory/{car_details_url}/"
         
-        # Generate HTML for the link with the image inside
-        link_html = f'<a href="{vdp_link}" target="_blank">'
-        link_html += f'<img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/>'
-        link_html += '</a>'
+        # Generate HTML for the link with the image embedded
+        link_html = f'<a href="{vdp_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
         
         return link_html
     
