@@ -607,10 +607,10 @@ def convert_text_to_html_images(text):
     return html_text
     
 def extract_dynamic_url_from_text(text):
-    # Regular expression pattern to match the dynamic URL associated with "explore"
-    dynamic_url_pattern = r'explore\s*(https?://\S+)'
+    # Regular expression pattern to match the "explore" link and extract the URL
+    explore_url_pattern = r'explore ([^\s]+)'
     
-    match_url = re.search(dynamic_url_pattern, text)
+    match_url = re.search(explore_url_pattern, text)
     if match_url:
         return match_url.group(1)
     else:
@@ -628,12 +628,12 @@ def convert_links(text):
         
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extract the dynamic URL from the answer text
+            # Extract the dynamic URL from the "explore" link in the answer text
             dynamic_url = extract_dynamic_url_from_text(text)
             if dynamic_url:
                 return f'<a href="{dynamic_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
-                # If no dynamic URL found, use the image URL
+                # If no "explore" link found, use the image URL
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
