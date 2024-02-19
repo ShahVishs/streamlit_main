@@ -673,6 +673,7 @@ def convert_text_to_html_images(text):
     def replace_with_html(match):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
+        # Make the image clickable with a link to car_details_url
         return f'<a href="{car_details_url}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     
     # Replace all occurrences in the text
