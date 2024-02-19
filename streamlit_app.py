@@ -766,7 +766,7 @@ def convert_text_to_html_images(text):
 #     html_text = re.sub(pattern, replace_with_tag, text)
 
 #     return html_text    
-def convert_text_to_html_images(text):
+def convert_links(text):
     # Pattern to match the specific format
     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
     
