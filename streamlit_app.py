@@ -627,18 +627,6 @@ def convert_links(text):
     html_text = re.sub(pattern, replace_with_tag, text)
 
     return html_text   
-output = ""
-
-# def extract_dynamic_url(image_url):
-#     # Implement the logic to extract the dynamic URL from the image URL
-#     # For example, you can parse the image URL or use any other logic based on your requirements
-#     # Here's a simple example assuming the dynamic part is after the last '/' in the image URL
-#     parts = image_url.rsplit('/', 1)
-#     if len(parts) == 2:
-#         return f"https://www.goschchevy.com/inventory/{parts[1]}"
-#     else:
-#         return "https://www.goschchevy.com/inventory/"
-
 
 output = ""
 with container:
