@@ -604,10 +604,10 @@ def convert_text_to_html_images(text):
         # Construct the VDP link based on the car identifier
         vdp_link = f"https://www.goschchevy.com/inventory/{car_details_url}/"
         
-        # Generate HTML for the link with the image embedded
-        link_html = f'<a href="{vdp_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+        # Generate HTML for the entire area (image + link)
+        area_html = f'<a href="{vdp_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
         
-        return link_html
+        return area_html
     
     # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
