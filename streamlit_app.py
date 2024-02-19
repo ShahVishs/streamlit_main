@@ -674,15 +674,15 @@ def convert_text_to_html_images(text):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
         
-        # Extract car_details_link from the answer
-        car_details_link = re.search(r"car_details_link:(.+?)(?:,|$)", text)
-        if car_details_link:
-            car_details_link = car_details_link.group(1).strip()
+        # Extract car_details_link from the "explore" link
+        explore_link_match = re.search(r'explore ([^\s]+)', text)
+        if explore_link_match:
+            explore_link = explore_link_match.group(1).strip()
         else:
-            car_details_link = "#"  # If car_details_link is not found, set a default link
+            explore_link = "#"  # If "explore" link is not found, set a default link
         
-        # Make the image clickable with a link to car_details_link
-        return f'<a href="{car_details_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+        # Make the image clickable with a link to the explore_link
+        return f'<a href="{explore_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     
     # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
