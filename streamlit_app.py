@@ -664,7 +664,10 @@ def convert_text_to_html_images(text):
     # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
+
+
 def convert_links(text):
+    
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
@@ -673,38 +676,17 @@ def convert_links(text):
         prefix = match.group(0)[0]  # Check if it's an image or a link
         alt_or_text = match.group(1)
         url = match.group(2)
-        
-        if prefix == '!':  # Image link
+        # Check for common image file extensions
+        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        else:  # Regular link
+
+        else:
             return f'<a href="{url}">{alt_or_text}</a>'
 
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
 
-    return html_text
-
-# def convert_links(text):
-    
-#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-#     # Function to replace each match
-#     def replace_with_tag(match):
-#         prefix = match.group(0)[0]  # Check if it's an image or a link
-#         alt_or_text = match.group(1)
-#         url = match.group(2)
-#         # Check for common image file extensions
-#         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-#             return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-
-#         else:
-#             return f'<a href="{url}">{alt_or_text}</a>'
-
-#     # Replace all occurrences
-#     html_text = re.sub(pattern, replace_with_tag, text)
-
-#     return html_text    
+    return html_text    
 output = ""
 with container:
     if st.session_state.user_name is None:
