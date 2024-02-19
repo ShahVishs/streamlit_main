@@ -654,7 +654,7 @@ with container:
                     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
                     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
                     f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_text_to_html_images(answer)}</span>'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
