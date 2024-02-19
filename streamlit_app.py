@@ -599,10 +599,17 @@ def convert_text_to_html_images(text):
     # Function to replace each match with an HTML string
     def replace_with_html(match):
         image_url = match.group(1).strip()
-        vin = match.group(2).strip()  # Assuming VIN is the car identifier
-        # Construct the VDP link based on the VIN
-        vdp_link = f"https://www.goschchevy.com/inventory/{vin}/"
-        return f'<a href="{vdp_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+        car_details_url = match.group(2).strip()
+        
+        # Construct the VDP link based on the car details URL
+        vdp_link = f"https://www.goschchevy.com/inventory/{car_details_url}/"
+        
+        # Generate HTML for the link with the image inside
+        link_html = f'<a href="{vdp_link}" target="_blank">'
+        link_html += f'<img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/>'
+        link_html += '</a>'
+        
+        return link_html
     
     # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
@@ -657,8 +664,8 @@ with container:
                         f'</div>',
                         unsafe_allow_html=True
                     )
-        if st.session_state.user_name:
-            try:
-                save_chat_to_airtable(st.session_state.user_name, user_input, output)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        # if st.session_state.user_name:
+        #     try:
+        #         save_chat_to_airtable(st.session_state.user_name, user_input, output)
+        #     except Exception as e:
+        #         st.error(f"An error occurred: {e}")
