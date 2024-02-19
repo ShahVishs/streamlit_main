@@ -766,6 +766,31 @@ def convert_text_to_html_images(text):
 #     html_text = re.sub(pattern, replace_with_tag, text)
 
 #     return html_text    
+# def convert_links(text):
+#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
+#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
+
+#     # Function to replace each match
+#     def replace_with_tag(match):
+#         prefix = match.group(0)[0]  # Check if it's an image or a link
+#         alt_or_text = match.group(1)
+#         url = match.group(2)
+
+#         # Check if the link starts with the specified format
+#         if url.startswith("https://www.goschchevy.com/inventory/"):
+#             vin_url = url
+#             return f'<a href="{vin_url}"><img src="{vin_url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+#         else:
+#             # Check for common image file extensions
+#             if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
+#                 return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+#             else:
+#                 return f'<a href="{url}">{alt_or_text}</a>'
+
+#     # Replace all occurrences
+#     html_text = re.sub(pattern, replace_with_tag, text)
+
+#     return html_text
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
@@ -776,21 +801,26 @@ def convert_links(text):
         alt_or_text = match.group(1)
         url = match.group(2)
 
-        # Check if the link starts with the specified format
-        if url.startswith("https://www.goschchevy.com/inventory/"):
-            vin_url = url
-            return f'<a href="{vin_url}"><img src="{vin_url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        else:
-            # Check for common image file extensions
-            if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-                return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+        # Check for common image file extensions
+        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
+            # Extract VIN from the URL
+            vin_match = re.search(r'/inventory/([^/]+)/', url)
+            if vin_match:
+                vin = vin_match.group(1)
+                vin_page_url = f'https://www.goschchevy.com/inventory/{vin}/'
+                return f'<a href="{vin_page_url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
-                return f'<a href="{url}">{alt_or_text}</a>'
+                return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+
+        else:
+            return f'<a href="{url}">{alt_or_text}</a>'
 
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
 
     return html_text
+
+
 output = ""
 with container:
     if st.session_state.user_name is None:
