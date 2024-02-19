@@ -747,19 +747,21 @@ def convert_text_to_html_images(text):
 
 def convert_links(text):
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
+    
     def replace_with_tag(match):
         prefix = match.group(0)[0]
         alt_or_text = match.group(1)
         url = match.group(2)
         
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            car_details_url_match = re.search(r"car_details_url:([^,\s]+)", text)
-            car_details_url = car_details_url_match.group(1).strip() if car_details_url_match else "#"
-            return f'<a href="{car_details_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        else:
-            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
-
+            # Extract card details URL from the alt text
+            card_details_url_match = re.search(r'car_details_url:\s*([^\]]+)', alt_or_text)
+            if card_details_url_match:
+                card_details_url = card_details_url_match.group(1).strip()
+                return f'<a href="{card_details_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+        
+        return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+    
     html_text = re.sub(pattern, replace_with_tag, text)
     return html_text
     
