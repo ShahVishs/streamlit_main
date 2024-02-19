@@ -679,7 +679,6 @@ def convert_text_to_html_images(text):
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
 
-
 def convert_links(text):
     
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
