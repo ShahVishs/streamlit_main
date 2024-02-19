@@ -607,15 +607,15 @@ def convert_text_to_html_images(text):
     return html_text
     
 def extract_dynamic_url_from_text(text):
-    # Regular expression pattern to match the dynamic URL
-    dynamic_url_pattern = r'https://www\.goschchevy\.com/inventory/[a-zA-Z0-9]+/'
+    # Regular expression pattern to match the dynamic URL associated with "explore"
+    dynamic_url_pattern = r'explore\s*(https?://\S+)'
     
     match_url = re.search(dynamic_url_pattern, text)
     if match_url:
-        return match_url.group()
+        return match_url.group(1)
     else:
         return None
-    
+
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
