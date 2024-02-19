@@ -652,7 +652,7 @@ with container:
                 # Add redirection links for each URL
                 for url in urls:
                     answer = answer.replace(url, f'<a href="{url}" target="_blank">{url}</a>')
-    
+
                 st.markdown(
                     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
                     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
