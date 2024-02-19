@@ -415,7 +415,7 @@ if 'user_name' not in st.session_state:
 
 llm = ChatOpenAI(model="gpt-4-1106-preview", temperature = 0)
 
-# langchain.debug=True
+langchain.debug=True
 
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
@@ -600,6 +600,7 @@ def convert_text_to_html_images(text):
     def replace_with_html(match):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
+        print(" car_details_url", car_details_url)
         return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>', car_details_url
     
     # Replace all occurrences in the text
