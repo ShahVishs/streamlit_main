@@ -618,8 +618,8 @@ def convert_links(text):
         
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extract the dynamic URL from the image URL or any other logic you may need
-            dynamic_url = convert_text_to_html_images(text)  # Implement the logic to extract the dynamic URL
+            # Extract the dynamic URL from the user input
+            dynamic_url = convert_text_to_html_images(user_input)
             return f'<a href="{dynamic_url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}">{alt_or_text}</a>'
