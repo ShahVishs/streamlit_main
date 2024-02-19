@@ -819,16 +819,20 @@ def conversational_chat(user_input, user_name):
 #     html_text = re.sub(pattern, replace_with_tag, text)
 
 #     return html_text
+
 def convert_text_to_html_images(text):
     # Pattern to match the specific format
     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
     
     # Function to replace each match with an HTML string
+    # def replace_with_html(match):
+    #     image_url = match.group(1).strip()
+    #     car_details_url = match.group(2).strip()
+    #     return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     def replace_with_html(match):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
-        return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
-    
+        return f'<a href="{car_details_url}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
@@ -853,7 +857,8 @@ def convert_links(text):
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
 
-    return html_text    
+    return html_text  
+    
 # def convert_links(text):
  
 #     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
