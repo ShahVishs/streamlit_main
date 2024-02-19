@@ -647,7 +647,23 @@ with container:
             with col1:
                 st.image("icon-1024.png", width=50)
             with col2:
-                st.markdown(
+                # Extract URL from the answer
+                url_match = re.search(r'href=["\'](https?://\S+)', answer)
+                if url_match:
+                    extracted_url = url_match.group(1)
+                    st.markdown(
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">'
+                        f'<a href="{extracted_url}" target="_blank">{convert_links(answer)}</a>'
+                        f'</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+                else:
+                    # If no URL found, display the answer without modification
+                    st.markdown(
                         f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
                         f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
                         f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
