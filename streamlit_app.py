@@ -618,18 +618,17 @@ def convert_links(text):
         
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extract the dynamic URL pattern from the answer
-            dynamic_url_pattern = r'https://www.goschchevy.com/inventory/\S+/'
-            match_dynamic_url = re.search(dynamic_url_pattern, answer)
-            
-            if match_dynamic_url:
-                dynamic_url = match_dynamic_url.group()
+            # Extract the dynamic URL pattern from the answer text
+            dynamic_url_pattern = r'https://www\.goschchevy\.com/inventory/[a-zA-Z0-9]+/'
+            match_url = re.search(dynamic_url_pattern, text)
+            if match_url:
+                dynamic_url = match_url.group()
                 return f'<a href="{dynamic_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-            else:
-                # If no dynamic URL pattern found, use the original URL
-                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        else:
-            return f'<a href="{url}">{alt_or_text}</a>'
+        #     else:
+        #         # If no dynamic URL pattern found, use the image URL
+        #         return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+        # else:
+        #     return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
