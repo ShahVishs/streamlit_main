@@ -600,7 +600,11 @@ def convert_text_to_html_images(text):
     def replace_with_html(match):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
-        return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+        # Check if the car_details_url follows a valid format
+        if re.match(r'^https?://(?:www\.)?[^/\s]+/inventory/.+', car_details_url):
+            return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+        else:
+            return f'<img src="{image_url}" alt="Invalid Car Details URL" style="width:100px;height:auto;"/>'
     
     # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
