@@ -766,25 +766,30 @@ def convert_text_to_html_images(text):
 #     html_text = re.sub(pattern, replace_with_tag, text)
 
 #     return html_text    
-def convert_links(text):
-    # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-    pattern = r'(?<!!)\[([^\]]+)\]\((https?://www\.goschchevy\.com/inventory/[^\)]+)\)|\[([^\]]+)\]\(([^)]+)\)'
-
-    # Function to replace each match
-    def replace_with_tag(match):
-        alt_or_text = match.group(1) or match.group(3)
-        url = match.group(2) or match.group(4)
+def convert_text_to_html_images(text):
+    # Pattern to match the specific format
+    pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
+    
+    # Function to replace each match with an HTML string
+    def replace_with_html(match):
+        image_url = match.group(1).strip()
+        car_details_url = match.group(2).strip()
         
-        # Check for common image file extensions
-        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        else:
-            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+        # Fetch the text from the car_details_url
+        try:
+            response = requests.get(car_details_url)
+            if response.status_code == 200:
+                car_details_text = response.text
+            else:
+                car_details_text = "Error fetching details"
+        except Exception as e:
+            car_details_text = str(e)
+        
+        return f'<div><a href="#" onclick="openCarDetails(\'{car_details_text}\'); return false;"><img src="{image_url}" alt="Car Image" style="cursor: pointer; width:100px;height:auto;"/></a></div>'
 
-    # Replace all occurrences
-    html_text = re.sub(pattern, replace_with_tag, text)
-
-    return html_text    
+    # Replace all occurrences in the text
+    html_text = re.sub(pattern, replace_with_html, text)
+    return html_text
 output = ""
 with container:
     if st.session_state.user_name is None:
