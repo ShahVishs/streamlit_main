@@ -734,35 +734,37 @@ def conversational_chat(user_input, user_name):
 
 #     return html_text    
 def convert_text_to_html_images(text):
+    # Pattern to match the specific format
     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
     
+    # Function to replace each match with an HTML string
     def replace_with_html(match):
         image_url = match.group(1).strip()
         car_details_url = match.group(2).strip()
         return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     
+    # Replace all occurrences in the text
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
 
 def convert_links(text):
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-    
+
     def replace_with_tag(match):
         prefix = match.group(0)[0]
         alt_or_text = match.group(1)
         url = match.group(2)
         
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extract card details URL from the alt text
-            card_details_url_match = re.search(r'car_details_url:([^,]+)', alt_or_text)
-            if card_details_url_match:
-                card_details_url = card_details_url_match.group(1).strip()
-                return f'<a href="{card_details_url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        
-        return f'<a href="{url}">{alt_or_text}</a>'
-    
+            car_details_url_match = re.search(r"car_details_url:([^,\s]+)", text)
+            car_details_url = car_details_url_match.group(1).strip() if car_details_url_match else "#"
+            return f'<a href="{car_details_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+        else:
+            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+
     html_text = re.sub(pattern, replace_with_tag, text)
     return html_text
+    
 output = ""
 with container:
     if st.session_state.user_name is None:
