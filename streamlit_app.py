@@ -625,7 +625,7 @@ def convert_links(text):
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text, flags=re.DOTALL)  # Add re.DOTALL to handle newlines in the pattern
 
-    return html_text 
+    return html_text
 output = ""
 with container:
     if st.session_state.user_name is None:
