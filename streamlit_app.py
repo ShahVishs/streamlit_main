@@ -688,28 +688,28 @@ def conversational_chat(user_input, user_name):
 #     html_text = re.sub(pattern, replace_with_html, text)
 #     return html_text
 
-def convert_text_to_html_images(text):
-    # Pattern to match the specific format
-    pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
+# def convert_text_to_html_images(text):
+#     # Pattern to match the specific format
+#     pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
     
-    # Function to replace each match with an HTML string
-    def replace_with_html(match):
-        image_url = match.group(1).strip()
-        car_details_url = match.group(2).strip()
+#     # Function to replace each match with an HTML string
+#     def replace_with_html(match):
+#         image_url = match.group(1).strip()
+#         car_details_url = match.group(2).strip()
         
-        # Extract car_details_link from the "explore" link
-        explore_link_match = re.search(r'explore ([^\s]+) - Image List', text)
-        if explore_link_match:
-            explore_link = explore_link_match.group(1).strip()
-        else:
-            explore_link = "#"  # If "explore" link is not found, set a default link
+#         # Extract car_details_link from the "explore" link
+#         explore_link_match = re.search(r'explore ([^\s]+) - Image List', text)
+#         if explore_link_match:
+#             explore_link = explore_link_match.group(1).strip()
+#         else:
+#             explore_link = "#"  # If "explore" link is not found, set a default link
         
-        # Make the image clickable with a link to the explore_link
-        return f'<a href="{explore_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+#         # Make the image clickable with a link to the explore_link
+#         return f'<a href="{explore_link}" target="_blank"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
     
-    # Replace all occurrences in the text
-    html_text = re.sub(pattern, replace_with_html, text)
-    return html_text
+#     # Replace all occurrences in the text
+#     html_text = re.sub(pattern, replace_with_html, text)
+#     return html_text
 
 
 # def convert_links(text):
@@ -733,29 +733,36 @@ def convert_text_to_html_images(text):
 #     html_text = re.sub(pattern, replace_with_tag, text)
 
 #     return html_text    
-def convert_links(text):
-    # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-    pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
+def convert_text_to_html_images(text):
+    pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
+    
+    def replace_with_html(match):
+        image_url = match.group(1).strip()
+        car_details_url = match.group(2).strip()
+        return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+    
+    html_text = re.sub(pattern, replace_with_html, text)
+    return html_text
 
-    # Function to replace each match
+def convert_links(text):
+    pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
+    
     def replace_with_tag(match):
-        prefix = match.group(0)[0]  # Check if it's an image or a link
+        prefix = match.group(0)[0]
         alt_or_text = match.group(1)
         url = match.group(2)
-        # Check for common image file extensions
+        
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extract car details URL from alt text
-            car_details_url_match = re.search(r'car_details_url:([^,\s]+)', alt_or_text)
-            if car_details_url_match:
-                car_details_url = car_details_url_match.group(1)
-                return f'<a href="{car_details_url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        # If not an image, simply create a link
+            # Extract card details URL from the alt text
+            card_details_url_match = re.search(r'car_details_url:([^,]+)', alt_or_text)
+            if card_details_url_match:
+                card_details_url = card_details_url_match.group(1).strip()
+                return f'<a href="{card_details_url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+        
         return f'<a href="{url}">{alt_or_text}</a>'
-
-    # Replace all occurrences
+    
     html_text = re.sub(pattern, replace_with_tag, text)
-
-    return html_text  
+    return html_text
 output = ""
 with container:
     if st.session_state.user_name is None:
