@@ -1,8 +1,6 @@
+
+openai
 streamlit
-langchain==0.0.349
-langchain-community==0.0.1
-langchain-core==0.0.13
-langsmith==0.0.77
 tiktoken
 pandas
 tabulate
@@ -12,9 +10,11 @@ faiss-cpu
 gspread
 pytz 
 airtable-python-wrapper
-pydantic==1.10.10
+tabulate
 langchain-experimental
-IPython
-openai 
+langchain==0.0.349
+langchain-community==0.0.1
+langchain-core==0.0.13
+langsmith==0.0.77
+pydantic
 jq
-Pillow==9.5.0

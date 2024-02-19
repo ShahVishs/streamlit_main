@@ -1,22 +1,25 @@
 from pydantic import BaseModel, Field
-# from pydantic.v1 import BaseModel, Field
 import os 
 from langchain import OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import initialize_agent, Tool
+# from langchain.chains import PALChain
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain import PromptTemplate, LLMChain
-import streamlit as st
+# import streamlit as st
 from dateutil import parser
+# from datetime import datetime
+from langchain.document_loaders import JSONLoader
 import datetime
 import calendar
 import random
+import re
 import json
-from langchain_experimental.agents.agent_toolkits import create_python_agent
+# from faker import Faker
+# from datetime import datetime, timedelta
 # from langchain.agents.agent_toolkits import create_python_agent
 from langchain.agents import load_tools, initialize_agent
 from langchain.agents import AgentType
-from langchain_experimental.tools.python.tool import PythonREPLTool
 # from langchain.tools.python.tool import PythonREPLTool
 from langchain.python import PythonREPL
 from langchain.chat_models import ChatOpenAI
@@ -24,6 +27,7 @@ from langchain.agents import tool
 from langchain import PromptTemplate
 from langchain_experimental.tools import PythonAstREPLTool
 import os
+import streamlit as st
 from airtable import Airtable
 from langchain.chains.router import MultiRetrievalQAChain
 from langchain.llms import OpenAI
@@ -44,6 +48,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.embeddings import OpenAIEmbeddings
 from pytz import timezone
+# import datetime
 from langchain.agents.agent_toolkits import create_retriever_tool
 from langchain.agents.agent_toolkits import create_conversational_retrieval_agent
 from langchain.chat_models import ChatOpenAI
@@ -58,8 +63,8 @@ import pandas as pd
 import requests
 from pydantic import BaseModel, Field
 from langchain.tools import tool
+# from datetime import datetime
 from typing import Dict, Any
-
 hide_share_button_style = """
     <style>
     .st-emotion-cache-zq5wmm.ezrtsby0 .stActionButton:nth-child(1) {
@@ -112,49 +117,61 @@ todays_date = current_date
 day_of_the_week = current_day
 
 business_details_text = [
-    "working days: all Days except sunday",
-    "working hours: 9 am to 7 pm", 
     "Phone: (555) 123-4567",
     "Address: 567 Oak Avenue, Anytown, CA 98765, Email: jessica.smith@example.com",
-    "dealer ship location: https://www.google.com/maps/place/Pine+Belt+Mazda/@40.0835762,-74.1764688,15.63z/data=!4m6!3m5!1s0x89c18327cdc07665:0x23c38c7d1f0c2940!8m2!3d40.0835242!4d-74.1742558!16s%2Fg%2F11hkd1hhhb?entry=ttu"
+    "dealer ship location: https://maps.app.goo.gl/ecHtb6y5f8q5PUxb9"
 ]
 retriever_3 = FAISS.from_texts(business_details_text, OpenAIEmbeddings()).as_retriever()
 
-file_1 = r'car_desription_new.csv'
+file_1 = r'inventory.csv'
 
 loader = CSVLoader(file_path=file_1)
 docs_1 = loader.load()
 embeddings = OpenAIEmbeddings()
 vectorstore_1 = FAISS.from_documents(docs_1, embeddings)
-retriever_1 = vectorstore_1.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.5,"k": 3})
+retriever_1 = vectorstore_1.as_retriever(search_type="similarity_score_threshold", search_kwargs={"score_threshold": 0.5,"k": 8})
 
-file_2 = r'short_car_details.csv'
-loader_2 = CSVLoader(file_path=file_2)
-docs_2 = loader_2.load()
-num_ret=len(docs_2)
-vectordb_2 = FAISS.from_documents(docs_2, embeddings)
-retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
+# file_2 = r'short_car_details.csv'
+# loader_2 = CSVLoader(file_path=file_2)
+# docs_2 = loader_2.load()
+# num_ret=len(docs_2)
+# vectordb_2 = FAISS.from_documents(docs_2, embeddings)
+# retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
+
+file_3 = r'csvjson.json'
+loader_3 = JSONLoader(file_path=file_3, jq_schema='.', text_content=False)
+data_3 = loader_3.load()
+vectordb_3 = FAISS.from_documents(data_3, embeddings)
+retriever_4 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 8})
 
 
 tool1 = create_retriever_tool(
     retriever_1, 
      "details_of_car",
-     "use to get car full details and more information. Input to this should be the car's model\
-     or car features and new or used car as a single argument for example new toeing car or new jeep cherokee"
+     "use to check availabilty of car and  to get car full details. Input to this should be the car's model\
+     or car features and new or used car as a single argument for example new toeing car or new jeep cherokee  and also use for getting images based on make and model "
 ) 
 
-tool2 = create_retriever_tool(
-    retriever_2, 
-     "Availability_check",
-     "use to check availabilty of car, Input is car make or model or both"
-)
+# tool2 = create_retriever_tool(
+#     retriever_2, 
+#      "Availability_check",
+#      "use to check availabilty of car, Input is car make or model or both"
+# )
 tool3 = create_retriever_tool(
     retriever_3, 
      "business_details",
      "Searches and returns documents related to business working days and hours, location and address details."
 )
 
+# tool4 = create_retriever_tool(
+#     retriever_4, 
+#      "image_details",
+#      "Use to search for vehicle information and images based on make and model."
+# )
 
+
+
+########VIN_FUNCTION########
 class CarDetails(BaseModel):
     make: str
     model: str
@@ -163,9 +180,9 @@ class CarDetails(BaseModel):
 class VINDetails(BaseModel):
     vin: str = Field(..., description="VIN of the car to get the car details")
 
-@tool(args_schema=VINDetails)
+@tool
 def get_car_details_from_vin(vin):
-    """Fetch car details for the given VPN."""
+    """Fetch car details for the given VIN."""
     
     BASE_URL = f"https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/{vin}?format=json"
 #     BASE_URL = "https://fe9b-2405-201-200a-100d-b840-86ed-9ebd-a606.ngrok-free.app/appointment/"
@@ -204,91 +221,173 @@ def get_car_details_from_vin(vin):
         # Handle the case when the request was not successful
         return CarDetails(make="", model="", year=0)
 
+
+#######APPOINTMENT DATE TO CHECK AVAILABILITY##############
+
 class AppointmentDetails(BaseModel):
     time: str
     availability: str
 
 class AppointmentInput(BaseModel):
-    date: str = Field(..., description="Date for which to get appointment details")
-
-@tool(args_schema=AppointmentInput)
-def get_appointment_details(date):
-    """Fetch appointment details for the given date and input to this function should be only "mm-dd-yyyy," format\
-    such as "04-12-2024" not "date":"mm-dd-yyyy" format."""
+    requested_appointment_date: str = Field(..., description="Date for which to get appointment details")
+    company_id: int = Field(..., description="company ID")
+    location_id: int = Field(..., description="location of dealership")
+        
+@tool
+def check_appointment_availability(requested_appointment_date: str, company_id: int, location_id: int) -> dict:
+# def get_appointment_details(requested_appointment_date: str):
+    """This tool checks appointment availability for the date that costumer has prefered. Input to this is costumers prefered date."""
     
-
-    BASE_URL="https://4730-2405-201-200a-100d-ac7d-3859-60f0-4d3f.ngrok-free.app/test/appointment"
+    BASE_URL = "https://webapp-api-green.prod.funnelai.com/test/appointment"
+    
     # Make the request
     payload = {
-        "requested_appointment_date": date
+        "requested_appointment_date": requested_appointment_date,
+        "company_id": company_id,
+        "location_id": location_id
     }
-    response = requests.post(BASE_URL, json=payload)
-#     print("the response is")
-#     print(response.text)
+
+    response = requests.get(BASE_URL, json=payload)
     
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
         result = response.json()
-#         print(result)
         
         # Check if the date is present in the response
-        if date in result and result[date] is not None:
+        if requested_appointment_date in result and result[requested_appointment_date] is not None:
             # Extract the appointment details for the given date
-            appointments = result[date]
-
-            
-            return appointments  # Return the value
+            appointments = result[requested_appointment_date]
+            return appointments
         else:
             # Handle the case when the date is not present in the response or is None
-            appointments ={
-        date: "Not_available"
-    }
-            return appointments
+            return {requested_appointment_date: "Not available"}
     else:
         # Handle the case when the request was not successful
-        return []
+        return {"error": "Failed to retrieve appointment details"}
 
 
 
+
+##########DATE_NOT_KNOWN#####CREATING_APPOINTMENT_LINK######
+import requests
+from pydantic import BaseModel, Field
+from typing import Dict, Any
+
+class appointment_link(BaseModel):
+    appointment_url: str
+#     link:str
 class CustomerDataStore(BaseModel):
     name: str = Field(..., description="name of the customer")
     phone: str = Field(..., description="phone number of the customer")
     email: str = Field(..., description="email of the customer")
-    make: str = Field(..., description="year of the car")
-    model: str = Field(..., description="model of the car")
+    make: str = Field(..., description="make or makes of the car")
+    model: str = Field(..., description="a single car or a multiple models of the car with comma separated")
     year:int=Field(..., description="year of the vehicle")
     company_id:int=Field(..., description="id of the company")
     location_id:int=Field(..., description="location id of the company")
-    start_date:str=Field(..., description="date of appointment")
+    start_date:str=Field(..., description="this should be empty string")
     appointment_timezone:str=Field(..., description="time zone")
     intent:str=Field(..., description="costumer intent")
     summary:str=Field(..., description="one line about summary of appointment,")
     description:str=Field(..., description="one line about description about visit,")
-# Uncomment if you want to use the decorator
-@tool(args_schema=CustomerDataStore)
-def store_appointment_data(name: str,phone: str,email: str ,make: str,model: str,year:int,
+
+@tool
+def create_appointment_link(name: str,phone: str,email: str ,make: str,model: str,year:int,
                            company_id:int,location_id:int,start_date:str,appointment_timezone:str,
                            intent:str,summary:str,description:str) -> dict:
 
 
-    """Store appointment data using an API."""
-#     print(data)
-    
-    # Your API endpoint for storing appointment data
+
+    """This tool is used to create appointment link when costumer is not sure on which date to book appointment. 
+    Input to this should not contain date"""
+
 #     api_url = "https://889d-2402-a00-172-22e6-71e5-ba36-c2e7-3c81.ngrok-free.app/test/appointment/create"
-    api_url="https://4730-2405-201-200a-100d-ac7d-3859-60f0-4d3f.ngrok-free.app/test/appointment/create"
+    api_url="https://495c-2402-a00-172-22e6-5ea8-c44e-fd0e-e8ed.ngrok-free.app/test/appointment/create"
 
     data_dict = {
-    "company_id": 1,
-    "location_id": 28,
+    "company_id": company_id,
+    "location_id": location_id,
     "lead": {
         "name": name,
         "phone": phone,
         "email": email
     },
     "vehicle": {
-        "year": 2023,
+        "year": year,
+        "make": make,
+        "model": model,
+        "intent": intent
+    },
+    "appointment": {
+        "start_date": start_date,
+        "description": description,
+        "summary":summary,
+        "appointment_timezone": appointment_timezone
+    }
+}
+
+    # Make the request
+    response = requests.post(api_url, json=data_dict)
+    print(response.status_code)
+    print("___json___")
+    print(response.json)
+    print("___text___")
+    print(response.text)
+#      response = requests.patch(api_url, json=data_dict)
+   
+    # Check the response status code
+    if response.status_code == 200:
+        print("Data stored successfully!")
+        appointment_url=response.text
+        return appointment_url
+           
+    else:
+        print(f"Failed to store data. Status code: {response.status_code}")
+        print(response.text)  # Print the response content for debugging
+
+
+
+#####CONFORM APPOINTMENT######
+class CustomerDataStore(BaseModel):
+    name: str = Field(..., description="name of the customer")
+    phone: str = Field(..., description="phone number of the customer")
+    email: str = Field(..., description="email of the customer")
+    make: str = Field(..., description="year of the car")
+    model: str = Field(..., description="a single car or a multiple models of the car with comma separated")
+    year:int=Field(..., description="year of the vehicle")
+    company_id:int=Field(..., description="id of the company")
+    location_id:int=Field(..., description="location id of the company")
+    start_date:str=Field(..., description="date and time of appointment")
+    appointment_timezone:str=Field(..., description="time zone")
+    intent:str=Field(..., description="costumer intent")
+    summary:str=Field(..., description="one line about summary of appointment,")
+    description:str=Field(..., description="one line about description about visit,")
+
+@tool
+def confirm_appointment(name: str,phone: str,email: str ,make: str,model: str,year:int,
+                           company_id:int,location_id:int,start_date:str,appointment_timezone:str,
+                           intent:str,summary:str,description:str) -> dict:
+
+
+
+    """Use this tool to confirm appointment for the given date and time"""
+#     print(data)
+    
+    # Your API endpoint for storing appointment data
+#     api_url = "https://889d-2402-a00-172-22e6-71e5-ba36-c2e7-3c81.ngrok-free.app/test/appointment/create"
+    api_url="https://webapp-api-green.prod.funnelai.com/test/appointment/create"
+
+    data_dict = {
+    "company_id": company_id,
+    "location_id": location_id,
+    "lead": {
+        "name": name,
+        "phone": phone,
+        "email": email
+    },
+    "vehicle": {
+        "year": year,
         "make": make,
         "model": model,
         "intent": intent
@@ -312,13 +411,18 @@ def store_appointment_data(name: str,phone: str,email: str ,make: str,model: str
         print(response.text)  # Print the response content for debugging
 
 
+
+
+
+
+
 airtable_api_key = st.secrets["AIRTABLE"]["AIRTABLE_API_KEY"]
 os.environ["AIRTABLE_API_KEY"] = airtable_api_key
 AIRTABLE_BASE_ID = "appN324U6FsVFVmx2"  
-AIRTABLE_TABLE_NAME = "gpt4_turbo_test_2"
+AIRTABLE_TABLE_NAME = "new_apis"
 
 
-st.info("Introducing **Otto**, your cutting-edge partner in streamlining dealership and customer-related operations. At EngagedAi, we specialize in harnessing the power of automation to revolutionize the way dealerships and customers interact. Our advanced solutions seamlessly handle tasks, from managing inventory and customer inquiries to optimizing sales processes, all while enhancing customer satisfaction. Discover a new era of efficiency and convenience with us as your trusted automation ally. [engagedai.io](https://funnelai.com/). For this demo application, we will use the Inventory Dataset. Please explore it [here](https://github.com/ShahVishs/workflow/blob/main/2013_Inventory.csv) to get a sense for what questions you can ask.")
+st.info("Introducing **Otto**, your cutting-edge partner in streamlining dealership and customer-related operations. At EngagedAi, we specialize in harnessing the power of automation to revolutionize the way dealerships and customers interact. Our advanced solutions seamlessly handle tasks, from managing inventory and customer inquiries to optimizing sales processes, all while enhancing customer satisfaction. Discover a new era of efficiency and convenience with us as your trusted automation ally. [engagedai.io](https://funnelai.com/). For this demo application, we will use the Inventory Dataset. Please explore it [here](https://github.com/buravelliprasad/turbo_6_tools/blob/main/car_desription_new.csv) to get a sense for what questions you can ask.")
 
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
@@ -332,73 +436,90 @@ if 'user_name' not in st.session_state:
 
 llm = ChatOpenAI(model="gpt-4-1106-preview", temperature = 0)
 
-langchain.debug=True
+# langchain.debug=True
 
 memory_key="chat_history"
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-response_styles = {
-    "Professional": "Personable, Humorous, emotional intelligent, creative, witty and engaging.",
-    "Humorous": "Personable, Persuasive, creative, engaging, witty and professional.",
-}
 
-# Get user-selected response style
-selected_style = st.selectbox("Select Response Style:", list(response_styles.keys()))
-
-# Set default value if 'selected_style' is not assigned
-if not selected_style:
-    selected_style = "Professional"
-    
-template = """You are a customer care support executive based on your performance, and you will get a bonus and incentives. 
-So follow instructions strictly and {response_style}.
-The name of the costumer is {name} and the dealership name is {dealership_name} and 
-do not start with appointment related questions.
+template = """You are an costumer care support exectutive based on your performance you will get bonus and incentives 
+so follow instructions strictly and respond in Personable, Persuvasive, creative, engaging, witty and professional.
+The name of the costumer is {name} and the dealership name is {dealership_name}. 
+Do not start with appointment related questions.
 To ensure a consistent and effective response, please adhere to the following guidelines:
+Inventory related Questions: 
+use "details_of_car" tool that extracts comprehensive information about cars in our inventory and also checks availability.
 
-Use "car_vailability_check" strictly for checking availability of a specific make or model of the car and 
-also for getting full list of available makes and models in the inventory.
+Avoid combining multiple questions like given below exaple1.
+example1:  "Are you interested in a new or used car or specific make or model in mind Or any specific features 
+like towing capacity, off-road capability?"
 
-Use "details_of_car" tool that extracts comprehensive information about specific cars in the inventory.
-This includes details like trim, price, color, and cost.
-
-Use "car_vailability_check" for checking car availability and "details_of_car" for car information.
-
-To optimize the search process, ensure the system is aware of the car model and whether the customer
-is interested in new or used cars.
-
-In cases where specific details are not included in the initial inquiry, initiate a proactive approach 
-by requesting the missing information. 
-
-To streamline the process, ask only one question at a time until all necessary details are obtained.
-This ensures a more efficient and accurate retrieval of car information.
-
-If customer inquires about car with features like towing, off-road capability,
-good mileage, or pickup trucks in this case no need to ask about make and model of the car 
-inquire whether they are interested in a new or used vehicle.
-
-After knowing car feature and new or old car preference use the "car_vailability_check" tool to answer.
+When customers inquire about specific car features like towing, off-road capability, mileage, pickup trucks, 
+or family cars if there is mention of new or used ask them are they interested in a new or used vehicle.
 
 
+**DO NOT DISCLOSE PRICE**  
 Do not disclose or ask the costumer if he likes to know the selling price of a car,
-disclose selling price only when the customer explicitly requests it use "details_of_car" function.
+disclose selling price only when the customer explicitly requests it.
+
+When utilizing the "details_of_car" tool, please respond with a list of cars, excluding square brackets. 
+For each car, include the make, year, model and trim.
+Additionally, strictly provide their car details links in the response, 
+with the text "explore model name" as a clickable link. For example, if the car model is XYZ, color is red the clickable 
+link should be "explore XYZ_red_color".
+Partition the list with new cars listed first, followed by a separate section for used cars.
+
+When using the 'details_of_car' tool to provide car information, adhere to these guidelines 
+to ensure concise and non-redundant responses:
+
+1. Prioritize Uniqueness:
+
+Consider cars as unique entities when they differ in any of the following core features:
+Model
+Make
+Year
+Trim
+Exterior color
+Interior color
+New/used status
+Cars sharing identical values for all of these features are considered similar.
+
+2. Avoid Similar Car Duplication:
+
+Display only one instance of a car if other cars with identical core features are present within the dataset.
+This ensures concise responses that highlight distinct vehicles without redundancy.
+Example:
+If two cars have the same make, model, year, trim, exterior color, interior color, and new/used status 
+display only one of them in the response.
+
+If the output from the 'details_of_car' tool yields multiple results, and each car model is distinct,
+kindly inquire with the customer to confirm their preferred choice.
+This will ensure clarity regarding the specific model that piques the customer's interest.
 
 
-If the customer's query matches a car model, respond with a list of car without square brackets, 
-including the make, year, model, and trim, and provide their respective links in the answer.
+After providing car details, kindly prompt the customer to book a test drive.
 
-checking Appointments Avaliability: 
-{details} use these details and find appointment date from the users input and check for appointment availabity 
-using "get_appointment_details" tool for that specific day or date and time. 
-strictly input to "get_appointment_details" tool should be "mm-dd-yyyy" format.
-If the requested date and time for the appointment are unavailable,
-suggest alternative times close to the customer's preference.
+Obtain car details from the customer.
+2. Phone Number:
+Check if you have the customer's phone number on record.
+If not, politely inquire about it.
 
-Additionally, provide this link'[click here](https://app.engagedai.io/engagements/appointment)'it will 
-take them to a URL where they can schedule or reschedule their appointment themselves. 
-Appointment Scheduling:
+3. Appointment Date and Time:
 
-After scheduling an appointment, initiate the conversation to get tradein car and personal details.
-**Car Trade-In Inquiry and personal details:**
+For certain date and time:
+
+Ask the customer for their preferred date and time for a test drive.
+{details} using these details find appointment date requested by costumer 
+and use the "get_appointment_details" tool to check availability.
+If available, book the appointment with "confirm_appointment".
+If unavailable, suggest alternative slots close to their preference.
+
+For uncertain date and time:
+
+Use the "create_appointment_link" tool to generate a booking link.
+Share the "book now" link with the customer.
+After fixing appointment or providing the appointment link Follow up question should be from Post-Appointment.
+Post-Appointment follow this steps strictly. only one question at a time no multiple questions in single response :
 
 1. Ask the customer if they have a car for trade-in.
 
@@ -419,46 +540,73 @@ After scheduling an appointment, initiate the conversation to get tradein car an
 4. Once you have the trade-in car details, ask the customer about their expected price for the trade-in.
 
     - User: [Response]
+    
 
-**Personal Information:**
+Encourage Dealership Visit: Our aim to encourage customers to explore our dealership for test drives. 
+Once essential details about the car, including make, model, color, and core features 
+are provided extend a cordial invitation to schedule a test drive.
 
-5. Finally, ask for the customer's personal details.
+Business details: Enquiry regarding google maps location and address of the store and contact details use 
+search_business_details tool.
 
-    - User: [Response]
-    - Contact Number:
-    - Email Address:
-
-Encourage Dealership Visit: Our goal is to encourage customers to visit the dealership for test drives or
-receive product briefings from our team. After providing essential information on the car's make, model,
-color, and basic features, kindly invite the customer to schedule an appointment for a test drive or visit us
-for a comprehensive product overview by our experts.
-Business details: Enquiry regarding google maps location of the store, address of the store, working days and working hours 
-and contact details use search_business_details tool to get information.
 company details:
-compant id is 24, location id is 07 and timezone is America/New_York
+compant id is 39, location id is 1 and timezone is America/New_York
 
-Keep responses concise, not exceeding two sentences and answers should be interactive.
+Strictly Keep responses concise, not exceeding two sentences or 100 words and answers should be interactive.
 Respond in a polite US english.
-strictly answer only from the provided content dont makeup answers.
-**Storing data:**    
-As a support executive you should collect important information about costumer for future reference.
-If the appointment schedule is fixed and you got costumer details name,Contact Number,Email Address.
-now its time to store data.
-Use this tool "store_appointment_data" to store the data.
-If any of the above details missing you can enquire about that."""
+
+**strictly answer only from the  content provided to you dont makeup answers.**"""
+
+# {details} use these details and find appointment date and check for appointment availabity 
+# using "get_appointment_details" tool for that specific day or date and time that costumer has requested for.
+# strictly input to "get_appointment_details" tool should be "mm-dd-yyyy" format.
+# Step 5: Appointment Timing Uncertain for Customer 
+# In case where the customer is uncertain about his preferred date and time for scheduling an appointment, automatically Use 
+# "create_appointment_link" tool, it will Generate a link and we provide it to the customer, allowing them the 
+# flexibility to schedule at their convenience whenever they are ready. Never ask permission from costumer to create a link. 
+
+# Ater providing car details ask costumer to book appointment for test drive.
+
+# If cosstumer is ready to book an appointment follow below steps.
+
+# step-1 Verify If we know Customer Phone Number. If not, inquire about the customer's phone number.
+
+# step-2 Ask for Appointment date:
+
+# Once you have the customer's phone number, ask for the desired appointment date and time.
+
+# Step 3: Verify Appointment Availability and book appointment:
+
+# {details} use this details and Utilize the "get_appointment_details" tool to assess the availability of the appointment time. 
+# If the requested time is available, proceed to confirm the appointment using the "confirm_appointment" tool. 
+# In the event that the preferred date and time are not available, recommend alternative time slots that align closely
+# with the customer's preferences.
+
+# Step 5:
+# Flexible Appointment Scheduling for Uncertain Dates
+
+# If the customer is uncertain about the date and time for an appointment, "create_appointment_link" 
+# tool without explicitly confirming with the customer. 
+# Provide them with a clickable link to book an appointment: [book now](Appointment Link).
+
+# {details} use these details and find appointment date and check for appointment availabity 
+# using "get_appointment_details" tool for that specific day or date and time that costumer has requested for.
+# strictly input to "get_appointment_details" tool should be "mm-dd-yyyy" format.
+# Step 5: Appointment Timing Uncertain for Customer 
+# In case where the customer is uncertain about his preferred date and time for scheduling an appointment, automatically Use 
+# "create_appointment_link" tool, it will Generate a link and we provide it to the customer, allowing them the 
+# flexibility to schedule at their convenience whenever they are ready. Never ask permission from costumer to create a link. 
 details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week day is "+day_of_the_week+"."
 name = st.session_state.user_name
-dealership_name="Gosch Auto Group"
-# input_template = template.format(details=details,name=name,dealership_name=dealership_name)
-input_template = template.format(response_style=response_styles[selected_style], details=details, name=name, dealership_name=dealership_name)
-# input_template = template.format(response_styles=response_styles, selected_style=selected_style, details=details, name=name, dealership_name=dealership_name)
+dealership_name="Gosch Chevrolet"
+input_template = template.format(details=details,name=name,dealership_name=dealership_name)
 system_message = SystemMessage(content=input_template)
 
 prompt = OpenAIFunctionsAgent.create_prompt(
     system_message=system_message,
     extra_prompt_messages=[MessagesPlaceholder(variable_name=memory_key)]
 )
-tools = [tool1,tool2,tool3,get_car_details_from_vin,get_appointment_details,store_appointment_data]
+tools = [tool1,tool3,check_appointment_availability,confirm_appointment,create_appointment_link]
 agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 if 'agent_executor' not in st.session_state:
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory, verbose=True, return_source_documents=True,
@@ -502,6 +650,42 @@ def conversational_chat(user_input, user_name):
     st.session_state.chat_history.append((user_input, output))
     
     return output
+
+def convert_text_to_html_images(text):
+    # Pattern to match the specific format
+    pattern = r"image_url:([^,]+), car_details_url:([^,\s]+)"
+    
+    # Function to replace each match with an HTML string
+    def replace_with_html(match):
+        image_url = match.group(1).strip()
+        car_details_url = match.group(2).strip()
+        return f'<a href="{car_details_url}"><img src="{image_url}" alt="Car Image" style="width:100px;height:auto;"/></a>'
+    
+    # Replace all occurrences in the text
+    html_text = re.sub(pattern, replace_with_html, text)
+    return html_text
+    
+def convert_links(text):
+    
+    # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
+    pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
+
+    # Function to replace each match
+    def replace_with_tag(match):
+        prefix = match.group(0)[0]  # Check if it's an image or a link
+        alt_or_text = match.group(1)
+        url = match.group(2)
+        # Check for common image file extensions
+        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
+            return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+
+        else:
+            return f'<a href="{url}">{alt_or_text}</a>'
+
+    # Replace all occurrences
+    html_text = re.sub(pattern, replace_with_tag, text)
+
+    return html_text    
 output = ""
 with container:
     if st.session_state.user_name is None:
@@ -523,14 +707,13 @@ with container:
                 st.image("icon-1024.png", width=50)
             with col2:
                 st.markdown(
-                f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 60%;'
-                f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{answer}</span>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-
+                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
         if st.session_state.user_name:
             try:
                 save_chat_to_airtable(st.session_state.user_name, user_input, output)
