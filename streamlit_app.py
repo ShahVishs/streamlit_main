@@ -619,7 +619,7 @@ def convert_links(text):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extract the dynamic URL from the image URL or any other logic you may need
-            dynamic_url = extract_dynamic_url(url)  # Implement the logic to extract the dynamic URL
+            dynamic_url = convert_text_to_html_images(text)  # Implement the logic to extract the dynamic URL
             return f'<a href="{dynamic_url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}">{alt_or_text}</a>'
@@ -629,15 +629,15 @@ def convert_links(text):
 
     return html_text
 
-def extract_dynamic_url(image_url):
-    # Implement the logic to extract the dynamic URL from the image URL
-    # For example, you can parse the image URL or use any other logic based on your requirements
-    # Here's a simple example assuming the dynamic part is after the last '/' in the image URL
-    parts = image_url.rsplit('/', 1)
-    if len(parts) == 2:
-        return f"https://www.goschchevy.com/inventory/{parts[1]}"
-    else:
-        return "https://www.goschchevy.com/inventory/"
+# def extract_dynamic_url(image_url):
+#     # Implement the logic to extract the dynamic URL from the image URL
+#     # For example, you can parse the image URL or use any other logic based on your requirements
+#     # Here's a simple example assuming the dynamic part is after the last '/' in the image URL
+#     parts = image_url.rsplit('/', 1)
+#     if len(parts) == 2:
+#         return f"https://www.goschchevy.com/inventory/{parts[1]}"
+#     else:
+#         return "https://www.goschchevy.com/inventory/"
 
 
 output = ""
