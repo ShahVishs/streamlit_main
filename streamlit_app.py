@@ -771,8 +771,8 @@ def extract_inventory_page_urls(text):
     return urls
 
 def convert_links(text):
-    # Extract inventory page URLs
-    image_urls = extract_inventory_page_urls(text)
+    # Get the list of inventory page URLs
+    inventory_page_urls = extract_inventory_page_urls(text)
 
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
@@ -782,12 +782,14 @@ def convert_links(text):
         alt_or_text = match.group(1)
         url = match.group(2)
 
-        # Check if the alt text exists as a key in the image_urls dictionary
-        if alt_or_text in image_urls:
-            inventory_page_url = image_urls[alt_or_text]
+        # Check if there are inventory page URLs
+        if inventory_page_urls:
+            # Use the corresponding URL based on the index of the match
+            match_index = inventory_page_urls.index(url) % len(inventory_page_urls)
+            inventory_page_url = inventory_page_urls[match_index]
             return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
-            # No specific URL found for the alt text, use the original URL
+            # No inventory page URLs found, use the original URL
             return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
 
     # Find all matches
