@@ -446,7 +446,7 @@ For each car, include the make, year, model and trim.
 Additionally, strictly provide their car details links in the response, 
 with the text "explore model name" as a clickable link. 
 For example, if the car model is XYZ, color is red the clickable 
-link should be "explore XYZ_red_color|imagelist url".
+link should be "explore XYZ_red_color" and also provide car imagelist url.
 When using the 'details_of_car' tool to provide car information, adhere to these guidelines 
 to ensure concise and non-redundant responses:
 
