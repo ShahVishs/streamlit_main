@@ -784,13 +784,15 @@ def convert_links(text):
 
         # Check if there are inventory page URLs
         if inventory_page_urls:
-            # Use the corresponding URL based on the index of the match
-            match_index = inventory_page_urls.index(url) % len(inventory_page_urls)
-            inventory_page_url = inventory_page_urls[match_index]
-            return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        else:
-            # No inventory page URLs found, use the original URL
-            return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+            # Use a set to check if the URL is present in the inventory page URLs
+            if url in set(inventory_page_urls):
+                # Use the corresponding URL based on the index of the match
+                match_index = inventory_page_urls.index(url) % len(inventory_page_urls)
+                inventory_page_url = inventory_page_urls[match_index]
+                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+
+        # No inventory page URLs found or the URL didn't match, use the original URL
+        return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
 
     # Find all matches
     matches = list(re.finditer(pattern, text))
@@ -802,7 +804,6 @@ def convert_links(text):
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
-
 
 
 
