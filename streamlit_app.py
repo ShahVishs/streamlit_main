@@ -702,41 +702,52 @@ def convert_text_to_html_images(text):
 
 #     return html_text
 
-def extract_inventory_page_urls(text, details):
+def extract_inventory_page_url(text, image_alt):
     # Regular expression to match the inventory page URL in the provided text
-    pattern = rf'\[{details}\]\(([^)]+)\)'
+    pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
 
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Extract all URLs from matches
-    urls = [match.group(1) for match in matches] if matches else []
+    # Iterate through matches and find the one that matches the alt text of the image
+    for match in matches:
+        details_type = match.group(1)
+        url = match.group(2)
+        if details_type.lower() in ['details', 'car details', 'view details']:
+            if f'[{image_alt}]' in text:
+                return url
 
-    return urls
+    # If no valid URL is found, return None
+    return None
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-    pattern = r'!\[([^\]]+)\]\(([^)]+)\)'
+    pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
     # Function to replace each match
     def replace_with_tag(match):
-        alt_text = match.group(1)
+        alt_or_text = match.group(1)
         url = match.group(2)
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URLs for the current image details
-            inventory_page_urls = extract_inventory_page_urls(text, f'{alt_text} Car Details')
-            if inventory_page_urls:
-                # Use the first URL in this example, you can iterate over all URLs as needed
-                return f'<a href="{inventory_page_urls[0]}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
+            # Extracted inventory page URL for the current image
+            inventory_page_url = extract_inventory_page_url(text, alt_or_text)
+            if inventory_page_url:
+                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
-                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
+                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
-            return f'<a href="{url}" target="_blank">{alt_text}</a>'
+            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+
+    # Find all matches
+    matches = list(re.finditer(pattern, text))
 
     # Replace all occurrences
-    html_text = re.sub(pattern, replace_with_tag, text)
+    html_text = text
+    for match in matches:
+        # Replace each match individually
+        html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
 output = ""
