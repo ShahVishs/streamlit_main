@@ -709,16 +709,17 @@ def extract_inventory_page_url(text, image_alt):
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Iterate through matches and find the one that matches the alt text of the image
+    # Iterate through matches and find the nearest details URL that precedes the image
+    image_position = text.find(f'![{image_alt}]') if f'![{image_alt}]' in text else text.find(f'[{image_alt}]')
+    nearest_url = None
     for match in matches:
         details_type = match.group(1)
         url = match.group(2)
         if details_type.lower() in ['details', 'car details', 'view details']:
-            if f'![{image_alt}]' in text or f'[{image_alt}]' in text:
-                return url
+            if match.start() < image_position:
+                nearest_url = url
 
-    # If no valid URL is found, return None
-    return None
+    return nearest_url
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
