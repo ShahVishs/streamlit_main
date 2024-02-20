@@ -723,7 +723,7 @@ def extract_inventory_page_urls(text):
 
     return image_details_mapping
 
-def convert_links(text):
+def convert_links(text, image_details_mapping):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
@@ -753,7 +753,7 @@ def convert_links(text):
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
-    
+image_details_mapping = extract_inventory_page_urls(text)   
 output = ""
 
 with container:
