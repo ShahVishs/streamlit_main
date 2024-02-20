@@ -785,26 +785,25 @@ def convert_links(text):
 
     # Function to replace each match
     def replace_with_tag(match):
+        prefix = match.group(0)[0]  # Check if it's an image or a link
         alt_or_text = match.group(1)
         url = match.group(2)
+        
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URLs
-            inventory_page_urls = extract_inventory_page_urls(text)
-            if inventory_page_urls:
-                # Dynamically generate HTML code for each URL
-                for inventory_page_url in inventory_page_urls:
-                    yield f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+            # Extracted inventory page URL
+            inventory_page_url = extract_inventory_page_url(text)
+            if inventory_page_url:
+                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
-                yield f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
-            yield f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
     # Replace all occurrences
-    html_texts = list(replace_with_tag(match) for match in re.finditer(pattern, text))
-    
-    # Combine the generated HTML code into a single string
-    return ''.join(html_text for html_text_list in html_texts for html_text in html_text_list)
+    html_text = re.sub(pattern, replace_with_tag, text)
+
+    return html_text
     
 output = ""
 
