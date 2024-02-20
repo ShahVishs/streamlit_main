@@ -702,42 +702,42 @@ def convert_text_to_html_images(text):
 
 #     return html_text
 
-# def extract_inventory_page_url(text, image_alt):
-#     # Regular expression to match the inventory page URL in the provided text
-#     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
-
-#     # Find all matches
-#     matches = re.finditer(pattern, text)
-
-#     # Iterate through matches and find the one that matches the alt text of the image
-#     for match in matches:
-#         details_type = match.group(1)
-#         url = match.group(2)
-#         if details_type.lower() in ['details', 'car details', 'view details']:
-#             if f'![{image_alt}]' in text or f'[{image_alt}]' in text:
-#                 return url
-
-#     # If no valid URL is found, return None
-#     return None
-def extract_inventory_page_urls(text):
+def extract_inventory_page_url(text, image_alt):
     # Regular expression to match the inventory page URL in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
 
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Initialize a list to store all the URLs
-    urls = []
-
-    # Iterate through matches and add all URLs to the list
+    # Iterate through matches and find the one that matches the alt text of the image
     for match in matches:
         details_type = match.group(1)
         url = match.group(2)
         if details_type.lower() in ['details', 'car details', 'view details']:
-            urls.append(url)
+            if f'![{image_alt}]' in text or f'[{image_alt}]' in text:
+                return url
 
-    # Return the list of all URLs
-    return urls
+    # If no valid URL is found, return None
+    return None
+# def extract_inventory_page_urls(text):
+#     # Regular expression to match the inventory page URL in the provided text
+#     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
+
+#     # Find all matches
+#     matches = re.finditer(pattern, text)
+
+#     # Initialize a list to store all the URLs
+#     urls = []
+
+#     # Iterate through matches and add all URLs to the list
+#     for match in matches:
+#         details_type = match.group(1)
+#         url = match.group(2)
+#         if details_type.lower() in ['details', 'car details', 'view details']:
+#             urls.append(url)
+
+#     # Return the list of all URLs
+#     return urls
     
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
@@ -751,7 +751,7 @@ def convert_links(text):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL for the current image
-            inventory_page_url = extract_inventory_page_urls(text)
+            inventory_page_url = extract_inventory_page_urls(text, alt_or_text)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
