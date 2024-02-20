@@ -704,46 +704,40 @@ def convert_text_to_html_images(text):
 
 def extract_inventory_page_urls(text):
     # Regular expression to match the inventory page URL in the provided text
-    pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
-
+    pattern = r'\[([^\]]+ Car Details)\]\(([^)]+)\)'
+    
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Extract URLs for each match
-    urls = {}
-    for match in matches:
-        details_type = match.group(1).lower()
-        url = match.group(2)
-        urls[details_type] = url
-
-    return urls
+    # Return a list of tuples (details, url)
+    return [(match.group(1), match.group(2)) for match in matches]
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!\[([^\]]+)\]\(([^)]+)\)'
 
     # Function to replace each match
-    def replace_with_tag(match, urls):
+    def replace_with_tag(match):
         alt_text = match.group(1)
         url = match.group(2)
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URL for the current image details
-            details_type = f'{alt_text} Car Details'.lower()
-            inventory_page_url = urls.get(details_type)
-            if inventory_page_url:
-                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
+            # Extracted inventory page URLs for the current image details
+            inventory_page_urls = extract_inventory_page_urls(text)
+            
+            # Find the matching URL based on the alt text
+            matching_url = next((u for (details, u) in inventory_page_urls if f'{alt_text} Car Details' == details), None)
+
+            if matching_url:
+                return f'<a href="{matching_url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
             else:
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}" target="_blank">{alt_text}</a>'
 
-    # Extract all URLs associated with details
-    urls = extract_inventory_page_urls(text)
-
     # Replace all occurrences
-    html_text = re.sub(pattern, lambda match: replace_with_tag(match, urls), text)
+    html_text = re.sub(pattern, replace_with_tag, text)
 
     return html_text
     
