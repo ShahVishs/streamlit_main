@@ -634,16 +634,31 @@ def convert_text_to_html_images(text):
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
     
-def extract_inventory_page_url(text):
-    # Regular expression to match the inventory page URL in the provided text
-    pattern = r'\[Car Details\]\(([^)]+)\)'
+# def extract_inventory_page_url(text):
+#     # Regular expression to match the inventory page URL in the provided text
+#     pattern = r'\[Car Details\]\(([^)]+)\)'
+    
+#     # Search for the pattern in the text
+#     match = re.search(pattern, text)
+    
+#     # If a match is found, return the extracted URL; otherwise, return None
+#     return match.group(1) if match else None
+def extract_car_details_and_link(text):
+    # Regular expression to match car details and inventory page URL with flexible labels
+    pattern = r'\[([^)]*Car[^)]*Details[^)]*)\]\(([^)]+)\)\s*\n?\s*\[([^)]*Car[^)]*Images[^)]*)\]\(([^)]+)\)'
     
     # Search for the pattern in the text
     match = re.search(pattern, text)
     
-    # If a match is found, return the extracted URL; otherwise, return None
-    return match.group(1) if match else None
-
+    # If a match is found, extract the details and link; otherwise, return None
+    if match:
+        car_details_label = match.group(1)
+        car_details_link = match.group(2)
+        car_images_label = match.group(3)
+        car_images_link = match.group(4)
+        return car_details_label, car_details_link, car_images_label, car_images_link
+    else:
+        return None, None, None, None
 # def convert_links(text):
     
 #     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
