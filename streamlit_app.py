@@ -744,12 +744,10 @@ def convert_links(text):
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
     # Replace all occurrences at once
-    html_text = text
-    for match in matches:
-        # Replace each match individually
-        html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
+    html_text = re.sub(pattern, lambda m: replace_with_tag(m), text)
 
     return html_text
+
 
 
 output = ""
