@@ -703,21 +703,22 @@ def convert_text_to_html_images(text):
 #     return html_text
 
 def extract_inventory_page_urls(text):
-    # Regular expression to match the inventory page URL in the provided text
+    # Regular expression to match the inventory page URLs in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
 
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Extract URLs for each match
-    urls = []
+    # Dictionary to store alt text and corresponding URLs
+    inventory_urls = {}
+
+    # Iterate through matches and store the URLs
     for match in matches:
         details_type = match.group(1)
         url = match.group(2)
-        if details_type.lower() in ['details', 'car details', 'view details']:
-            urls.append(url)
+        inventory_urls[details_type.lower()] = url
 
-    return urls
+    return inventory_urls
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
@@ -726,6 +727,9 @@ def convert_links(text):
     # Find all matches
     matches = list(re.finditer(pattern, text))
 
+    # Extract inventory page URLs for all images
+    inventory_urls = extract_inventory_page_urls(text)
+
     # Function to replace each match
     def replace_with_tag(match):
         alt_or_text = match.group(1)
@@ -733,13 +737,9 @@ def convert_links(text):
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URLs for the current image
-            inventory_page_urls = extract_inventory_page_urls(text)
-            for inventory_page_url in inventory_page_urls:
-                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-            
-            # If no matching URL is found, fallback to the original image link
-            return f'<img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/>'
+            # Get the corresponding inventory page URL
+            inventory_page_url = inventory_urls.get(alt_or_text.lower(), url)
+            return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
