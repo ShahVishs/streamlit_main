@@ -801,7 +801,7 @@ def convert_links(text):
                 # Use the corresponding URL for the current image
                 inventory_page_url = inventory_page_urls[index]
 
-                # Generate HTML for the image with the correct URL
+                # Generate HTML for the image with the correct URL and a clickable link
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             
         # If no match or URL not found, use the original link
