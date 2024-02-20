@@ -702,27 +702,30 @@ def convert_text_to_html_images(text):
 
 #     return html_text
 
-def extract_inventory_page_url(text, image_alt):
-    # Regular expression to match the inventory page URL in the provided text
-    pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
+def extract_inventory_page_urls(text):
+    # Regular expression to match the inventory page URLs in the provided text
+    pattern = r'\[Car Details\]\(([^)]+)\)\n\n\[Car Images\]\(([^)]+)\)'
 
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Iterate through matches and find the one that matches the alt text of the image
-    for match in matches:
-        details_type = match.group(1)
-        url = match.group(2)
-        if details_type.lower() in ['details', 'car details', 'view details']:
-            if f'[{image_alt}]' in text:
-                return url
+    # Create a dictionary to store the URLs
+    urls_dict = {}
 
-    # If no valid URL is found, return None
-    return None
+    # Iterate through matches and store the URLs
+    for match in matches:
+        details_url = match.group(1)
+        images_url = match.group(2)
+        urls_dict[images_url] = details_url
+
+    return urls_dict
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
+
+    # Extract inventory page URLs for images based on their alt text
+    inventory_page_urls = extract_inventory_page_urls(text)
 
     # Function to replace each match
     def replace_with_tag(match):
@@ -731,8 +734,8 @@ def convert_links(text):
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URL for the current image
-            inventory_page_url = extract_inventory_page_url(text, alt_or_text)
+            # Extract the inventory page URL for the current image alt text
+            inventory_page_url = inventory_page_urls.get(url)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
@@ -750,7 +753,6 @@ def convert_links(text):
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
-    
 output = ""
 
 with container:
