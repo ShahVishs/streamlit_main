@@ -706,9 +706,9 @@ def convert_links(text):
 
     # Function to replace each match
     def replace_with_tag(match):
-        prefix = match.group(0)[0]  # Check if it's an image or a link
         alt_or_text = match.group(1)
         url = match.group(2)
+        
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL
@@ -720,10 +720,16 @@ def convert_links(text):
         else:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
+    # Find all matches
+    matches = re.finditer(pattern, text)
+    
     # Replace all occurrences
-    html_text = re.sub(pattern, lambda match: replace_with_tag(match), text)
+    html_text = text
+    for match in matches:
+        html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
+    
 output = ""
 
 with container:
