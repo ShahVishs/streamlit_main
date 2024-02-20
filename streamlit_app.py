@@ -709,16 +709,10 @@ def extract_inventory_page_urls(text):
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Create a dictionary to store image details as keys and their URLs as values
-    details_urls = {}
+    # Iterate through matches and collect all URLs
+    urls = [match.group(2) for match in matches]
 
-    # Iterate through matches and store details and URLs in the dictionary
-    for match in matches:
-        details_type = match.group(1).strip().lower()
-        url = match.group(2)
-        details_urls[details_type] = url
-
-    return details_urls
+    return urls
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
@@ -731,14 +725,15 @@ def convert_links(text):
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URL for the current image details
+            # Extracted inventory page URLs for all image details
             inventory_page_urls = extract_inventory_page_urls(text)
             
-            # Use the corresponding URL for the current image details
-            details_type = f'{alt_text} Car Details'.strip().lower()
-            inventory_page_url = inventory_page_urls.get(details_type)
+            # Find the index of the current image in the order
+            index = inventory_page_urls.index(f'{alt_text} Car Details') if f'{alt_text} Car Details' in inventory_page_urls else None
 
-            if inventory_page_url:
+            if index is not None and index < len(inventory_page_urls):
+                # Use the URL corresponding to the current image
+                inventory_page_url = inventory_page_urls[index]
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
             else:
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
