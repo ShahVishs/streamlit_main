@@ -769,15 +769,15 @@ def convert_text_to_html_images(text):
 #         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
 #     return html_text
-def extract_inventory_page_url(text):
-    # Regular expression to match the inventory page URL in the provided text
+def extract_inventory_page_urls(text):
+    # Regular expression to match URLs in markdown format
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
     
-    # Search for the pattern in the text
-    match = re.search(pattern, text)
+    # Find all matches in the text
+    matches = re.findall(pattern, text)
     
-    # If a match is found, return the extracted URL; otherwise, return None
-    return match.group(2) if match else None
+    # Return a list of extracted URLs
+    return [match[1] for match in matches]
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
@@ -785,24 +785,27 @@ def convert_links(text):
 
     # Function to replace each match
     def replace_with_tag(match):
-        prefix = match.group(0)[0]  # Check if it's an image or a link
         alt_or_text = match.group(1)
         url = match.group(2)
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URL
-            inventory_page_url = extract_inventory_page_url(text)
-            if inventory_page_url:
-                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+            # Extracted inventory page URLs
+            inventory_page_urls = extract_inventory_page_urls(text)
+            if inventory_page_urls:
+                # Dynamically generate HTML code for each URL
+                for inventory_page_url in inventory_page_urls:
+                    yield f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
-                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+                yield f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
-            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+            yield f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
     # Replace all occurrences
-    html_text = re.sub(pattern, replace_with_tag, text)
-
-    return html_text
+    html_texts = list(replace_with_tag(match) for match in re.finditer(pattern, text))
+    
+    # Combine the generated HTML code into a single string
+    return ''.join(html_text for html_text_list in html_texts for html_text in html_text_list)
+    
 output = ""
 
 with container:
@@ -824,28 +827,28 @@ with container:
             col1, col2 = st.columns([0.7, 10]) 
             with col1:
                 st.image("icon-1024.png", width=50)
-            # with col2:
-            #     # st.markdown(convert_links(answer))
-            #     st.markdown(
-            #         f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-            #         f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-            #         f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-            #         f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
-            #         f'</div>',
-            #         unsafe_allow_html=True
-            #     )
             with col2:
-                urls = re.findall(r'\[(Details|Car Details|View Details)\]\(([^)]+)\)', answer)
-                for url in urls:
-                    clickable_image = convert_links(f"[Image]({url[1]})")
-                    st.markdown(
-                        f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
-                        f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
-                        f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                        f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{clickable_image}</span>'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
+                # st.markdown(convert_links(answer))
+                st.markdown(
+                    f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+                    f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+                    f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+            # with col2:
+            #     urls = re.findall(r'\[(Details|Car Details|View Details)\]\(([^)]+)\)', answer)
+            #     for url in urls:
+            #         clickable_image = convert_links(f"[Image]({url[1]})")
+            #         st.markdown(
+            #             f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
+            #             f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
+            #             f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
+            #             f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{clickable_image}</span>'
+            #             f'</div>',
+            #             unsafe_allow_html=True
+            #         )
         # if st.session_state.user_name:
         #     try:
         #         save_chat_to_airtable(st.session_state.user_name, user_input, output)
