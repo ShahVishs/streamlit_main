@@ -705,35 +705,42 @@ def convert_text_to_html_images(text):
 def extract_inventory_page_url(text):
     # Regular expression to match the inventory page URL in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
-    
-    # Search for the pattern in the text
-    match = re.search(pattern, text)
-    
-    # If a match is found, return the extracted URL; otherwise, return None
-    return match.group(2) if match else None
+
+    # Find all matches
+    matches = re.finditer(pattern, text)
+
+    # Iterate through matches and return the first valid URL
+    for match in matches:
+        details_type = match.group(1)
+        url = match.group(2)
+        if details_type.lower() in ['details', 'car details', 'view details']:
+            return url
+
+    # If no valid URL is found, return None
+    return None
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-    pattern = r'!\[([^\]]+)\]\(([^)]+)\)'
+    pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
-    # Find all matches
-    matches = list(re.finditer(pattern, text))
-    
     # Function to replace each match
     def replace_with_tag(match):
         alt_or_text = match.group(1)
         url = match.group(2)
-        
+
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL for the current image
-            inventory_page_url = extract_inventory_page_url(match.group(0))
+            inventory_page_url = extract_inventory_page_url(text)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+
+    # Find all matches
+    matches = list(re.finditer(pattern, text))
 
     # Replace all occurrences
     html_text = text
