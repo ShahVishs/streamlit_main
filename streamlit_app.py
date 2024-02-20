@@ -745,7 +745,7 @@ def convert_links(text):
 
     # Replace all occurrences
     html_text = text
-    for i, match in enumerate(matches):
+    for match in matches:
         # Replace each match individually
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
