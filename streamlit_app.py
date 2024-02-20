@@ -634,16 +634,28 @@ def convert_text_to_html_images(text):
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
     
+# def extract_inventory_page_url(text):
+#     # Regular expression to match the inventory page URL in the provided text
+#     pattern = r'\[Car Details\]\(([^)]+)\)'
+    
+#     # Search for the pattern in the text
+#     match = re.search(pattern, text)
+    
+#     # If a match is found, return the extracted URL; otherwise, return None
+#     return match.group(1) if match else None
 def extract_inventory_page_url(text):
-    # Regular expression to match the inventory page URL in the provided text
-    pattern = r'\[Car Details\]\(([^)]+)\)'
+    # Regular expression to match the inventory number in the provided text
+    pattern = r'/inventory/([^/]+)'
     
     # Search for the pattern in the text
     match = re.search(pattern, text)
     
-    # If a match is found, return the extracted URL; otherwise, return None
-    return match.group(1) if match else None
-    
+    # If a match is found, construct the inventory page URL; otherwise, return None
+    if match:
+        inventory_number = match.group(1)
+        return f'https://www.goschchevy.com/inventory/{inventory_number}/'
+    else:
+        return None    
 # def convert_links(text):
     
 #     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
