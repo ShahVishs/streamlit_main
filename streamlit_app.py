@@ -703,56 +703,53 @@ def convert_text_to_html_images(text):
 #     return html_text
 
 def extract_inventory_page_urls(text):
-    # Regular expression to match the inventory page URLs in the provided text
-    pattern = r'\[Car Details\]\(([^)]+)\)\n\n\[Car Images\]\(([^)]+)\)'
+    # Regular expression to match the inventory page URL in the provided text
+    pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
 
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Create a dictionary to store the URLs
-    urls_dict = {}
+    # Create a dictionary to store image details as keys and their URLs as values
+    details_urls = {}
 
-    # Iterate through matches and store the URLs
+    # Iterate through matches and store details and URLs in the dictionary
     for match in matches:
-        details_url = match.group(1)
-        images_url = match.group(2)
-        urls_dict[images_url] = details_url
+        details_type = match.group(1).strip().lower()
+        url = match.group(2)
+        details_urls[details_type] = url
 
-    return urls_dict
+    return details_urls
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-    pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-    # Extract inventory page URLs for images based on their alt text
-    inventory_page_urls = extract_inventory_page_urls(text)
+    pattern = r'!\[([^\]]+)\]\(([^)]+)\)'
 
     # Function to replace each match
     def replace_with_tag(match):
-        alt_or_text = match.group(1)
+        alt_text = match.group(1)
         url = match.group(2)
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extract the inventory page URL for the current image alt text
-            inventory_page_url = inventory_page_urls.get(url)
-            if inventory_page_url:
-                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-            else:
-                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        else:
-            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+            # Extracted inventory page URL for the current image details
+            inventory_page_urls = extract_inventory_page_urls(text)
+            
+            # Use the corresponding URL for the current image details
+            details_type = f'{alt_text} Car Details'.strip().lower()
+            inventory_page_url = inventory_page_urls.get(details_type)
 
-    # Find all matches
-    matches = list(re.finditer(pattern, text))
+            if inventory_page_url:
+                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
+            else:
+                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
+        else:
+            return f'<a href="{url}" target="_blank">{alt_text}</a>'
 
     # Replace all occurrences
-    html_text = text
-    for match in matches:
-        # Replace each match individually
-        html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
+    html_text = re.sub(pattern, replace_with_tag, text)
 
     return html_text
+    
 output = ""
 
 with container:
