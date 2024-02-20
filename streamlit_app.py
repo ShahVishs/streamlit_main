@@ -665,7 +665,7 @@ def extract_inventory_page_url(text):
 #     html_text = re.sub(pattern, replace_with_tag, text)
 
 #     return html_text 
-def convert_links_with_image(text):
+def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
