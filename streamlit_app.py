@@ -653,8 +653,8 @@ def extract_inventory_page_url(text):
     # If a match is found, extract the details and link; otherwise, return None
     if match:
         car_details_link = match.group(1)
-        car_images_link = match.group(2)
-        return car_details_link, car_images_link
+        
+        return car_details_link
     else:
         return None, None
 # def convert_links(text):
