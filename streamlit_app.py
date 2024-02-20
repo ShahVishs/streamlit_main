@@ -794,16 +794,18 @@ def convert_links(text):
             # Extracted inventory page URLs
             inventory_page_urls = extract_inventory_page_urls(text)
             
-            # Find the index of the current URL in the list
-            index = inventory_page_urls.index(url)
+            # Find the index of the current URL in the list (case-insensitive and trimmed)
+            index = next((i for i, u in enumerate(inventory_page_urls) if u.strip().lower() == url.strip().lower()), -1)
             
-            # Use the corresponding URL for the current image
-            inventory_page_url = inventory_page_urls[index]
+            if index != -1:
+                # Use the corresponding URL for the current image
+                inventory_page_url = inventory_page_urls[index]
 
-            # Generate HTML for the image with the correct URL
-            return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-        else:
-            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+                # Generate HTML for the image with the correct URL
+                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+            
+        # If no match or URL not found, use the original link
+        return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
