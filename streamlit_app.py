@@ -138,18 +138,19 @@ retriever_1 = vectorstore_1.as_retriever(search_type="similarity_score_threshold
 # vectordb_2 = FAISS.from_documents(docs_2, embeddings)
 # retriever_2 = vectordb_2.as_retriever(search_type="similarity", search_kwargs={"k": num_ret})
 
-file_3 = r'csvjson.json'
-loader_3 = JSONLoader(file_path=file_3, jq_schema='.', text_content=False)
-data_3 = loader_3.load()
-vectordb_3 = FAISS.from_documents(data_3, embeddings)
-retriever_4 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 8})
+# file_3 = r'csvjson.json'
+# loader_3 = JSONLoader(file_path=file_3, jq_schema='.', text_content=False)
+# data_3 = loader_3.load()
+# vectordb_3 = FAISS.from_documents(data_3, embeddings)
+# retriever_4 = vectordb_3.as_retriever(search_type="similarity", search_kwargs={"k": 8})
 
 
 tool1 = create_retriever_tool(
     retriever_1, 
      "details_of_car",
-     "use to check availabilty of car and  to get car full details. Input to this should be the car's model\
-     or car features and new or used car as a single argument for example new toeing car or new jeep cherokee  and also use for getting images based on make and model "
+     "use to check availabilty of car and  to get car full details with images. Input to this should be the car's model\
+     or car features and new or used car as a single argument for example new toeing car or new jeep cherokee\
+     and also use for getting images based on make and model "
 ) 
 
 # tool2 = create_retriever_tool(
@@ -303,7 +304,8 @@ def create_appointment_link(name: str,phone: str,email: str ,make: str,model: st
     Input to this should not contain date"""
 
 #     api_url = "https://889d-2402-a00-172-22e6-71e5-ba36-c2e7-3c81.ngrok-free.app/test/appointment/create"
-    api_url="https://495c-2402-a00-172-22e6-5ea8-c44e-fd0e-e8ed.ngrok-free.app/test/appointment/create"
+    # api_url="https://495c-2402-a00-172-22e6-5ea8-c44e-fd0e-e8ed.ngrok-free.app/test/appointment/create"
+    api_url="https://e182-52-73-21-156.ngrok-free.app/test/appointment/create"
 
     data_dict = {
     "company_id": company_id,
@@ -450,7 +452,7 @@ To ensure a consistent and effective response, please adhere to the following gu
 Inventory related Questions: 
 use "details_of_car" tool that extracts comprehensive information about cars in our inventory and also checks availability.
 
-Avoid combining multiple questions like given below exaple1.
+Avoid combining multiple questions like given below example1
 example1:  "Are you interested in a new or used car or specific make or model in mind Or any specific features 
 like towing capacity, off-road capability?"
 
@@ -464,10 +466,9 @@ disclose selling price only when the customer explicitly requests it.
 
 When utilizing the "details_of_car" tool, please respond with a list of cars, excluding square brackets. 
 For each car, include the make, year, model and trim.
-Additionally, strictly provide their car details links in the response, 
-with the text "explore model name" as a clickable link. 
-For example, if the car model is XYZ, color is red the clickable 
-link should be "explore XYZ_red_color" and also provide car imagelist url.
+Additionally, strictly provide their car_details_link and also provide car_images_link.
+
+Partition the list with new cars listed first, followed by a separate section for used cars.
 
 When using the 'details_of_car' tool to provide car information, adhere to these guidelines 
 to ensure concise and non-redundant responses:
@@ -497,16 +498,24 @@ kindly inquire with the customer to confirm their preferred choice.
 This will ensure clarity regarding the specific model that piques the customer's interest.
 
 
-After providing car details, kindly prompt the customer to book a test drive.
+After providing car details, kindly ask the customer if he is interested for test drive.
 
-Obtain car details from the customer.
-2. Phone Number:
-Check if you have the customer's phone number on record.
-If not, politely inquire about it.
-
-3. Appointment Date and Time:
+you: Are you interested in test drive?
+customer:yes
+you:check for contact number in record, politely inquire about it.
+customer: phone number given
+you: preffered appointment date?
 
 For certain date and time:
+
+{details}. 
+Given this information, please use the "get_appointment_details" tool to check for the availability of the 
+requested appointment date by the customer. For example If the costumer requested date is tomorrow, 
+you know todays date and day find tomorrows date and use "get_appointment_details" tool. Use todays date only when costumer requests 
+for todays appointment else use todays date for finding requested date.
+If the desired date is available, proceed to book the appointment using the "confirm_appointment" tool.
+
+In case the requested date is unavailable, kindly suggest alternative slots close to the customer's preference
 
 Ask the customer for their preferred date and time for a test drive.
 {details} using these details find appointment date requested by costumer 
@@ -556,47 +565,7 @@ Strictly Keep responses concise, not exceeding two sentences or 100 words and an
 Respond in a polite US english.
 
 **strictly answer only from the  content provided to you dont makeup answers.**"""
-
-# {details} use these details and find appointment date and check for appointment availabity 
-# using "get_appointment_details" tool for that specific day or date and time that costumer has requested for.
-# strictly input to "get_appointment_details" tool should be "mm-dd-yyyy" format.
-# Step 5: Appointment Timing Uncertain for Customer 
-# In case where the customer is uncertain about his preferred date and time for scheduling an appointment, automatically Use 
-# "create_appointment_link" tool, it will Generate a link and we provide it to the customer, allowing them the 
-# flexibility to schedule at their convenience whenever they are ready. Never ask permission from costumer to create a link. 
-
-# Ater providing car details ask costumer to book appointment for test drive.
-
-# If cosstumer is ready to book an appointment follow below steps.
-
-# step-1 Verify If we know Customer Phone Number. If not, inquire about the customer's phone number.
-
-# step-2 Ask for Appointment date:
-
-# Once you have the customer's phone number, ask for the desired appointment date and time.
-
-# Step 3: Verify Appointment Availability and book appointment:
-
-# {details} use this details and Utilize the "get_appointment_details" tool to assess the availability of the appointment time. 
-# If the requested time is available, proceed to confirm the appointment using the "confirm_appointment" tool. 
-# In the event that the preferred date and time are not available, recommend alternative time slots that align closely
-# with the customer's preferences.
-
-# Step 5:
-# Flexible Appointment Scheduling for Uncertain Dates
-
-# If the customer is uncertain about the date and time for an appointment, "create_appointment_link" 
-# tool without explicitly confirming with the customer. 
-# Provide them with a clickable link to book an appointment: [book now](Appointment Link).
-
-# {details} use these details and find appointment date and check for appointment availabity 
-# using "get_appointment_details" tool for that specific day or date and time that costumer has requested for.
-# strictly input to "get_appointment_details" tool should be "mm-dd-yyyy" format.
-# Step 5: Appointment Timing Uncertain for Customer 
-# In case where the customer is uncertain about his preferred date and time for scheduling an appointment, automatically Use 
-# "create_appointment_link" tool, it will Generate a link and we provide it to the customer, allowing them the 
-# flexibility to schedule at their convenience whenever they are ready. Never ask permission from costumer to create a link. 
-details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and todays week day is "+day_of_the_week+"."
+details= "Today's date is "+ todays_date +" in mm-dd-yyyy format and its "+day_of_the_week+"."
 name = st.session_state.user_name
 dealership_name="Gosch Chevrolet"
 input_template = template.format(details=details,name=name,dealership_name=dealership_name)
@@ -685,7 +654,7 @@ def convert_links(text):
     # Replace all occurrences
     html_text = re.sub(pattern, replace_with_tag, text)
 
-    return html_text    
+    return html_text 
 output = ""
 with container:
     if st.session_state.user_name is None:
