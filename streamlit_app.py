@@ -758,7 +758,7 @@ with container:
                 #     f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
                 #     f'</div>',
                 #     unsafe_allow_html=True
-                )
+                # )
         # if st.session_state.user_name:
         #     try:
         #         save_chat_to_airtable(st.session_state.user_name, user_input, output)
