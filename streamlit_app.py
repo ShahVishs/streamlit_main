@@ -703,18 +703,18 @@ def convert_text_to_html_images(text):
 #     return html_text
 
 def extract_inventory_page_url(text):
-    # Regular expression to match details and extract URL with VIN
+    # Regular expression to match the details and VIN in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)/(vin[^\)]+)\)'
 
     # Search for the pattern in the text
     match = re.search(pattern, text)
-
-    # If a match is found, construct the inventory page URL with VIN
+    
+    # If a match is found, construct the inventory page URL
     if match:
-        detail_type = match.group(1)
-        url_before_vin = match.group(2)
-        vin_part = match.group(3)
-        return f'{url_before_vin}/{vin_part}/'
+        details = match.group(1)
+        url_prefix = match.group(2)
+        vin = match.group(3)
+        return f'{url_prefix}/{vin}/'
     else:
         return None
 
@@ -729,8 +729,8 @@ def convert_links(text):
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URL with VIN
-            inventory_page_url = extract_inventory_page_url(text)
+            # Extracted inventory page URL
+            inventory_page_url = extract_inventory_page_url(url)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
@@ -747,6 +747,7 @@ def convert_links(text):
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
+
     
 output = ""
 
