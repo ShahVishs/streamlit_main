@@ -706,14 +706,13 @@ def extract_inventory_page_url(text):
     # Regular expression to match the inventory page URL in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
 
-    # Find all matches
+     # Find all matches
     matches = re.finditer(pattern, text)
 
     # Iterate through matches and return the first valid URL
     for match in matches:
-        details_type = match.group(1)
-        url = match.group(2)
-        if details_type.lower() in ['details', 'car details', 'view details']:
+        url = match.group(1)
+        if "inventory" in url:
             return url
 
     # If no valid URL is found, return None
