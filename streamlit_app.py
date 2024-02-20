@@ -702,26 +702,25 @@ def convert_text_to_html_images(text):
 
 #     return html_text
 
-def extract_inventory_page_urls(text):
+def extract_inventory_page_url(text, image_alt):
     # Regular expression to match the inventory page URL in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
 
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Create a dictionary to store details URLs
-    details_urls = {}
-    
-    # Iterate through matches and store in the dictionary
+    # Iterate through matches and find the one that matches the alt text of the image
     for match in matches:
         details_type = match.group(1)
         url = match.group(2)
         if details_type.lower() in ['details', 'car details', 'view details']:
-            details_urls[details_type.lower()] = url
+            if f'![{image_alt}]' in text or f'[{image_alt}]' in text:
+                return url
 
-    return details_urls
+    # If no valid URL is found, return None
+    return None
 
-def convert_links(text, details_urls):
+def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
@@ -733,9 +732,9 @@ def convert_links(text, details_urls):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL for the current image
-            details_url = details_urls.get('details', '')  # Use 'details' as the default type
-            if details_url:
-                return f'<a href="{details_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+            inventory_page_url = extract_inventory_page_url(text, alt_or_text)
+            if inventory_page_url:
+                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
