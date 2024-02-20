@@ -733,7 +733,6 @@ def convert_links(text, details_urls):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Use the next "Details" URL from the list
-            details_urls = extract_details_urls(text)
             details_url = details_urls.pop(0) if details_urls else None
             if details_url:
                 return f'<a href="{details_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
@@ -781,7 +780,7 @@ with container:
                     f'<div style="background-color: black; color: white; border-radius: 10px; padding: 10px; width: 85%;'
                     f' border-top-right-radius: 10px; border-bottom-right-radius: 10px;'
                     f' border-top-left-radius: 0; border-bottom-left-radius: 0; box-shadow: 2px 2px 5px #888888;">'
-                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer, details_urls)}</span>'
+                    f'<span style="font-family: Arial, sans-serif; font-size: 16px; white-space: pre-wrap;">{convert_links(answer)}</span>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
