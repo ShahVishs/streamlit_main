@@ -702,20 +702,24 @@ def convert_text_to_html_images(text):
 
 #     return html_text
 
-def extract_inventory_page_url(text):
+def extract_inventory_page_url(match):
     # Regular expression to match the inventory page URL in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
-    
-    # Search for the pattern in the text
-    match = re.search(pattern, text)
+
+    # Extracted inventory page URL for the current image
+    match_text = match.group(0)
+    match_inventory = re.search(pattern, match_text)
     
     # If a match is found, return the extracted URL; otherwise, return None
-    return match.group(2) if match else None
+    return match_inventory.group(2) if match_inventory else None
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
+    # Find all matches
+    matches = list(re.finditer(pattern, text))
+    
     # Function to replace each match
     def replace_with_tag(match):
         alt_or_text = match.group(1)
@@ -724,7 +728,7 @@ def convert_links(text):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL for the current image
-            inventory_page_url = extract_inventory_page_url(text)
+            inventory_page_url = extract_inventory_page_url(match)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
@@ -732,9 +736,6 @@ def convert_links(text):
         else:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
-    # Find all matches
-    matches = list(re.finditer(pattern, text))
-    
     # Replace all occurrences
     html_text = text
     for i, match in enumerate(matches):
