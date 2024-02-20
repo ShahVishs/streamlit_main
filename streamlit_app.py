@@ -721,10 +721,11 @@ def convert_links(text):
         prefix = match.group(0)[0]  # Check if it's an image or a link
         alt_or_text = match.group(1)
         url = match.group(2)
+
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URL based on the current image text
-            inventory_page_url = extract_inventory_page_url(alt_or_text)
+            # Extracted inventory page URL for the current image
+            inventory_page_url = extract_inventory_page_url(url)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
