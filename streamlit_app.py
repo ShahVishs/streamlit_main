@@ -719,6 +719,7 @@ def convert_links(text):
 
     # Function to replace each match
     def replace_with_tag(match):
+        prefix = match.group(0)[0]
         alt_text = match.group(1)
         url = match.group(2)
 
