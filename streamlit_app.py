@@ -709,8 +709,12 @@ def extract_inventory_page_urls(text):
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Iterate through matches and collect all URLs
-    urls = [match.group(2) for match in matches]
+    # Extract URLs for each match
+    urls = {}
+    for match in matches:
+        details_type = match.group(1).lower()
+        url = match.group(2)
+        urls[details_type] = url
 
     return urls
 
@@ -719,29 +723,27 @@ def convert_links(text):
     pattern = r'!\[([^\]]+)\]\(([^)]+)\)'
 
     # Function to replace each match
-    def replace_with_tag(match):
+    def replace_with_tag(match, urls):
         alt_text = match.group(1)
         url = match.group(2)
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URLs for all image details
-            inventory_page_urls = extract_inventory_page_urls(text)
-            
-            # Find the index of the current image in the order
-            index = inventory_page_urls.index(f'{alt_text} Car Details') if f'{alt_text} Car Details' in inventory_page_urls else None
-
-            if index is not None and index < len(inventory_page_urls):
-                # Use the URL corresponding to the current image
-                inventory_page_url = inventory_page_urls[index]
+            # Extracted inventory page URL for the current image details
+            details_type = f'{alt_text} Car Details'.lower()
+            inventory_page_url = urls.get(details_type)
+            if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
             else:
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}" target="_blank">{alt_text}</a>'
 
+    # Extract all URLs associated with details
+    urls = extract_inventory_page_urls(text)
+
     # Replace all occurrences
-    html_text = re.sub(pattern, replace_with_tag, text)
+    html_text = re.sub(pattern, lambda match: replace_with_tag(match, urls), text)
 
     return html_text
     
