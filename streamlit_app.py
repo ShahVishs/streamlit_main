@@ -716,6 +716,9 @@ def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
+    # Find all matches
+    matches = list(re.finditer(pattern, text))
+    
     # Function to replace each match
     def replace_with_tag(match):
         alt_or_text = match.group(1)
@@ -732,12 +735,9 @@ def convert_links(text):
         else:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
-    # Find all matches
-    matches = re.finditer(pattern, text)
-    
     # Replace all occurrences
     html_text = text
-    for match in matches:
+    for i, match in enumerate(matches):
         # Replace each match individually
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
