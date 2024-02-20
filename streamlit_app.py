@@ -702,16 +702,17 @@ def convert_text_to_html_images(text):
 
 #     return html_text
 
-def extract_inventory_page_urls(text):
+def extract_inventory_page_urls(text, details):
     # Regular expression to match the inventory page URL in the provided text
-    pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
-    
-    
+    pattern = rf'\[{details}\]\(([^)]+)\)'
+
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Return a list of tuples (details, url)
-    return [(match.group(1), match.group(2)) for match in matches]
+    # Extract all URLs from matches
+    urls = [match.group(1) for match in matches] if matches else []
+
+    return urls
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
@@ -719,20 +720,16 @@ def convert_links(text):
 
     # Function to replace each match
     def replace_with_tag(match):
-        prefix = match.group(0)[0]
         alt_text = match.group(1)
         url = match.group(2)
 
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URLs for the current image details
-            inventory_page_urls = extract_inventory_page_urls(text)
-            
-            # Find the matching URL based on the alt text
-            matching_url = next((u for (details, u) in inventory_page_urls if f'{alt_text} Car Details' == details), None)
-
-            if matching_url:
-                return f'<a href="{matching_url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
+            inventory_page_urls = extract_inventory_page_urls(text, f'{alt_text} Car Details')
+            if inventory_page_urls:
+                # Use the first URL in this example, you can iterate over all URLs as needed
+                return f'<a href="{inventory_page_urls[0]}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
             else:
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_text}" style="width: 100px; height: auto;"/></a>'
         else:
@@ -742,7 +739,6 @@ def convert_links(text):
     html_text = re.sub(pattern, replace_with_tag, text)
 
     return html_text
-    
 output = ""
 
 with container:
