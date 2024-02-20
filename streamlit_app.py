@@ -719,37 +719,6 @@ def convert_text_to_html_images(text):
 
 #     # If no valid URL is found, return None
 #     return None
-
-# def convert_links(text):
-#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-#     # Function to replace each match
-#     def replace_with_tag(match):
-#         alt_or_text = match.group(1)
-#         url = match.group(2)
-
-#         # Check for common image file extensions
-#         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-#             # Extracted inventory page URL for the current image
-#             inventory_page_url = extract_inventory_page_url(text, alt_or_text)
-#             if inventory_page_url:
-#                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-#             else:
-#                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-#         else:
-#             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
-
-#     # Find all matches
-#     matches = list(re.finditer(pattern, text))
-
-#     # Replace all occurrences
-#     html_text = text
-#     for match in matches:
-#         # Replace each match individually
-#         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
-
-#     return html_text
 def extract_inventory_page_urls(text):
     # Regular expression to match the inventory page URL in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
@@ -769,11 +738,8 @@ def extract_inventory_page_urls(text):
 
     # Return the list of all URLs
     return urls
-
+    
 def convert_links(text):
-    # Get the list of inventory page URLs
-    inventory_page_urls = extract_inventory_page_urls(text)
-
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
@@ -782,17 +748,16 @@ def convert_links(text):
         alt_or_text = match.group(1)
         url = match.group(2)
 
-        # Check if there are inventory page URLs
-        if inventory_page_urls:
-            # Use a set to check if the URL is present in the inventory page URLs
-            if url in set(inventory_page_urls):
-                # Use the corresponding URL based on the index of the match
-                match_index = inventory_page_urls.index(url) % len(inventory_page_urls)
-                inventory_page_url = inventory_page_urls[match_index]
+        # Check for common image file extensions
+        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
+            # Extracted inventory page URL for the current image
+            inventory_page_url = extract_inventory_page_url(text, alt_or_text)
+            if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-
-        # No inventory page URLs found or the URL didn't match, use the original URL
-        return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+            else:
+                return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+        else:
+            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
     # Find all matches
     matches = list(re.finditer(pattern, text))
@@ -804,6 +769,7 @@ def convert_links(text):
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
+
 
 
 
