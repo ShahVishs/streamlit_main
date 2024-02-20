@@ -702,12 +702,15 @@ def convert_text_to_html_images(text):
 
 #     return html_text
 
-def extract_inventory_page_url(text):
+def extract_inventory_page_url(match):
+    # Extract the URL from the match
+    url = match.group(2)
+    
     # Regular expression to match the inventory page URL in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
     
-    # Search for the pattern in the text
-    match = re.search(pattern, text)
+    # Search for the pattern in the URL
+    match = re.search(pattern, url)
     
     # If a match is found, return the extracted URL; otherwise, return None
     return match.group(2) if match else None
@@ -727,7 +730,7 @@ def convert_links(text):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL
-            inventory_page_url = extract_inventory_page_url(text)
+            inventory_page_url = extract_inventory_page_url(match)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
