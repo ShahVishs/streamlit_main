@@ -750,6 +750,7 @@ def convert_links(text):
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
+    
 output = ""
 
 with container:
