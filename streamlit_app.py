@@ -634,8 +634,28 @@ def convert_text_to_html_images(text):
     html_text = re.sub(pattern, replace_with_html, text)
     return html_text
     
-def convert_links(text):
+# def convert_links(text):
     
+#     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
+#     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
+
+#     # Function to replace each match
+#     def replace_with_tag(match):
+#         prefix = match.group(0)[0]  # Check if it's an image or a link
+#         alt_or_text = match.group(1)
+#         url = match.group(2)
+#         # Check for common image file extensions
+#         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
+#             return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+
+#         else:
+#             return f'<a href="{url}">{alt_or_text}</a>'
+
+#     # Replace all occurrences
+#     html_text = re.sub(pattern, replace_with_tag, text)
+
+#     return html_text 
+def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
@@ -644,10 +664,16 @@ def convert_links(text):
         prefix = match.group(0)[0]  # Check if it's an image or a link
         alt_or_text = match.group(1)
         url = match.group(2)
-        # Check for common image file extensions
-        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            return f'<a href="{url}"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-
+        
+        # If it's an image URL, append car details URL to it
+        if prefix == '!':
+            # Extract the image URL from the answer
+            image_url_from_answer = re.search(r"image_url:([^,]+)", url).group(1).strip()
+            # Extract the car details URL from the answer
+            car_details_url = re.search(r"car_details_url:([^,\s]+)", url).group(1).strip()
+            # Join the extracted image URL with the car details URL
+            combined_url = f'{image_url_from_answer}/{car_details_url}'
+            return f'<a href="{combined_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
             return f'<a href="{url}">{alt_or_text}</a>'
 
@@ -655,7 +681,6 @@ def convert_links(text):
     html_text = re.sub(pattern, replace_with_tag, text)
 
     return html_text 
-
 
 
 output = ""
