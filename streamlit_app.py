@@ -702,24 +702,26 @@ def convert_text_to_html_images(text):
 
 #     return html_text
 
-def extract_inventory_page_url(text, image_alt):
+def extract_inventory_page_urls(text):
     # Regular expression to match the inventory page URL in the provided text
     pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
 
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Iterate through matches and find the nearest details URL that precedes the image
-    image_position = text.find(f'![{image_alt}]') if f'![{image_alt}]' in text else text.find(f'[{image_alt}]')
-    nearest_url = None
+    # Create a dictionary to store image alt text and corresponding details URLs
+    image_details_mapping = {}
+    
+    # Iterate through matches and store in the dictionary
     for match in matches:
         details_type = match.group(1)
         url = match.group(2)
         if details_type.lower() in ['details', 'car details', 'view details']:
-            if match.start() < image_position:
-                nearest_url = url
+            image_alt = re.search(f'!\[([^\]]+)\]', text)
+            if image_alt:
+                image_details_mapping[image_alt.group(1)] = url
 
-    return nearest_url
+    return image_details_mapping
 
 def convert_links(text):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
@@ -733,7 +735,7 @@ def convert_links(text):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL for the current image
-            inventory_page_url = extract_inventory_page_url(text, alt_or_text)
+            inventory_page_url = image_details_mapping.get(alt_or_text)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
