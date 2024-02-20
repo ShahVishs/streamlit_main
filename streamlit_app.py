@@ -735,6 +735,7 @@ def convert_links(text, image_details_mapping):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL for the current image
+            image_details_mapping = extract_inventory_page_urls(text)   
             inventory_page_url = image_details_mapping.get(alt_or_text)
             if inventory_page_url:
                 return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
@@ -753,7 +754,7 @@ def convert_links(text, image_details_mapping):
         html_text = re.sub(re.escape(match.group(0)), lambda m: replace_with_tag(match), html_text, count=1)
 
     return html_text
-image_details_mapping = extract_inventory_page_urls(text)   
+
 output = ""
 
 with container:
