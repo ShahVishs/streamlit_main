@@ -645,7 +645,7 @@ def convert_text_to_html_images(text):
 #     return match.group(1) if match else None
 def extract_inventory_page_url(text):
     # Regular expression to match the car details and inventory page URL
-    pattern = r'\[Car Details\]\(([^)]+)\)\s*\n?\s*\[Car Images\]\(([^)]+)\)'
+    pattern = r'https://www\.goschchevy\.com/inventory/([^/]+)'
     
     # Search for the pattern in the text
     match = re.search(pattern, text)
