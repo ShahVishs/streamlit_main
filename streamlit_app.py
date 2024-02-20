@@ -704,7 +704,7 @@ def convert_text_to_html_images(text):
 
 def extract_inventory_page_url(text, image_alt):
     # Regular expression to match the inventory page URL in the provided text
-    pattern = r'\[{}.*?\]\(([^)]+)\)'.format(re.escape(image_alt))
+    pattern = r'\[(Details|Car Details|View Details)\]\(([^)]+)\)'
     
     # Search for the pattern in the text
     match = re.search(pattern, text)
