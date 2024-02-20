@@ -709,21 +709,19 @@ def extract_inventory_page_urls(text):
     # Find all matches
     matches = re.finditer(pattern, text)
 
-    # Create a dictionary to store image alt text and corresponding details URLs
-    image_details_mapping = {}
+    # Create a dictionary to store details URLs
+    details_urls = {}
     
     # Iterate through matches and store in the dictionary
     for match in matches:
         details_type = match.group(1)
         url = match.group(2)
         if details_type.lower() in ['details', 'car details', 'view details']:
-            image_alt = re.search(f'!\[([^\]]+)\]', text)
-            if image_alt:
-                image_details_mapping[image_alt.group(1)] = url
+            details_urls[details_type.lower()] = url
 
-    return image_details_mapping
+    return details_urls
 
-def convert_links(text, image_details_mapping):
+def convert_links(text, details_urls):
     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
 
@@ -735,10 +733,9 @@ def convert_links(text, image_details_mapping):
         # Check for common image file extensions
         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
             # Extracted inventory page URL for the current image
-            image_details_mapping = extract_inventory_page_urls(text)   
-            inventory_page_url = image_details_mapping.get(alt_or_text)
-            if inventory_page_url:
-                return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+            details_url = details_urls.get('details', '')  # Use 'details' as the default type
+            if details_url:
+                return f'<a href="{details_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             else:
                 return f'<a href="{url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
         else:
