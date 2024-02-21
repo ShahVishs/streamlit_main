@@ -779,39 +779,6 @@ def extract_inventory_page_urls(text):
     # Return a list of extracted URLs
     return [match[1] for match in matches]
 
-def convert_links(text):
-    # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
-    pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
-
-    # Function to replace each match
-    def replace_with_tag(match):
-        prefix = match.group(0)[0]  # Check if it's an image or a link
-        alt_or_text = match.group(1)
-        url = match.group(2)
-
-        # Check for common image file extensions
-        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
-            # Extracted inventory page URLs
-            inventory_page_urls = extract_inventory_page_urls(text)
-            
-            # Use a counter to iterate through the inventory page URLs
-            replace_with_tag.counter = getattr(replace_with_tag, 'counter', 0) % len(inventory_page_urls)
-            inventory_page_url = inventory_page_urls[replace_with_tag.counter]
-
-            # Increment the counter for the next iteration
-            replace_with_tag.counter += 1
-
-            # Generate HTML for the image with the correct URL
-            return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
-            
-        # If no match or URL not found, use the original link
-        return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
-
-    # Replace all occurrences
-    html_text = re.sub(pattern, replace_with_tag, text)
-
-    return html_text
-
 # def convert_links(text):
 #     # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
 #     pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
@@ -821,11 +788,6 @@ def convert_links(text):
 #         prefix = match.group(0)[0]  # Check if it's an image or a link
 #         alt_or_text = match.group(1)
 #         url = match.group(2)
-
-#         # Check if the URL starts with "http://" or "https://"
-#         if url.startswith("http://") or url.startswith("https://"):
-#             # If it's an external link, return it as it is
-#             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
 #         # Check for common image file extensions
 #         if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
@@ -842,13 +804,50 @@ def convert_links(text):
 #             # Generate HTML for the image with the correct URL
 #             return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
             
-#         # If it's not an external link or an image, return it as it is
+#         # If no match or URL not found, use the original link
 #         return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
 #     # Replace all occurrences
 #     html_text = re.sub(pattern, replace_with_tag, text)
 
 #     return html_text
+
+def convert_links(text):
+    # Regular expression to match markdown format ![alt text](URL) or [link text](URL)
+    pattern = r'!?\[([^\]]+)\]\(([^)]+)\)'
+
+    # Function to replace each match
+    def replace_with_tag(match):
+        prefix = match.group(0)[0]  # Check if it's an image or a link
+        alt_or_text = match.group(1)
+        url = match.group(2)
+
+        # Check if the link should be excluded from conversion
+        if url.startswith("https://app.engagedai.io/"):
+            return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+
+        # Check for common image file extensions
+        if any(url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif']):
+            # Extracted inventory page URLs
+            inventory_page_urls = extract_inventory_page_urls(text)
+
+            # Use a counter to iterate through the inventory page URLs
+            replace_with_tag.counter = getattr(replace_with_tag, 'counter', 0) % len(inventory_page_urls)
+            inventory_page_url = inventory_page_urls[replace_with_tag.counter]
+
+            # Increment the counter for the next iteration
+            replace_with_tag.counter += 1
+
+            # Generate HTML for the image with the correct URL
+            return f'<a href="{inventory_page_url}" target="_blank"><img src="{url}" alt="{alt_or_text}" style="width: 100px; height: auto;"/></a>'
+
+        # If no match or URL not found, use the original link
+        return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
+
+    # Replace all occurrences
+    html_text = re.sub(pattern, replace_with_tag, text)
+
+    return html_text
 
 output = ""
 
