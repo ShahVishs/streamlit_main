@@ -823,7 +823,7 @@ def convert_links(text):
         url = match.group(2)
 
         # Check if the link should be excluded from conversion
-        if url.startswith("https://app.engagedai.io/"):
+        if "Book Now" in alt_or_text:
             return f'<a href="{url}" target="_blank">{alt_or_text}</a>'
 
         # Check for common image file extensions
